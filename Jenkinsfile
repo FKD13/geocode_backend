@@ -5,7 +5,7 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Test'
-        sh 'sudo systemctl status jenkins'
+        sh './runapp.sh test'
       }
     }
   }
