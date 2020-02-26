@@ -1,7 +1,5 @@
 pipeline {
-  agent {
-    node { label 'Backend-Build'}
-  }
+  agent any
 
   stages {
     stage('Build') {
