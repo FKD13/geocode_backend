@@ -6,7 +6,7 @@ pipeline {
       steps {
         echo 'Test'
         sh 'cp .env.template .env'
-        sh './runapp.sh test'
+        sh './runapp.sh build'
       }
     }
   }
