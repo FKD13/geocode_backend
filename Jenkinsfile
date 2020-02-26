@@ -7,6 +7,7 @@ pipeline {
         echo 'Test'
         sh 'cp .env.template .env'
         sh './runapp.sh build'
+        echo 'Yeet'
       }
     }
   }
