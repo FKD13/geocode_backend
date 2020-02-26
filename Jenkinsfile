@@ -5,6 +5,7 @@ pipeline {
     stage('Build') {
       steps {
         echo 'Test'
+        sh 'cp .env.template .env'
         sh './runapp.sh test'
       }
     }
