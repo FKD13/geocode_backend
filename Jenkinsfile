@@ -1,11 +1,12 @@
-node {
-    stage('Build') {
-        echo 'Building for Branch: ' + env.BRANCH_NAME
-        sh './runapp.sh build -x test'
-    }
+pipeline {
+    agent any
 
-    stage('Test') {
-        echo 'Testing for branch: ' + env.BRANCH_NAME
-        sh './runapp test'
+    Stages {
+        stage('Build') {
+            steps {
+                echo 'Building for branch: ' + env.BRANCH_NAME
+                sh './runapp.sh build -x test'
+            }
+        }
     }
 }
