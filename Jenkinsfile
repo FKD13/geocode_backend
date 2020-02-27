@@ -6,6 +6,8 @@ pipeline {
             steps {
                 echo 'Building for branch: ' + env.BRANCH_NAME
                 sh './runapp.sh build -x test'
+                sh './runapp.sh bootWar'
+                sh 'ls -lR'
             }
         }
         stage('Deploy-Development') {
