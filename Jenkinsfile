@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    Stages {
+    stages {
         stage('Build') {
             steps {
                 echo 'Building for branch: ' + env.BRANCH_NAME
