@@ -1,14 +1,15 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Build') {
-      steps {
-        echo 'Test'
-        sh 'cp .env.template .env'
-        sh './runapp.sh build'
-        echo 'Yeetskeet!'
-      }
+    node {
+        stage('Build') {
+            echo 'Building for Branch: ' + env.BRANCH_NAME
+            sh './runapp.sh build -x test'
+        }
+
+        stage('Test') {
+            echo 'Testing for branch: ' + env.BRANCH_NAME
+            sh './runapp test'
+        }
     }
-  }
 }
