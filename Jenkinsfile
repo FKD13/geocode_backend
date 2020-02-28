@@ -8,7 +8,7 @@ pipeline {
                 sh './runapp.sh build -x test'
                 sh './runapp.sh bootWar'
                 sh 'sudo cp build/libs/*.war /home/groep29/backend/development/app.war'
-                sh 'systemctl start backend_dev.service'
+                sh 'sudo systemctl start backend_dev.service'
             }
         }
         stage('Deploy-Development') {
