@@ -7,7 +7,8 @@ pipeline {
                 echo 'Building for branch: ' + env.BRANCH_NAME
                 sh './runapp.sh build -x test'
                 sh './runapp.sh bootWar'
-                sh 'ls -lR'
+                sh 'cp build/*.war /home/groep29/backend/development/app.war'
+                sh 'systemctl start backend_dev.service'
             }
         }
         stage('Deploy-Development') {
