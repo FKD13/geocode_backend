@@ -9,7 +9,7 @@
     - Create a user for the new database, for example I used `geocode-dev`. A localhost user should be enough.
 
 - Create a `.env` file in the project root, this should be based upon `.env.template`. Edit the file where needed.
-- If you are on windows just edit the `runapp.bat` file with your parameters and `JAVA_HOME` directory.
+- If you are on windows create a `.env.bat` file in the project root, this should be based upon `.env.bat.template`. Edit the file where needed
 
 ### Start the server
 
