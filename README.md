@@ -14,4 +14,4 @@
 
 To start the webserver simply run `./runapp.sh bootrun`.
 
-To visit the swagger documentation, surf to [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+To visit the swagger documentation, surf to [http://localhost:8080/swagger/swagger-ui.html](http://localhost:8080/swagger/swagger-ui.html)
