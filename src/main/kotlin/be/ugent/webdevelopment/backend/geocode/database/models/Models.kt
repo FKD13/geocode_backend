@@ -1,13 +1,11 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
-import java.sql.Time
 import java.time.LocalDateTime
-import java.util.*
 import javax.persistence.*
 
 @Entity
 @Table(name = "users")
-data class User (
+class User (
         @Id @GeneratedValue var id: Int = 0,
         @Column(nullable = false, name = "oauth_id") var oauthId: String = "",
         @Column(name = "oauth_secret") var oauthSecret: String? = "",
@@ -21,14 +19,14 @@ data class User (
 
 @Entity
 @Table(name = "oauth_parties")
-data class OauthParty (
+class OauthParty (
         @Id @GeneratedValue var id: Int = 0,
         @Column(nullable = false) var oauthPartyName: String = ""
 )
 
 @Entity
 @Table(name = "locations")
-data class Location (
+class Location (
         @Id @GeneratedValue var id: Int = 0,
         @Column(nullable = false) var longitude: Double = 0.0,
         @Column(nullable = false) var latitude: Double = 0.0,
@@ -41,7 +39,7 @@ data class Location (
 
 @Entity
 @Table(name = "tours")
-data class Tour (
+class Tour (
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToMany(cascade = [CascadeType.ALL]) var locations: List<Location>? = null,
@@ -52,7 +50,7 @@ data class Tour (
 
 @Entity
 @Table(name = "comments")
-data class Comment (
+class Comment (
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
@@ -62,7 +60,7 @@ data class Comment (
 
 @Entity
 @Table(name = "location_ratings")
-data class LocationRating (
+class LocationRating (
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
@@ -71,7 +69,7 @@ data class LocationRating (
 
 @Entity
 @Table(name = "check_ins")
-data class CheckIn (
+class CheckIn (
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
@@ -80,7 +78,7 @@ data class CheckIn (
 
 @Entity
 @Table(name = "reports")
-data class Report (
+class Report (
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
@@ -92,7 +90,7 @@ data class Report (
 
 @Entity
 @Table(name = "user_tours")
-data class UserTour (
+class UserTour (
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(optional = false, cascade = [CascadeType.ALL], fetch = FetchType.LAZY) var user: User = User(),
         @ManyToOne(optional = false, cascade = [CascadeType.ALL], fetch = FetchType.LAZY) var tour: Tour = Tour(),
