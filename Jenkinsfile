@@ -10,7 +10,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing for branch: ' + env.BRANCH_NAME
-                sh './runapp.sh test'
+                sh './gradlew test'
             }
         }
         stage('Deploy-Development') {
