@@ -30,7 +30,7 @@ class Location (
         @Id @GeneratedValue var id: Int = 0,
         @Column(nullable = false) var longitude: Double = 0.0,
         @Column(nullable = false) var latitude: Double = 0.0,
-        @Column(nullable = false, name = "secret_id") var secretId: String = "",
+        @Column(nullable = false, name = "secret_id", unique = true) var secretId: String = "",
         @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
         @Column(nullable = false) var listed: Boolean = true,
         @Column(nullable = false) var name: String = "",

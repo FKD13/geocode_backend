@@ -1,6 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.model.Location
+import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
@@ -32,7 +32,6 @@ class LocationsController : Controller<Location, UUID> {
 
     override fun delete(id: UUID) {
         service.deleteById(id)
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

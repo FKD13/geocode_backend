@@ -1,37 +1,36 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
-import be.ugent.webdevelopment.backend.geocode.dao.LocationDao
-import be.ugent.webdevelopment.backend.geocode.model.Location
+import be.ugent.webdevelopment.backend.geocode.database.models.Location
+import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class LocationsService: ServiceInterface<Location, UUID>{
+class LocationsService {
 
     @Autowired
-    @Qualifier("fakeLocationDao")
-    private lateinit var locationDao: LocationDao
+    private lateinit var locationRepository: LocationRepository
 
-    override fun findAll(): List<Location> {
-        return locationDao.getAllLocations()
+    fun findAll(): List<Location> {
+        return locationRepository.findAll()
     }
 
-    override fun findById(id: UUID): Location {
-        return locationDao.getLocationById(id)!! //TODO dit moet mooier worden en een http error gooien
+    fun findById(secret_id: UUID): Location {
+        return locationRepository.findBySecretId(secret_id.toString())
     }
 
-    override fun create(resource: Location): UUID {
-        return locationDao.insertLocation(resource)
+    fun create(resource: Location): UUID {
+        return UUID.fromString(locationRepository.save(resource).secretId)
     }
 
-    override fun update(id: UUID, resource: Location): Int {
-        return locationDao.updateLocation(id, resource)
+    fun update(secret_id: UUID, resource: Location): Int {
+        throw NotImplementedError("This has not been implemented")
     }
 
-    override fun deleteById(id: UUID): Int{
-        return locationDao.deleteLocation(id)
+    fun deleteById(secret_id: UUID): Int{
+        locationRepository.deleteBySecretId(secret_id.toString())
+        return 1
     }
 
 }

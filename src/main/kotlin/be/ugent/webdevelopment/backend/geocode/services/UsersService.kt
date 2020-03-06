@@ -1,37 +1,36 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
-import be.ugent.webdevelopment.backend.geocode.dao.UserDao
+import be.ugent.webdevelopment.backend.geocode.database.models.User
+import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import org.springframework.stereotype.Service
-
-import be.ugent.webdevelopment.backend.geocode.model.User
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 
 @Service
-class UsersService: ServiceInterface<User, Long>{
+class UsersService {
 
     @Autowired
-    @Qualifier("fakeUserDao")
-    private lateinit var userDao: UserDao
+    private lateinit var userRepository: UserRepository
 
-    override fun findAll(): List<User> {
-        return userDao.getAllUsers()
+    fun findAll(): List<User> {
+        return userRepository.findAll()
     }
 
-    override fun findById(id: Long): User {
-        return userDao.getUserById(id)!! //TODO dit moet mooier worden en een http error gooien
+    fun findById(id: Int): User {
+        return userRepository.findById(id).get() //TODO dit moet mooier worden en een http error gooien
     }
 
-    override fun create(resource: User): Long {
-        return userDao.insertUser(resource)
+    fun create(resource: User): Int {
+        return userRepository.save(resource).id
     }
 
-    override fun update(id: Long, resource: User): Int {
-        return userDao.updateUser(id, resource)
+    fun update(id: Int, resource: User): Int {
+        throw NotImplementedError("This has not been implemented")
+        //return userRepository.updateUser(id, resource)
     }
 
-    override fun deleteById(id: Long): Int {
-        return userDao.deleteUser(id)
+    fun deleteById(id: Int): Int {
+        userRepository.deleteById(id)
+        return 1
     }
 
 }
