@@ -30,6 +30,7 @@ dependencies {
     //swagger
     implementation("org.springdoc:springdoc-openapi-ui:1.2.33")
 
+    implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     //implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -43,6 +44,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.h2database:h2")
 }
 
 tasks.withType<Test> {
