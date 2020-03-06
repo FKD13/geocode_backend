@@ -33,3 +33,4 @@ out/
 
 # env file
 .env
+.env.bat
