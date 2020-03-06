@@ -34,7 +34,8 @@ class Location (
         @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
         @Column(nullable = false) var listed: Boolean = true,
         @Column(nullable = false) var name: String = "",
-        @Column(nullable = false, length = 1024) var description: String = ""
+        @Column(nullable = false, length = 2048) var description: String = "",
+        @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var creator: User = User()
 )
 
 @Entity
@@ -44,7 +45,7 @@ class Tour (
         @ManyToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToMany(cascade = [CascadeType.ALL]) var locations: List<Location>? = null,
         @Column(nullable = false) var name: String = "",
-        @Column(length = 1024, nullable = false) var description: String = "",
+        @Column(length = 2048, nullable = false) var description: String = "",
         @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now()
 )
 
