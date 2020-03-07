@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDateTime
 import javax.persistence.*
 

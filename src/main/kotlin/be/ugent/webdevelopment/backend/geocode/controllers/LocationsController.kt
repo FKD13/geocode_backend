@@ -1,37 +1,46 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
+import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
 import java.util.*
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @RestController
+@ResponseStatus(HttpStatus.OK)
 @RequestMapping("/locations")
-class LocationsController : Controller<LocationsWrapper, UUID> {
+class LocationsController(val service : LocationsService){
 
-    @Autowired
-    private lateinit var service: LocationsService
-
-    override fun findAll(): List<LocationsWrapper> {
+    @GetMapping
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<LocationsWrapper> {
         return service.findAll()
     }
 
-    override fun findById(id: UUID): LocationsWrapper {
-        return service.findById(id)
+    @GetMapping(value = ["/{secret_id}"])
+    fun findById(@PathVariable secret_id: UUID,
+                 response: HttpServletResponse, request: HttpServletRequest): LocationsWrapper {
+        return service.findById(secret_id)
     }
 
-    override fun create(resource: LocationsWrapper): UUID{
+    @PostMapping
+    fun create(@RequestBody resource: LocationsWrapper,
+               response: HttpServletResponse, request: HttpServletRequest): UUID{
         return service.create(resource)
     }
 
-    override fun update(id: UUID, resource: LocationsWrapper) {
-        service.update(id, resource)
+    @PutMapping(value = ["/{secret_id}"])
+    fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationsWrapper,
+               response: HttpServletResponse, request: HttpServletRequest) {
+        service.update(secret_id, resource)
     }
 
-    override fun delete(id: UUID) {
-        service.deleteById(id)
+    @DeleteMapping(value = ["/{secret_id}"])
+    fun delete(@PathVariable secret_id: UUID,
+               response: HttpServletResponse, request: HttpServletRequest) {
+        service.deleteById(secret_id)
     }
 
 }
