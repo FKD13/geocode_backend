@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/users")
-class UsersController(val service: UsersService){
+class UsersController(val service: UsersService): Controller<UsersWrapper>{
 
     @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<UsersWrapper> {
@@ -23,12 +23,6 @@ class UsersController(val service: UsersService){
     fun findById(@PathVariable id: Int,
                  response: HttpServletResponse, request: HttpServletRequest): UsersWrapper {
         return service.findById(id)
-    }
-
-    @PostMapping
-    fun create(@RequestBody resource: UsersWrapper,
-               response: HttpServletResponse, request: HttpServletRequest): Int {
-        return service.create(resource)
     }
 
     @PutMapping(value = ["/{id}"])

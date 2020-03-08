@@ -18,49 +18,43 @@ class LocationsService {
     private lateinit var userRepository: UserRepository
 
     fun findAll(): List<LocationsWrapper> {
-        return locationRepository.findAll().map { location -> LocationsWrapper(location) }
+        return locationRepository.findAllByListedEquals(true).map { LocationsWrapper(it) }
     }
 
     fun findById(secret_id: UUID): LocationsWrapper {
-        return LocationsWrapper(locationRepository.findBySecretId(secret_id.toString()))
+        return LocationsWrapper(locationRepository.findBySecretId(secret_id.toString())!!)
+        //TODO !! naar safe expression omvormen
     }
 
     fun create(resource: LocationsWrapper): UUID {
-        return UUID.fromString(locationRepository.saveAndFlush(
-                //TODO al deze dubbele uitroeptekens veranderen.
-                // Checks uitvoeren en daarmee de juiste error terug geven
-                Location(longitude = resource.longitude!!,
-                        latitude = resource.latitude!!,
-                        secretId = UUID.randomUUID().toString(),
-                        description = resource.description!!,
-                        creator = userRepository.findById(resource.creatorId!!).get())
-        ).secretId)
+        val loc : Location = Location(
+                longitude = resource.longitude!!,
+                latitude =  resource.latitude!!,
+                secretId = UUID.randomUUID().toString(),
+                listed = resource.listed!!,
+                name = resource.name!!,
+                description = resource.description!!,
+                creator = userRepository.findById(resource.creatorId!!).get()
+        )
+        //TODO als er een waarde niet is meegegeven een correcte error geven en als de user met creatorId niet gevonden is ook
+        return UUID.fromString(locationRepository.saveAndFlush(loc).secretId)
     }
 
     fun update(secret_id: UUID, resource: LocationsWrapper){
-        val location = locationRepository.findBySecretId(secret_id = secret_id.toString())
-        // hier mogen de '!!' wel blijven staan, de check staat er telkens boven
-        if (resource.creatorId != null){
-            location.creator = userRepository.findById(resource.creatorId!!).get()
-        }
-        if (resource.longitude != null){
-            location.longitude = resource.longitude!!
-        }
-        if (resource.latitude != null){
-            location.latitude = resource.latitude!!
-        }
-        if (resource.name != null){
-            location.name = resource.name!!
-        }
-        if (resource.description != null){
-            location.description = resource.description!!
-        }
+        val location : Location = locationRepository.findBySecretId(secret_id = secret_id.toString())!!
+        //TODO !! naar safe expression omvormen
+
+        resource.longitude?.let { location.longitude = resource.longitude!! }
+        resource.latitude?.let { location.latitude = resource.latitude!! }
+        resource.name?.let { location.name = resource.name!! }
+        resource.description?.let { location.description = resource.description!! }
+        resource.creatorId?.let { location.creator = userRepository.findById(resource.creatorId!!).get() }
+
         locationRepository.saveAndFlush(location)
     }
 
-    fun deleteById(secret_id: UUID): Int{
+    fun deleteById(secret_id: UUID){
         locationRepository.deleteBySecretId(secret_id.toString())
-        return 1
     }
 
 }

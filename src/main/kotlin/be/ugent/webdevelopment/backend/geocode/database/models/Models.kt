@@ -1,6 +1,5 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -33,7 +32,7 @@ class Location (
         @Column(nullable = false) var latitude: Double = 0.0,
         @Column(nullable = false, name = "secret_id", unique = true) var secretId: String = "",
         @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
-        @Column(nullable = false) var listed: Boolean = true,
+        @Column(nullable = false) var listed: Boolean = false,
         @Column(nullable = false) var name: String = "",
         @Column(nullable = false, length = 2048) var description: String = "",
         @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var creator: User = User()

@@ -1,9 +1,11 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UsersWrapper
+import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 
 @Service
 class UsersService {
@@ -16,12 +18,13 @@ class UsersService {
     }
 
     fun findById(id: Int): UsersWrapper {
-        return UsersWrapper(userRepository.findById(id).get())
-        //TODO dit moet mooier worden en een http error gooien als findbyid niet lukt
+        val user : Optional<User> = userRepository.findById(id)
+        if(user.isEmpty) throw Exception()
+        return UsersWrapper(user.get())
     }
 
     fun create(resource: UsersWrapper): Int {
-        throw NotImplementedError() //TODO dit mag enkel opgeroepen worden met de Oauth
+        throw NotImplementedError() // Een user mag enkel aangemaakt worden via Oauth
     }
 
     fun update(id: Int, resource: UsersWrapper): Int {

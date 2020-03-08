@@ -1,7 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
-import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -12,7 +11,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/locations")
-class LocationsController(val service : LocationsService){
+class LocationsController(val service : LocationsService) : Controller<LocationsWrapper>{
 
     @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<LocationsWrapper> {
@@ -40,7 +39,7 @@ class LocationsController(val service : LocationsService){
     @DeleteMapping(value = ["/{secret_id}"])
     fun delete(@PathVariable secret_id: UUID,
                response: HttpServletResponse, request: HttpServletRequest) {
-        service.deleteById(secret_id)
-    }
+    service.deleteById(secret_id)
+}
 
 }
