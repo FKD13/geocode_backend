@@ -25,6 +25,11 @@ class UsersController(val service: UsersService): Controller<UsersWrapper>{
         return service.findById(id)
     }
 
+    @PutMapping
+    fun create(@RequestBody resource: UsersWrapper, response: HttpServletResponse, request: HttpServletRequest){
+        service.create(resource)
+    }
+
     @PutMapping(value = ["/{id}"])
     fun update(@PathVariable id: Int, @RequestBody resource: UsersWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
