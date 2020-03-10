@@ -35,7 +35,7 @@ class LocationsService {
                 name = resource.name!!,
                 description = resource.description!!,
                 //creator = userRepository.findById(resource.creatorId!!).get()
-                crator = null
+                creator = null
         )
         //TODO als er een waarde niet is meegegeven een correcte error geven en als de user met creatorId niet gevonden is ook
         return UUID.fromString(locationRepository.saveAndFlush(loc).secretId)
