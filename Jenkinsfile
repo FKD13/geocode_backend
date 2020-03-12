@@ -10,6 +10,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing for branch: ' + env.BRANCH_NAME
+                sh 'mv .env.template .env'
                 sh './runapp.sh test'
             }
         }
