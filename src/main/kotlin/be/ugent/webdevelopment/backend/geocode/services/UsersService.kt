@@ -24,8 +24,8 @@ class UsersService {
     }
 
     fun create(resource: UsersWrapper): Int {
-        throw NotImplementedError("This has not been implemented")
-        // Een user mag enkel aangemaakt worden via Oauth
+        userRepository.saveAndFlush(User()) // Een user mag enkel aangemaakt worden via Oauth
+        return 1
     }
 
     fun update(id: Int, resource: UsersWrapper): Int {
