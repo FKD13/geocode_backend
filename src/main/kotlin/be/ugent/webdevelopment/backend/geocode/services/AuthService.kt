@@ -50,6 +50,7 @@ class AuthService {
             exc.addException(GenericException("Unable to login."))
             exc.addException(PropertyException("email", "Email and/or password is wrong."))
             exc.addException(PropertyException("password", ""))
+            throw exc
         }
     }
 
@@ -64,8 +65,8 @@ class AuthService {
         }
 
         if(usernamePattern.matcher(resource.username).matches())
-            throw PropertyException("username", "Password can only contain letters, numbers, space - and _")
-        
+            exc.addException(PropertyException("username", "Can only contain letters, numbers, space - or _"))
+
         if(resource.email.length < 5) {
             exc.addException(PropertyException("email", "Should be longer than 5 characters"))
         }
@@ -73,7 +74,7 @@ class AuthService {
         try {
             InternetAddress(resource.email).validate()
         } catch (e: AddressException) {
-            throw PropertyException("email", "Invalid email adress")
+            exc.addException(PropertyException("email", "Invalid email adress"))
         }
 
         if(resource.password != resource.passwordRepeat) {
@@ -89,7 +90,7 @@ class AuthService {
         }
 
         if(passwordPattern.matcher(resource.password).matches())
-            throw PropertyException("password", "Password should not contain ` ´ ' and \"")
+            exc.addException(PropertyException("password", "Should not contain ` ´ ' or \""))
 
         if(resource.captcha.isEmpty) {
             exc.addException(PropertyException("captcha", "Empty captcha, try again."))
