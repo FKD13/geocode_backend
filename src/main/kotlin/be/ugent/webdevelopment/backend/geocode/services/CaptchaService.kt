@@ -25,10 +25,10 @@ class CaptchaResponse(
 @Service
 class CaptchaService {
 
-    @Value("\${CHAPTCHA_SITE}")
+    @Value("\${CAPTCHA_SITE}")
     private final lateinit var captchaSite: String
 
-    @Value("\${CHAPTCHA_SECRET}")
+    @Value("\${CAPTCHA_SECRET}")
     private final lateinit var captchaSecret: String
 
     private final val action: String = "register"
