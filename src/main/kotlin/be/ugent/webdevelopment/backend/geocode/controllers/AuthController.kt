@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserLoginWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserRegisterWrapper
 import be.ugent.webdevelopment.backend.geocode.services.AuthService
 import org.springframework.http.HttpStatus
@@ -11,9 +12,8 @@ import org.springframework.web.bind.annotation.*
 class AuthController(val service: AuthService) {
 
     @GetMapping(value = ["/login"])
-    fun login() : String {
-
-        return "Hello"
+    fun login(@RequestBody resource: UserLoginWrapper) {
+        service.tryLogin(resource)
     }
 
     @GetMapping(value = ["/logout"])

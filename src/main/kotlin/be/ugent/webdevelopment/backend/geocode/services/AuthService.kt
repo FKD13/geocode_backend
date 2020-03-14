@@ -1,15 +1,20 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserLoginWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserRegisterWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
+import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
+import java.lang.reflect.Field
 import java.util.*
 
+@Service
 class AuthService {
 
     @Autowired
@@ -19,35 +24,56 @@ class AuthService {
     private lateinit var captchaService: CaptchaService
 
     fun checkUser(username: String) : Boolean {
-        val user : Optional<User> = userRepository.findByUsername(username);
+        val user : Optional<User> = userRepository.findByUsername(username)
         return !user.isEmpty
     }
 
+    fun tryLogin(resource: UserLoginWrapper) {
+        val user = userRepository.findByEmail(resource.email)
+
+        //TODO: hash password to check!
+        if(user.isEmpty || user.get().password != resource.password) {
+            val exc = ExceptionContainer(code = HttpStatus.BAD_REQUEST)
+            exc.addException(GenericException("Unable to login."))
+            exc.addException(PropertyException("email", "Email and/or password is wrong."))
+            exc.addException(PropertyException("password", ""))
+        }
+    }
+
     fun tryRegister(resource: UserRegisterWrapper) {
+        val exc = ExceptionContainer(code = HttpStatus.BAD_REQUEST)
         if(resource.username.length < 3) {
-            throw PropertyException("username", "Username can't be less than 3 characters")
+            exc.addException(PropertyException("username", "Should be longer than 3 characters"))
         }
 
         if(resource.username.length > 30) {
-            throw PropertyException("username", "Username can't be longer than 30 characters")
+            exc.addException(PropertyException("username", "Should be shorter than 30 characters"))
         }
 
         //TODO: check username allowed characters
-        
+
         if(resource.email.length < 5) {
-            throw PropertyException("email", "Username can't be less than 5 characters")
+            exc.addException(PropertyException("email", "Should be longer than 5 characters"))
         }
 
         //TODO: check email allowed characters
 
         if(resource.password != resource.passwordRepeat) {
-            throw PropertyException("passwordRepeat", "Passwords didn't match, try again.", HttpStatus.BAD_REQUEST)
+            exc.addException(PropertyException("passwordRepeat", "Passwords didn't match, try again."))
+        }
+
+        if(resource.password.length < 8) {
+            exc.addException(PropertyException("password", "Should be longer than 3 characters"))
+        }
+
+        if(resource.password.length > 64) {
+            exc.addException(PropertyException("password", "Should be shorter than 30 characters"))
         }
 
         //TODO: check password allowed characters
 
         if(resource.captcha.isEmpty) {
-            throw PropertyException("captcha", "Empty captcha, try again.", HttpStatus.BAD_REQUEST)
+            exc.addException(PropertyException("captcha", "Empty captcha, try again."))
         }
 
         captchaService.validateCaptcha(resource.captcha.get())
@@ -56,16 +82,25 @@ class AuthService {
         if(existingUser.isPresent) {
             val user = existingUser.get()
             if(user.username.toLowerCase() == resource.username.toLowerCase()) {
-                throw PropertyException("username", "Username already exists, try again.", HttpStatus.BAD_REQUEST)
+                exc.addException(PropertyException("username", "Username already exists, try again."))
             }
 
             if(user.email.toLowerCase() == resource.email.toLowerCase()) {
-                throw PropertyException("email", "Email already exists, try again.", HttpStatus.BAD_REQUEST)
+                exc.addException(PropertyException("email", "Email already exists, try again."))
             }
         }
 
+        //TODO: add ability to check if there are errors in a ExceptionContainter
+        if(exc.isNotEmpty()) {
+            exc.addException(GenericException("Unable to create new user."))
+            throw exc
+        }
 
-
+        //TODO: Hash & Salt password!!
+        userRepository.saveAndFlush(User(
+                email = resource.email,
+                username = resource.username,
+                password = resource.password))
 
     }
 }
