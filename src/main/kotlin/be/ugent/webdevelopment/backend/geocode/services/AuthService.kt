@@ -5,11 +5,19 @@ import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
+import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.util.*
+import java.util.regex.Pattern
+import javax.mail.internet.AddressException
+import javax.mail.internet.InternetAddress
+import javax.validation.ConstraintValidatorContext
+import javax.validation.constraints.Email
+import javax.xml.validation.Validator
 
+@Service
 class AuthService {
 
     @Autowired
@@ -17,6 +25,12 @@ class AuthService {
 
     @Autowired
     private lateinit var captchaService: CaptchaService
+
+    private val emailPattern = Pattern.compile("[A-Za-z0-9_%+-]+@[A-Za-z0-9.-].[a-zA-Z]{2,4}")
+    private val passwordPattern = Pattern.compile("^.*['\"`´].*$")
+    private val usernamePattern = Pattern.compile("[A-Za-z0-9 \\-_]+")
+
+    private val mail = InternetAddress()
 
     fun checkUser(username: String) : Boolean {
         val user : Optional<User> = userRepository.findByUsername(username);
@@ -32,19 +46,25 @@ class AuthService {
             throw PropertyException("username", "Username can't be longer than 30 characters")
         }
 
-        //TODO: check username allowed characters
+        if(usernamePattern.matcher(resource.username).matches())
+            throw PropertyException("username", "Password can only contain letters, numbers, space - and _")
         
         if(resource.email.length < 5) {
             throw PropertyException("email", "Username can't be less than 5 characters")
         }
 
-        //TODO: check email allowed characters
+        try {
+            InternetAddress(resource.email).validate()
+        } catch (e: AddressException) {
+            throw PropertyException("email", "Invalid email adress")
+        }
 
         if(resource.password != resource.passwordRepeat) {
             throw PropertyException("passwordRepeat", "Passwords didn't match, try again.", HttpStatus.BAD_REQUEST)
         }
 
-        //TODO: check password allowed characters
+        if(passwordPattern.matcher(resource.password).matches())
+            throw PropertyException("password", "Password should not contain ` ´ ' and \"")
 
         if(resource.captcha.isEmpty) {
             throw PropertyException("captcha", "Empty captcha, try again.", HttpStatus.BAD_REQUEST)
