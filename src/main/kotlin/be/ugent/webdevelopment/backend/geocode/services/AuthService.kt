@@ -110,8 +110,7 @@ class AuthService {
             }
         }
 
-        //TODO: add ability to check if there are errors in a ExceptionContainter
-        if(exc.isNotEmpty()) {
+        if(!exc.isEmpty()) {
             exc.addException(GenericException("Unable to create new user."))
             throw exc
         }
