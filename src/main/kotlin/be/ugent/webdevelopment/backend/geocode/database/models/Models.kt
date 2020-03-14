@@ -12,7 +12,7 @@ class User (
         @Column(name = "oauth_secret") var oauthSecret: String? = "",
         @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY) var oauthParty: OauthParty = OauthParty(),
         @Column(nullable = true) var email: String? = "",
-        @Column(nullable = false) var username: String = "",
+        @Column(nullable = false, unique = true) var username: String = "",
         @Column(name = "avatar_url") var avatarUrl: String? = "",
         @Column(nullable = false) var admin: Boolean = false,
         @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now()
