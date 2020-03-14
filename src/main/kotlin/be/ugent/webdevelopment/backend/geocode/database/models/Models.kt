@@ -20,7 +20,7 @@ class User (
 @Entity
 @Table(name = "user_password")
 class UserPassword (
-        @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var user: User = User(),
+        @Id @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var user: User = User(),
         @Column(nullable = false) var password: String = ""
 )
 
