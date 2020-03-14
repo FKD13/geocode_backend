@@ -30,7 +30,7 @@ class ErrorTest {
             ex.addException(PropertyException("$i", "$i, $i"))
         }
         val exw = ex.wrap()
-        Assertions.assertEquals(ex.inputExceptions.size, exw.input_errors.size)
-        Assertions.assertEquals(ex.generalExceptions.size, exw.general_errors.size)
+        Assertions.assertEquals(ex.inputExceptions.size, exw.inputErrors.size)
+        Assertions.assertEquals(ex.generalExceptions.size, exw.generalErrors.size)
     }
 }

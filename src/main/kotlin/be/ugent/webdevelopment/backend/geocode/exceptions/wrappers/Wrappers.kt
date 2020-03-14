@@ -5,8 +5,8 @@ import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 
 class ExceptionContainerWrapper(ec: ExceptionContainer) : Wrapper {
-    val input_errors: List<PropertyExceptionWrapper> = ec.inputExceptions.map { it.wrap() }
-    val general_errors: List<GenericExceptionWrapper> = ec.generalExceptions.map { it.wrap() }
+    val inputErrors: List<PropertyExceptionWrapper> = ec.inputExceptions.map { it.wrap() }
+    val generalErrors: List<GenericExceptionWrapper> = ec.generalExceptions.map { it.wrap() }
 }
 
 class GenericExceptionWrapper(ge: GenericException) : Wrapper {
