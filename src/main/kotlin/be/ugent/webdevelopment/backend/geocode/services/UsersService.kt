@@ -3,6 +3,7 @@ package be.ugent.webdevelopment.backend.geocode.services
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UsersWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
+import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
@@ -29,7 +30,7 @@ class UsersService {
     }
 
     fun update(id: Int, resource: UsersWrapper): Int {
-        throw NotImplementedError("This has not been implemented")
+        throw GenericException(code = 501, message = "Not Implemented Yet")
         //return userRepository.updateUser(id, resource)
     }
 

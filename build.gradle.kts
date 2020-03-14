@@ -29,6 +29,8 @@ dependencies {
     implementation("org.mariadb.jdbc:mariadb-java-client")
     //swagger
     implementation("org.springdoc:springdoc-openapi-ui:1.2.33")
+    //JWT
+    implementation("com.auth0:java-jwt:3.4.0")
 
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -49,6 +51,7 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging.showStandardStreams = true
 }
 
 tasks.withType<KotlinCompile> {
