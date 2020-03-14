@@ -12,7 +12,23 @@ class ExceptionHandlerAdvice {
     @ExceptionHandler(ExceptionContainer::class)
     fun handleException(e: ExceptionContainer): ResponseEntity<ExceptionContainerWrapper> {
         return ResponseEntity
-                .status(e.code)
-                .body(e.wrap())
+                . status(e.code)
+                . body(e.wrap())
+    }
+
+    @ExceptionHandler(GenericException::class)
+    fun handleException(e: GenericException) : ResponseEntity<ExceptionContainerWrapper> {
+        val ec = ExceptionContainer().also { it.addException(e) }
+        return ResponseEntity
+                . status(e.code)
+                . body(ec.wrap())
+    }
+
+    @ExceptionHandler(PropertyException::class)
+    fun handleException(e: PropertyException) : ResponseEntity<ExceptionContainerWrapper> {
+        val ec = ExceptionContainer().also { it.addException(e) }
+        return ResponseEntity
+                . status(e.code)
+                . body(ec.wrap())
     }
 }

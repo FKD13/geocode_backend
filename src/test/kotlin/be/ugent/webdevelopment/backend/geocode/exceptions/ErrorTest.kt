@@ -19,7 +19,7 @@ class ErrorTest {
     fun `GenericException should contain the same`() {
         val ex = GenericException("nonono")
         val exw = ex.wrap()
-        Assertions.assertEquals(ex.error, exw.error)
+        Assertions.assertEquals(ex.message, exw.message)
     }
 
     @Test
