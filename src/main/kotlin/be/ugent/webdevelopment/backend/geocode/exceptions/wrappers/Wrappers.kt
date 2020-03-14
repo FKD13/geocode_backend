@@ -10,7 +10,7 @@ class ExceptionContainerWrapper(ec: ExceptionContainer) : Wrapper {
 }
 
 class GenericExceptionWrapper(ge: GenericException) : Wrapper {
-    val error: String = ge.error
+    val message: String = ge.message
 }
 
 class PropertyExceptionWrapper(pe: PropertyException) : Wrapper {

@@ -3,9 +3,9 @@ package be.ugent.webdevelopment.backend.geocode.exceptions
 import be.ugent.webdevelopment.backend.geocode.exceptions.wrappers.ExceptionContainerWrapper
 import java.util.*
 
-class ExceptionContainer(var code: Int = 404,
+class ExceptionContainer(code: Int = 404,
                          inputErrors: LinkedList<PropertyException> = LinkedList(),
-                         generalExceptions: LinkedList<GenericException> = LinkedList()) : GeocodeException, Throwable() {
+                         generalExceptions: LinkedList<GenericException> = LinkedList()) : GeocodeException(code) {
 
     var inputExceptions: LinkedList<PropertyException> = inputErrors
         private set
