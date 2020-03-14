@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
+import org.intellij.lang.annotations.Identifier
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -20,7 +21,8 @@ class User (
 @Entity
 @Table(name = "user_password")
 class UserPassword (
-        @Id @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var user: User = User(),
+        @Id @GeneratedValue var id: Int = 0,
+        @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var user: User = User(),
         @Column(nullable = false) var password: String = ""
 )
 
