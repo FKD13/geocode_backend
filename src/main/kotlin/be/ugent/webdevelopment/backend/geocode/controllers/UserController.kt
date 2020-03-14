@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
 class UserController(val service: UserService) : Controller<UserWrapper>{
 
     @GetMapping
-    fun findById(
+    fun findByLoggedIn(
                  response: HttpServletResponse, request: HttpServletRequest): UserWrapper {
         return service.findById(1)
         //TODO haal het id of wat we ook gebruiken voor authenticatie uit cookie en zoek het in de service.

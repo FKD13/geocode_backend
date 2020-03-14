@@ -24,22 +24,4 @@ class LocationsController(val service : LocationsService) : Controller<Locations
         return service.findById(secret_id)
     }
 
-    @PostMapping
-    fun create(@RequestBody resource: LocationsWrapper,
-               response: HttpServletResponse, request: HttpServletRequest): UUID{
-        return service.create(resource)
-    }
-
-    @PutMapping(value = ["/{secret_id}"])
-    fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationsWrapper,
-               response: HttpServletResponse, request: HttpServletRequest) {
-        service.update(secret_id, resource)
-    }
-
-    @DeleteMapping(value = ["/{secret_id}"])
-    fun delete(@PathVariable secret_id: UUID,
-               response: HttpServletResponse, request: HttpServletRequest) {
-    service.deleteById(secret_id)
-}
-
 }

@@ -20,11 +20,11 @@ class UserService {
         return UserWrapper(user.get())
     }
 
-    fun create(resource: UserWrapper): Int {
-        throw NotImplementedError() // Een user mag enkel aangemaakt worden via Oauth
+    fun create(resource: UserWrapper){
+        throw NotImplementedError() // Een user mag enkel aangemaakt worden via auth
     }
 
-    fun update(id: Int, resource: UserWrapper): Int {
+    fun update(id: Int, resource: UserWrapper){
         throw NotImplementedError("This has not been implemented")
         //return userRepository.updateUser(id, resource)
     }
