@@ -6,6 +6,7 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.UserReposit
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -21,26 +22,25 @@ class AuthService {
     }
 
     fun tryRegister(resource: UserRegisterWrapper) {
-        val resourceEmail = resource.email.toLowerCase()
         if(resource.password != resource.passwordRepeat) {
-            throw PropertyException("passwordRepeat", "Passwords didn't match, try again.", 400)
+            throw PropertyException("passwordRepeat", "Passwords didn't match, try again.", HttpStatus.BAD_REQUEST)
         }
 
         if(resource.captcha.isEmpty) {
-            throw PropertyException("captcha", "Empty captcha, try again.", 400)
+            throw PropertyException("captcha", "Empty captcha, try again.", HttpStatus.BAD_REQUEST)
         }
 
         // TODO: check captcha validity
 
-        val existingUser = userRepository.findByEmailOrUsername(resourceEmail, resource.username)
+        val existingUser = userRepository.findByEmailOrUsername(resource.email, resource.username)
         if(existingUser.isPresent) {
             val user = existingUser.get()
-            if(user.username == resource.username) {
-                throw PropertyException("username", "Username already exists, try again.", 400)
+            if(user.username.toLowerCase() == resource.username.toLowerCase()) {
+                throw PropertyException("username", "Username already exists, try again.", HttpStatus.BAD_REQUEST)
             }
 
-            if(user.email == resourceEmail) {
-                throw PropertyException("email", "Email already exists, try again.", 400)
+            if(user.email.toLowerCase() == resource.email.toLowerCase()) {
+                throw PropertyException("email", "Email already exists, try again.", HttpStatus.BAD_REQUEST)
             }
         }
 
