@@ -18,6 +18,13 @@ class User (
 )
 
 @Entity
+@Table(name = "user_password")
+class UserPassword (
+        @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var user: User = User(),
+        @Column(nullable = false) var password: String = ""
+)
+
+@Entity
 @Table(name = "oauth_parties")
 class OauthParty (
         @Id @GeneratedValue var id: Int = 0,
