@@ -10,11 +10,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/auth")
 class AuthController(val service: AuthService) {
 
-    @GetMapping(value = ["/captcha"])
-    fun captchaToken() : String {
-        return "Hello"
-    }
-
     @GetMapping(value = ["/login"])
     fun login() : String {
 
