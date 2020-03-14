@@ -8,21 +8,11 @@ import javax.persistence.*
 @Table(name = "users")
 class User (
         @Id @GeneratedValue var id: Int = 0,
-        @Column(nullable = false, name = "oauth_id") var oauthId: String = "",
-        @Column(name = "oauth_secret") var oauthSecret: String? = "",
-        @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY) var oauthParty: OauthParty = OauthParty(),
-        @Column(nullable = true) var email: String? = "",
+        @Column(nullable = false, unique = true) var email: String = "",
         @Column(nullable = false, unique = true) var username: String = "",
         @Column(name = "avatar_url") var avatarUrl: String? = "",
         @Column(nullable = false) var admin: Boolean = false,
-        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now()
-)
-
-@Entity
-@Table(name = "user_password")
-class UserPassword (
-        @Id @GeneratedValue var id: Int = 0,
-        @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, optional = false) var user: User = User(),
+        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
         @Column(nullable = false) var password: String = ""
 )
 
