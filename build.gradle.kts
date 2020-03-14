@@ -31,6 +31,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.2.33")
     //JWT
     implementation("com.auth0:java-jwt:3.4.0")
+    //Email
+    implementation("com.sun.mail:javax.mail:1.6.2")
 
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
