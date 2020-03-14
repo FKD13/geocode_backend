@@ -1,9 +1,10 @@
 package be.ugent.webdevelopment.backend.geocode.exceptions
 
 import be.ugent.webdevelopment.backend.geocode.exceptions.wrappers.ExceptionContainerWrapper
+import org.springframework.http.HttpStatus
 import java.util.*
 
-class ExceptionContainer(code: Int = 404,
+class ExceptionContainer(code: HttpStatus = HttpStatus.NOT_FOUND,
                          inputErrors: LinkedList<PropertyException> = LinkedList(),
                          generalExceptions: LinkedList<GenericException> = LinkedList()) : GeocodeException(code) {
 
