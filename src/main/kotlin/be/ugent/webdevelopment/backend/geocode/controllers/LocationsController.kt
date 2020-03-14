@@ -40,6 +40,6 @@ class LocationsController(val service : LocationsService) : Controller<Locations
     fun delete(@PathVariable secret_id: UUID,
                response: HttpServletResponse, request: HttpServletRequest) {
     service.deleteById(secret_id)
-}
+    }
 
 }
