@@ -25,13 +25,12 @@ class UserService {
     }
 
     fun update(id: Int, resource: UserWrapper){
-        throw NotImplementedError("This has not been implemented")
-        //return userRepository.updateUser(id, resource)
+        
     }
 
-    fun deleteById(id: Int): Int {
+    fun deleteById(id: Int) {
         userRepository.deleteById(id)
-        return 1
+
     }
 
 }

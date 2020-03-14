@@ -21,5 +21,11 @@ class ExceptionContainer(code: Int = 404,
         inputExceptions.add(exception)
     }
 
+    fun throwIfNotEmpty(){
+        if ((!inputExceptions.isEmpty()) || (!generalExceptions.isEmpty())){
+            throw this
+        }
+    }
+
     override fun wrap(): ExceptionContainerWrapper = ExceptionContainerWrapper(this)
 }
