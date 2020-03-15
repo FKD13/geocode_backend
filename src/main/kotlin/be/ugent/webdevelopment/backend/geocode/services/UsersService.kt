@@ -22,6 +22,11 @@ class UsersService {
     @Autowired
     private lateinit var authService: AuthService
 
+    fun findByEmail(email: String): User{
+        if(userRepository.findByEmail(email).isPresent) return userRepository.findByEmail(email).get()
+        throw GenericException("User with email = $email was not found in the database")
+    }
+
     fun findAll(): List<UsersWrapper> {
         return userRepository.findAll().map { user -> UsersWrapper(user) }
     }
