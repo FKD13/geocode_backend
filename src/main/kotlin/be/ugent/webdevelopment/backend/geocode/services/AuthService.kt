@@ -65,8 +65,8 @@ class AuthService {
             exc.addException(PropertyException("username", "You can use letters, numbers, spaces, underscores & hyphens, but it can't begin or end with a space."))
         }
 
-        if(resource.email.length <= 256) {
-            exc.addException(PropertyException("email", "Should be at most 256 characters"))
+        if(resource.email.length > 320) {
+            exc.addException(PropertyException("email", "Should be at most 320 characters"))
         }
 
         try {
