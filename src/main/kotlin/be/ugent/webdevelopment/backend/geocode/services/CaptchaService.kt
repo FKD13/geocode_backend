@@ -19,7 +19,7 @@ class CaptchaResponse(
     val hostname: String?,
 
     @JsonProperty("error-codes")
-    val errorCodes: List<Int>?
+    val errorCodes: List<String>?
 )
 
 @Service
@@ -45,7 +45,8 @@ class CaptchaService {
         }
         val verifyUri: URI = URI.create(
                 "https://www.google.com/recaptcha/api/siteverify?secret=${captchaSecret}&response=${response}")
-        val captchaResponse : CaptchaResponse = RestTemplate().postForObject(verifyUri, CaptchaResponse::class)
+        println(verifyUri.toString())
+        val captchaResponse : CaptchaResponse = RestTemplate().postForObject(verifyUri, CaptchaResponse::class.java)
         if (captchaResponse.success == null || !captchaResponse.success ) {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Captha failed")
         } else if (captchaResponse.action == null || captchaResponse.action == action) {}
