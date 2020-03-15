@@ -39,7 +39,7 @@ class LocationController(val service: LocationService, val jwtService: JWTAuthen
     @DeleteMapping(value = ["/{secret_id}"])
     fun delete(@PathVariable secret_id: UUID,
                response: HttpServletResponse, request: HttpServletRequest) {
-        service.deleteById(secret_id)
+        service.deleteById(jwtService.tryAuthenticate(request), secret_id)
     }
 
 }
