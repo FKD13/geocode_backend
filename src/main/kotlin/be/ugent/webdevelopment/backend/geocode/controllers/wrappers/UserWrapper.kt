@@ -1,25 +1,25 @@
 package be.ugent.webdevelopment.backend.geocode.controllers.wrappers
 
 import be.ugent.webdevelopment.backend.geocode.database.models.User
+import org.hibernate.validator.constraints.URL
 import java.time.LocalDateTime
+import java.util.*
 
 class UserWrapper(
-        id : Int?,
-        username: String?,
-        avatarUrl: String?,
-        var oauthParty: String?,
-        var email: String?,
-        var admin: Boolean?,
-        var time: LocalDateTime?) : UsersWrapper(id, username, avatarUrl){
+        id : Optional<Int>,
+        username: Optional<String>,
+        avatarUrl: Optional<String>,
+        var email: Optional<String>,
+        var admin: Optional<Boolean>,
+        var time: Optional<LocalDateTime>) : UsersWrapper(id, username, avatarUrl){
 
     constructor(user: User): this(
-            id = user.id,
-            username = user.username,
-            avatarUrl = user.avatarUrl,
-            oauthParty = user.oauthParty.oauthPartyName,
-            email = user.email,
-            admin = user.admin,
-            time = user.time
+            id = Optional.of(user.id),
+            username = Optional.of(user.username),
+            avatarUrl = Optional.of(user.avatarUrl!!), //todo why is avatarURL in database String? ????
+            email = Optional.of(user.email),
+            admin = Optional.of(user.admin),
+            time = Optional.of(user.time)
     )
 }
 

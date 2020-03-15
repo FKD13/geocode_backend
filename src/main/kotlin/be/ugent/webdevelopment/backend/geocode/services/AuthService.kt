@@ -41,6 +41,10 @@ class AuthService {
         return !user.isEmpty
     }
 
+    fun checkEmail(email: String) : Boolean {
+        return emailPattern.matcher(email).matches()
+    }
+
     fun tryLogin(resource: UserLoginWrapper) {
         val user = userRepository.findByEmail(resource.email)
 
@@ -113,10 +117,13 @@ class AuthService {
             }
         }
 
+        exc.throwIfNotEmpty()
+        /*
         if(!exc.isEmpty()) {
             exc.addException(GenericException("Unable to create account."))
             throw exc
         }
+         */
 
         //TODO: Hash & Salt password!!
         userRepository.saveAndFlush(User(
