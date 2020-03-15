@@ -37,6 +37,9 @@ class JWTAuthenticator {
     fun tryAuthenticate(request: HttpServletRequest) : User {
         val user: Optional<User>
         var token: Optional<String> = Optional.empty()
+        if (request.cookies == null) {
+            throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
+        }
         request.cookies.map {if(it.name.equals(cookieToken)) {token = Optional.of(it.value)}}
         token.orElseThrow { GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in") }
         val jwtToken: DecodedJWT = JWT.require(Algorithm.HMAC512(secret))
