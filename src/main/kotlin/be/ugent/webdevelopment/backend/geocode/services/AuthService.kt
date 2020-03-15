@@ -65,7 +65,7 @@ class AuthService {
         }
 
         if(!usernamePattern.matcher(resource.username).matches()) {
-            exc.addException(PropertyException("username", "Can only contain letters, numbers, space - or _"))
+            exc.addException(PropertyException("username", "You can use letters, numbers, spaces, underscores & hyphens."))
         }
 
         if(resource.email.length < 5) {
