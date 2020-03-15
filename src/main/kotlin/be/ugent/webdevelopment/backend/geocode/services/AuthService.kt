@@ -32,12 +32,12 @@ class AuthService {
 
     private val emailPattern = Pattern.compile("[A-Za-z0-9_%+-]+@[A-Za-z0-9.-].[a-zA-Z]{2,4}")
     private val passwordPattern = Pattern.compile("^.*['\"`´].*$")
-    private val usernamePattern = Pattern.compile("[A-Za-z0-9 \\-_]+")
+    private val usernamePattern = Pattern.compile("^[A-Za-z0-9 \\-_]+$")
 
     private val mail = InternetAddress()
 
     fun checkUser(username: String) : Boolean {
-        val user : Optional<User> = userRepository.findByUsername(username)
+        val user : Optional<User> = userRepository.findByUsernameIgnoreCase(username)
         return !user.isEmpty
     }
 
