@@ -1,6 +1,5 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
-import org.intellij.lang.annotations.Identifier
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -8,7 +7,7 @@ import javax.persistence.*
 @Table(name = "users")
 class User (
         @Id @GeneratedValue var id: Int = 0,
-        @Column(nullable = false, unique = true) var email: String = "",
+        @Column(nullable = false, unique = true, length = 512) var email: String = "",
         @Column(nullable = false, unique = true) var username: String = "",
         @Column(name = "avatar_url") var avatarUrl: String? = "",
         @Column(nullable = false) var admin: Boolean = false,
