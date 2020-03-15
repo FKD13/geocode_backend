@@ -32,7 +32,7 @@ class AuthService {
 
     private val emailPattern = Pattern.compile("[A-Za-z0-9_%+-]+@[A-Za-z0-9.-].[a-zA-Z]{2,4}")
     private val passwordPattern = Pattern.compile("^.*['\"`´].*$")
-    private val usernamePattern = Pattern.compile("^[A-Za-z0-9 \\-_]+$")
+    private val usernamePattern = Pattern.compile("^[^ ][A-Za-z0-9 \\-_]+[^ ]$")
 
     private val mail = InternetAddress()
 
@@ -65,7 +65,7 @@ class AuthService {
         }
 
         if(!usernamePattern.matcher(resource.username).matches()) {
-            exc.addException(PropertyException("username", "You can use letters, numbers, spaces, underscores & hyphens."))
+            exc.addException(PropertyException("username", "You can use letters, numbers, spaces, underscores & hyphens, but it can't begin or end with a space."))
         }
 
         if(resource.email.length < 5) {
