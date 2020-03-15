@@ -32,12 +32,12 @@ class AuthService {
 
     private val emailPattern = Pattern.compile("[A-Za-z0-9_%+-]+@[A-Za-z0-9.-].[a-zA-Z]{2,4}")
     private val passwordPattern = Pattern.compile("^.*['\"`´].*$")
-    private val usernamePattern = Pattern.compile("[A-Za-z0-9 \\-_]+")
+    private val usernamePattern = Pattern.compile("^[^ ][A-Za-z0-9 \\-_]+[^ ]$")
 
     private val mail = InternetAddress()
 
     fun checkUser(username: String) : Boolean {
-        val user : Optional<User> = userRepository.findByUsername(username)
+        val user : Optional<User> = userRepository.findByUsernameIgnoreCase(username)
         return !user.isEmpty
     }
 
@@ -64,8 +64,9 @@ class AuthService {
             exc.addException(PropertyException("username", "Should be shorter than 30 characters"))
         }
 
-        if(usernamePattern.matcher(resource.username).matches())
-            exc.addException(PropertyException("username", "Can only contain letters, numbers, space - or _"))
+        if(!usernamePattern.matcher(resource.username).matches()) {
+            exc.addException(PropertyException("username", "You can use letters, numbers, spaces, underscores & hyphens, but it can't begin or end with a space."))
+        }
 
         if(resource.email.length < 5) {
             exc.addException(PropertyException("email", "Should be longer than 5 characters"))
@@ -82,23 +83,25 @@ class AuthService {
         }
 
         if(resource.password.length < 8) {
-            exc.addException(PropertyException("password", "Should be longer than 3 characters"))
+            exc.addException(PropertyException("password", "Should be longer than 8 characters"))
         }
 
         if(resource.password.length > 64) {
             exc.addException(PropertyException("password", "Should be shorter than 30 characters"))
         }
 
-        if(passwordPattern.matcher(resource.password).matches())
+        if(passwordPattern.matcher(resource.password).matches()) {
             exc.addException(PropertyException("password", "Should not contain ` ´ ' or \""))
+        }
 
         if(resource.captcha.isEmpty) {
             exc.addException(PropertyException("captcha", "Empty captcha, try again."))
         }
 
+        //TODO: FIX CAPTCHA
         //captchaService.validateCaptcha(resource.captcha.get())
 
-        val existingUser = userRepository.findByEmailOrUsername(resource.email, resource.username)
+        val existingUser = userRepository.findByEmailOrUsernameIgnoreCase(resource.email, resource.username)
         if(existingUser.isPresent) {
             val user = existingUser.get()
             if(user.username.toLowerCase() == resource.username.toLowerCase()) {
@@ -111,7 +114,7 @@ class AuthService {
         }
 
         if(!exc.isEmpty()) {
-            exc.addException(GenericException("Unable to create new user."))
+            exc.addException(GenericException("Unable to create account."))
             throw exc
         }
 
