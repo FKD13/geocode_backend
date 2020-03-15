@@ -124,7 +124,7 @@ class AuthService {
 
         if (exc.isEmpty().not()){
             exc.addException(GenericException("Unable to log in."))
-            exc.throwIfNotEmpty()
+            throw exc
         }
 
         val hash = BCrypt.hashpw(resource.password, BCrypt.gensalt(bCryptRounds))
