@@ -63,6 +63,7 @@ class JWTAuthenticator {
         response.addCookie(Cookie(cookieToken, JWT.create()
                 .withSubject(user.id.toString())
                 .withExpiresAt(Date(System.currentTimeMillis() + secretDuration.toLong()))
-                .sign(Algorithm.HMAC512(secret))).also {it.isHttpOnly = true}.also {it.secure = true}.also {it.path = "/"}) //TODO be more specific than "/"
+                .sign(Algorithm.HMAC512(secret))).also {it.isHttpOnly = true}.also {it.path = "/"}) //TODO: be more specific than "/"
+        //TODO: add secure
     }
 }
