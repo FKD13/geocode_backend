@@ -51,7 +51,11 @@ class UserService {
     fun update(user: User, resource: UserWrapper){
         val container : ExceptionContainer = ExceptionContainer()
 
-        resource.email.ifPresent { if(authService.checkEmail(resource.email.get()).not()) container.addException(PropertyException("email", "The email is not valid"))  }
+        resource.email.ifPresent {
+            if(authService.checkEmail(resource.email.get()).not())
+                container.addException(PropertyException("email", "The email is not valid"))
+            checkEmailUnique(resource.email.get(), container)
+        }
         resource.avatarUrl.ifPresent { checkUrl(resource.avatarUrl.get(), container) }
         resource.username.ifPresent { checkUsername(resource.username.get(), container) }
 
@@ -62,6 +66,10 @@ class UserService {
         resource.username.ifPresent { user.username = resource.username.get() }
         userRepository.saveAndFlush(user)
 
+    }
+
+    private fun checkEmailUnique(email: String, container: ExceptionContainer) {
+        userRepository.findByEmail(email).ifPresent { container.addException(PropertyException("email", "Email already exists, try again." )) }
     }
 
     fun deleteUser(user: User) {
