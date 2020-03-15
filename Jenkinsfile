@@ -38,7 +38,7 @@ pipeline {
         }
         stage('Self Destruct') {
             steps {
-                sh 'rm -rf .g* .e* *'
+                sh 'rm -rf .[!.]* *'
             }
         }
     }
