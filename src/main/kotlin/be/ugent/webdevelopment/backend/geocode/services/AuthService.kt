@@ -10,6 +10,7 @@ import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.bcrypt.BCrypt
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.lang.reflect.Field
@@ -33,6 +34,8 @@ class AuthService {
     private val passwordPattern = Pattern.compile("^.*['\"`´].*$")
     private val usernamePattern = Pattern.compile("^[^ ][A-Za-z0-9 \\-_]+[^ ]$")
 
+    private val bCryptRounds = 12
+
     fun checkUser(username: String) : Boolean {
         val user : Optional<User> = userRepository.findByUsernameIgnoreCase(username)
         return !user.isEmpty
@@ -50,8 +53,7 @@ class AuthService {
     fun tryLogin(resource: UserLoginWrapper) {
         val user = userRepository.findByEmail(resource.email)
 
-        //TODO: hash password to check!
-        if(user.isEmpty || user.get().password != resource.password) {
+        if(user.isEmpty || BCrypt.checkpw(resource.password, user.get().password).not()) {
             val exc = ExceptionContainer(code = HttpStatus.BAD_REQUEST)
             exc.addException(GenericException("Unable to login."))
             exc.addException(PropertyException("email", "Email and/or password is wrong."))
@@ -122,11 +124,12 @@ class AuthService {
 
         exc.throwIfNotEmpty()
 
-        //TODO: Hash & Salt password!!
+        val hash = BCrypt.hashpw(resource.password, BCrypt.gensalt(bCryptRounds))
+
         userRepository.saveAndFlush(User(
                 email = resource.email,
                 username = resource.username,
-                password = resource.password))
+                password = hash))
 
     }
 }

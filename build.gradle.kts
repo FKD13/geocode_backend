@@ -33,10 +33,11 @@ dependencies {
     implementation("com.auth0:java-jwt:3.4.0")
     //Email
     implementation("com.sun.mail:javax.mail:1.6.2")
+    //Security
+    implementation("org.springframework.security:spring-security-core")
 
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    //implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
