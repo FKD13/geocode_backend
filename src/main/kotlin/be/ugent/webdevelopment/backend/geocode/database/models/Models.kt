@@ -17,13 +17,6 @@ class User (
 )
 
 @Entity
-@Table(name = "oauth_parties")
-class OauthParty (
-        @Id @GeneratedValue var id: Int = 0,
-        @Column(nullable = false) var oauthPartyName: String = ""
-)
-
-@Entity
 @Table(name = "locations")
 class Location (
         @Id @GeneratedValue var id: Int = 0,
