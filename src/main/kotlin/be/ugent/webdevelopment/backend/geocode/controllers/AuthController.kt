@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/auth")
 class AuthController(val service: AuthService) {
 
-    @GetMapping(value = ["/login"])
+    @PostMapping(value = ["/login"])
     fun login(@RequestBody resource: UserLoginWrapper) {
         service.tryLogin(resource)
     }
 
-    @GetMapping(value = ["/logout"])
+    @PostMapping(value = ["/logout"])
     fun logout() : String {
         return "Hello"
     }
 
-    @GetMapping(value = ["/register"])
+    @PostMapping(value = ["/register"])
     fun register(@RequestBody resource: UserRegisterWrapper) {
         service.tryRegister(resource)
     }
