@@ -98,9 +98,10 @@ class AuthService {
             exc.addException(PropertyException("captcha", "Empty captcha, try again."))
         }
 
+        //TODO: FIX CAPTCHA
         //captchaService.validateCaptcha(resource.captcha.get())
 
-        val existingUser = userRepository.findByEmailOrUsername(resource.email, resource.username)
+        val existingUser = userRepository.findByEmailOrUsernameIgnoreCase(resource.email, resource.username)
         if(existingUser.isPresent) {
             val user = existingUser.get()
             if(user.username.toLowerCase() == resource.username.toLowerCase()) {
