@@ -1,8 +1,10 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
+import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationService
+import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -12,7 +14,7 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/Location")
 @ResponseStatus(HttpStatus.OK)
 @RestController
-class LocationController(val service: LocationService, val jwtService: JWTAuthenticator) : Controller<LocationWrapper>{
+class LocationController(val service: LocationService, val jwtService: JWTAuthenticator, val locationsService: LocationsService) : Controller<LocationWrapper>{
 
     @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper> {
@@ -29,7 +31,8 @@ class LocationController(val service: LocationService, val jwtService: JWTAuthen
     @PutMapping(value = ["/{secret_id}"])
     fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        //todo double check of dat de location met die secret_id ook effectief van de ingelogde user is.
+        if(jwtService.tryAuthenticateGetId(request) != locationsService.findById(secret_id).creatorId)
+            throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secret_id, resource)
     }
 
