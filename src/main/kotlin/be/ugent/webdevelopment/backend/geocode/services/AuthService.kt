@@ -38,6 +38,15 @@ class AuthService {
         return !user.isEmpty
     }
 
+    fun checkEmail(email: String) : Boolean {
+        try {
+            InternetAddress(email).validate()
+        } catch (e: AddressException) {
+            return false
+        }
+        return true
+    }
+
     fun tryLogin(resource: UserLoginWrapper) {
         val user = userRepository.findByEmail(resource.email)
 
@@ -69,9 +78,7 @@ class AuthService {
             exc.addException(PropertyException("email", "Should be at most 320 characters"))
         }
 
-        try {
-            InternetAddress(resource.email).validate()
-        } catch (e: AddressException) {
+        if(!checkEmail(resource.email)) {
             exc.addException(PropertyException("email", "Invalid email adress"))
         }
 
@@ -113,10 +120,7 @@ class AuthService {
             }
         }
 
-        if(!exc.isEmpty()) {
-            exc.addException(GenericException("Unable to create account."))
-            throw exc
-        }
+        exc.throwIfNotEmpty()
 
         //TODO: Hash & Salt password!!
         userRepository.saveAndFlush(User(

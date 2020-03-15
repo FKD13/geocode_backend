@@ -33,6 +33,7 @@ class JWTAuthenticator {
 
     private val cookieToken: String = "Geocode_Token"
 
+    //TODO: Use Cookies
     fun tryAuthenticate(request: HttpServletRequest) : User {
         val user: Optional<User>
         var token: Optional<String> = Optional.empty()
@@ -55,6 +56,7 @@ class JWTAuthenticator {
         }
     }
 
+    //TODO: Use Cookies
     fun addToken(user: User, response: HttpServletResponse) {
         response.addCookie(Cookie(cookieToken, JWT.create()
                 .withSubject(user.id.toString())
