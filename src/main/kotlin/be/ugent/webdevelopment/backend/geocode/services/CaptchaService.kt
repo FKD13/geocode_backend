@@ -48,7 +48,7 @@ class CaptchaService {
         val captchaResponse : CaptchaResponse = RestTemplate().postForObject(verifyUri, CaptchaResponse::class.java)
         if (captchaResponse.success == null || !captchaResponse.success ) {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Captha failed")
-        } else if (captchaResponse.action == null || captchaResponse.action == action) {
+        } else if (captchaResponse.action == null || captchaResponse.action != action) {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Actions did not match")
         }
     }
