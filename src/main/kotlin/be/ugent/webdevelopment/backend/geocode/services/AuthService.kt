@@ -49,7 +49,7 @@ class AuthService {
             val exc = ExceptionContainer(code = HttpStatus.BAD_REQUEST)
             exc.addException(GenericException("Unable to login."))
             exc.addException(PropertyException("email", "Email and/or password is wrong."))
-            exc.addException(PropertyException("password", ""))
+            exc.addException(PropertyException("password", "Email and/or password is wrong."))
             throw exc
         }
     }
