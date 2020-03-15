@@ -16,7 +16,7 @@ class UserWrapper(
     constructor(user: User): this(
             id = Optional.of(user.id),
             username = Optional.of(user.username),
-            avatarUrl = Optional.of(user.avatarUrl!!), //todo why is avatarURL in database String? ????
+            avatarUrl = Optional.of(user.avatarUrl),
             email = Optional.of(user.email),
             admin = Optional.of(user.admin),
             time = Optional.of(user.time)

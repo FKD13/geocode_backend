@@ -30,11 +30,8 @@ class AuthService {
     @Autowired
     private lateinit var captchaService: CaptchaService
 
-    private val emailPattern = Pattern.compile("[A-Za-z0-9_%+-]+@[A-Za-z0-9.-].[a-zA-Z]{2,4}")
     private val passwordPattern = Pattern.compile("^.*['\"`´].*$")
     private val usernamePattern = Pattern.compile("^[^ ][A-Za-z0-9 \\-_]+[^ ]$")
-
-    private val mail = InternetAddress()
 
     fun checkUser(username: String) : Boolean {
         val user : Optional<User> = userRepository.findByUsernameIgnoreCase(username)
@@ -42,7 +39,12 @@ class AuthService {
     }
 
     fun checkEmail(email: String) : Boolean {
-        return emailPattern.matcher(email).matches()
+        try {
+            InternetAddress(email).validate()
+        } catch (e: AddressException) {
+            return false
+        }
+        return true
     }
 
     fun tryLogin(resource: UserLoginWrapper) {
@@ -76,9 +78,7 @@ class AuthService {
             exc.addException(PropertyException("email", "Should be longer than 5 characters"))
         }
 
-        try {
-            InternetAddress(resource.email).validate()
-        } catch (e: AddressException) {
+        if(!checkEmail(resource.email)) {
             exc.addException(PropertyException("email", "Invalid email adress"))
         }
 
@@ -118,12 +118,6 @@ class AuthService {
         }
 
         exc.throwIfNotEmpty()
-        /*
-        if(!exc.isEmpty()) {
-            exc.addException(GenericException("Unable to create account."))
-            throw exc
-        }
-         */
 
         //TODO: Hash & Salt password!!
         userRepository.saveAndFlush(User(
