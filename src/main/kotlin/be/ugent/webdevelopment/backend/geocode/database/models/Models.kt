@@ -10,7 +10,7 @@ class User (
         @Id @GeneratedValue var id: Int = 0,
         @Column(nullable = false, unique = true) var email: String = "",
         @Column(nullable = false, unique = true) var username: String = "",
-        @Column(name = "avatar_url") var avatarUrl: String? = "",
+        @Column(nullable = false, name = "avatar_url") var avatarUrl: String = "",
         @Column(nullable = false) var admin: Boolean = false,
         @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
         @Column(nullable = false) var password: String = ""
