@@ -1,13 +1,14 @@
 package be.ugent.webdevelopment.backend.geocode.controllers.wrappers
 
 import be.ugent.webdevelopment.backend.geocode.database.models.User
+import java.util.*
 
-class UsersWrapper(var id: Int?,
-                   var username: String?,
-                   var avatarUrl: String?): Wrapper {
+open class UsersWrapper(var id: Optional<Int>,
+                   var username: Optional<String>,
+                   var avatarUrl: Optional<String>): Wrapper {
     constructor(user: User) : this(
-            id = user.id,
-            username = user.username,
-            avatarUrl = user.avatarUrl
+            id = Optional.of(user.id),
+            username = Optional.of(user.username),
+            avatarUrl = Optional.of(user.avatarUrl!!) //todo why is avatarURL in database String? ????
     )
 }

@@ -2,6 +2,7 @@ package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
+import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,15 +25,17 @@ class JWTAuthenticator {
 
     private val headerString: String = "Token"
 
+    //TODO: Use Cookies
     fun tryAuthenticate(request: HttpServletRequest) : User {
         val token: String = request.getHeader(headerString)
         val userid: Int = JWT.require(Algorithm.HMAC512(secret))
                 .build().verify(token)
                 .subject.toInt()
         val user: Optional<User> = userRepository.findById(userid)
-        return user.orElseThrow { Exception("Things have gone wrong") }
+        return user.orElseThrow { GenericException("Could not authenticate") }
     }
 
+    //TODO: Use Cookies
     fun addToken(user: User, response: HttpServletResponse) {
         val token: String = JWT.create()
                 .withSubject(user.id.toString())

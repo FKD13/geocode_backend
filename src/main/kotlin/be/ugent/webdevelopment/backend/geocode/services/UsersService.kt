@@ -6,7 +6,6 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.UserReposit
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import java.util.*
 
 @Service
@@ -21,23 +20,8 @@ class UsersService {
 
     fun findById(id: Int): UsersWrapper {
         val user : Optional<User> = userRepository.findById(id)
-        if(user.isEmpty) throw Exception()
+        if(user.isEmpty) throw GenericException("User with id = $id was not found in the database")
         return UsersWrapper(user.get())
-    }
-
-    fun create(resource: UsersWrapper): Int {
-        userRepository.saveAndFlush(User()) // Een user mag enkel aangemaakt worden via Oauth
-        return 1
-    }
-
-    fun update(id: Int, resource: UsersWrapper): Int {
-        throw GenericException(code = HttpStatus.NOT_IMPLEMENTED, message = "Not Implemented Yet")
-        //return userRepository.updateUser(id, resource)
-    }
-
-    fun deleteById(id: Int): Int {
-        userRepository.deleteById(id)
-        return 1
     }
 
 }

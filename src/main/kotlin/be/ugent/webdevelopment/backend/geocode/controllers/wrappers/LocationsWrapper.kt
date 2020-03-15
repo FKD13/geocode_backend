@@ -10,13 +10,13 @@ class LocationsWrapper(var longitude: Double?,
                        var secretId: String?,
                        var listed: Boolean?
 ) : Wrapper {
-constructor(loc: Location) : this(longitude = loc.longitude,
-        latitude = loc.latitude,
-        name = loc.name,
-        description = loc.description,
-        creatorId = loc.creator.id,
-        secretId = loc.secretId,
-        listed = loc.listed
-)
+    constructor(loc: Location) : this(longitude = loc.longitude,
+            latitude = loc.latitude,
+            name = loc.name,
+            description = loc.description,
+            creatorId = loc.creator.id,
+            secretId = loc.secretId,
+            listed = loc.listed
+    )
 
 }
