@@ -64,7 +64,7 @@ class AuthService {
             exc.addException(PropertyException("username", "Should be shorter than 30 characters"))
         }
 
-        if(usernamePattern.matcher(resource.username).matches()) {
+        if(!usernamePattern.matcher(resource.username).matches()) {
             exc.addException(PropertyException("username", "Can only contain letters, numbers, space - or _"))
         }
 
@@ -83,7 +83,7 @@ class AuthService {
         }
 
         if(resource.password.length < 8) {
-            exc.addException(PropertyException("password", "Should be longer than 3 characters"))
+            exc.addException(PropertyException("password", "Should be longer than 8 characters"))
         }
 
         if(resource.password.length > 64) {
@@ -113,7 +113,7 @@ class AuthService {
         }
 
         if(!exc.isEmpty()) {
-            exc.addException(GenericException("Unable to create new user."))
+            exc.addException(GenericException("Unable to create account."))
             throw exc
         }
 
