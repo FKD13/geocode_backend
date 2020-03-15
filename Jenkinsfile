@@ -38,7 +38,8 @@ pipeline {
         }
         stage('Self Destruct') {
             steps {
-                sh 'rm -rf * .*'
+                sh 'rm -rf .git'
+                sh 'rm -r ../$(basename $(pwd))'
             }
         }
     }
