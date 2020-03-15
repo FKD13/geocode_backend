@@ -21,34 +21,4 @@ class RepositoryTest @Autowired constructor (
         val locationRatingRepository: LocationRatingRepository,
         val commentRepository: CommentRepository,
         val checkInRepository: CheckInRepository) {
-
-    private val oauthParty = OauthParty(oauthPartyName = "Google")
-    private val user = User(oauthId = "1234", oauthParty = oauthParty, username = "Jhon", email = "john@mail.com")
-    private val location = Location(longitude = 2.0, latitude = 4.0, listed = false, name = "Epic Location",
-            description = "...", creator = user)
-
-    @Test
-    fun oauthPartyRepositoryTest() {
-        oauthPartyRepository.save(oauthParty)
-        val found = oauthPartyRepository.findByOauthPartyName(oauthParty.oauthPartyName)
-        assertThat(found).isNotNull
-        assertThat(found).isEqualTo(oauthParty)
-    }
-
-    @Test
-    fun userRepositoryTest() {
-        userRepository.save(user)
-        val found: Optional<User> = userRepository.findById(user.id)
-        assertThat(found).isNotNull
-        assertThat(userRepository.findByUsername("fred").size).isEqualTo(0)
-        assertThat(userRepository.findByUsername(user.username).size).isEqualTo(1)
-        assertThat(found.get().oauthParty).isEqualTo(oauthParty)
-    }
-
-    @Test
-    fun locationRepositoryTest() {
-        locationRepository.save(location)
-        val found = locationRepository.findByCreator(user)
-        assertThat(found.size).isEqualTo(1)
-    }
 }
