@@ -18,19 +18,19 @@ class UserController(val service: UserService, val jwtService: JWTAuthenticator)
     @GetMapping
     fun findByLoggedIn(
                  response: HttpServletResponse, request: HttpServletRequest): UserWrapper {
-        return UserWrapper(jwtService.tryAuthenticateGetUser(request))
+        return UserWrapper(jwtService.tryAuthenticate(request))
     }
 
     @PutMapping
     fun update(@RequestBody resource: UserWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        service.update(jwtService.tryAuthenticateGetId(request), resource)
+        service.update(jwtService.tryAuthenticate(request), resource)
     }
 
     @DeleteMapping
     fun delete(
                response: HttpServletResponse, request: HttpServletRequest) {
-        service.deleteById(jwtService.tryAuthenticateGetId(request))
+        service.deleteUser(jwtService.tryAuthenticate(request))
     }
 
 }

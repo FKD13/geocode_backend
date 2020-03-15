@@ -25,19 +25,14 @@ class JWTAuthenticator {
 
     private val headerString: String = "Token"
 
-    fun tryAuthenticateGetUser(request: HttpServletRequest) : User {
-        val userid: Int = this.tryAuthenticateGetId(request)
-        val user: Optional<User> = userRepository.findById(userid)
-        return user.orElseThrow { GenericException("Could not authenticate") }
-    }
-
     //TODO: Use Cookies
-    fun tryAuthenticateGetId(request: HttpServletRequest) : Int {
+    fun tryAuthenticate(request: HttpServletRequest) : User {
         val token: String = request.getHeader(headerString)
         val userid: Int = JWT.require(Algorithm.HMAC512(secret))
                 .build().verify(token)
                 .subject.toInt()
-        return userid
+        val user: Optional<User> = userRepository.findById(userid)
+        return user.orElseThrow { GenericException("Could not authenticate") }
     }
 
     //TODO: Use Cookies

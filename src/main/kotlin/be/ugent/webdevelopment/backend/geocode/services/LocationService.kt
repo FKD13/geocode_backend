@@ -2,6 +2,7 @@ package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
+import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
@@ -16,8 +17,8 @@ class LocationService(var locationRepository: LocationRepository, var userReposi
 
     private val descriptionTagsPattern = Pattern.compile("<(\\s|\\t)+([^(li|ul|p|b|i|u|img|br|/|h1|h2|h3)])(\\s|>)")
 
-    fun findAll(id: Int): List<LocationWrapper> {
-        return locationRepository.findByCreator(userRepository.getOne(id)).map { LocationWrapper(it) }
+    fun findAll(user: User): List<LocationWrapper> {
+        return locationRepository.findByCreator(user).map { LocationWrapper(it) }
     }
 
     fun checkLat(lat: Double, container: ExceptionContainer) {
