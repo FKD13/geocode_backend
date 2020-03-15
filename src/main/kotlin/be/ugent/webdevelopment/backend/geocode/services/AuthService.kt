@@ -64,8 +64,9 @@ class AuthService {
             exc.addException(PropertyException("username", "Should be shorter than 30 characters"))
         }
 
-        if(usernamePattern.matcher(resource.username).matches())
+        if(usernamePattern.matcher(resource.username).matches()) {
             exc.addException(PropertyException("username", "Can only contain letters, numbers, space - or _"))
+        }
 
         if(resource.email.length < 5) {
             exc.addException(PropertyException("email", "Should be longer than 5 characters"))
@@ -89,8 +90,9 @@ class AuthService {
             exc.addException(PropertyException("password", "Should be shorter than 30 characters"))
         }
 
-        if(passwordPattern.matcher(resource.password).matches())
+        if(passwordPattern.matcher(resource.password).matches()) {
             exc.addException(PropertyException("password", "Should not contain ` ´ ' or \""))
+        }
 
         if(resource.captcha.isEmpty) {
             exc.addException(PropertyException("captcha", "Empty captcha, try again."))
