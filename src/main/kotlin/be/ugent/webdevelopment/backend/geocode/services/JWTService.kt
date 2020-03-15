@@ -24,13 +24,18 @@ class JWTAuthenticator {
 
     private val headerString: String = "Token"
 
-    fun tryAuthenticate(request: HttpServletRequest) : User {
+    fun tryAuthenticateGetUser(request: HttpServletRequest) : User {
+        val userid: Int = this.tryAuthenticateGetId(request)
+        val user: Optional<User> = userRepository.findById(userid)
+        return user.orElseThrow { Exception("Things have gone wrong") }
+    }
+
+    fun tryAuthenticateGetId(request: HttpServletRequest) : Int {
         val token: String = request.getHeader(headerString)
         val userid: Int = JWT.require(Algorithm.HMAC512(secret))
                 .build().verify(token)
                 .subject.toInt()
-        val user: Optional<User> = userRepository.findById(userid)
-        return user.orElseThrow { Exception("Things have gone wrong") }
+        return userid
     }
 
     fun addToken(user: User, response: HttpServletResponse) {
