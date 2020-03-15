@@ -21,7 +21,7 @@ class UserService {
     @Autowired
     private lateinit var authService: AuthService
 
-
+    /* This function will probably not be needed, this is done in the JWT Controller r*/
     fun findById(id: Int): UserWrapper {
         val user : Optional<User> = userRepository.findById(id)
         if(user.isEmpty) throw GenericException("The user with id= $id was not found in the database.")
@@ -73,8 +73,12 @@ class UserService {
     }
 
     fun deleteById(id: Int) {
-        //todo controleer of user met id effectief bestaat
-        userRepository.deleteById(id)
+        userRepository.findById(id).ifPresentOrElse(
+                {
+                    userRepository.deleteById(id)
+                }, {
+                    throw GenericException("The User with id= $id could not be found and could therefor also not be deleted.")
+                })
     }
 
 }

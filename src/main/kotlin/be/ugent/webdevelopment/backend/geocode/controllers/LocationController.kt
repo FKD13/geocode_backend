@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class LocationController(val service: LocationService) : Controller<LocationWrapper>{
 
-    @GetMapping(value = ["/login"])
+    @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper> {
         return service.findAll(1)
     }
