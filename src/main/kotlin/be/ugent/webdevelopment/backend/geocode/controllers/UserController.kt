@@ -4,6 +4,7 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrap
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
+import be.ugent.webdevelopment.backend.geocode.services.UsersService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
@@ -13,7 +14,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/user")
-class UserController(val jwtService: JWTAuthenticator, val locationsService: LocationsService) : Controller<UserWrapper>{
+class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator, val locationsService: LocationsService) : Controller<UserWrapper>{
 
     @GetMapping
     fun findByLoggedIn(
@@ -24,6 +25,18 @@ class UserController(val jwtService: JWTAuthenticator, val locationsService: Loc
     @GetMapping(value = ["/locations"])
     fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper>{
         return locationsService.findAllByUser(jwtService.tryAuthenticate(request))
+    }
+
+    @PatchMapping
+    fun update(@RequestBody resource: UserWrapper,
+               response: HttpServletResponse, request: HttpServletRequest) {
+        usersService.update(jwtService.tryAuthenticate(request), resource)
+    }
+
+    @DeleteMapping
+    fun delete(
+            response: HttpServletResponse, request: HttpServletRequest) {
+        usersService.deleteUser(jwtService.tryAuthenticate(request))
     }
 
 

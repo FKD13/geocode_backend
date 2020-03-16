@@ -40,34 +40,36 @@ class UsersService {
 
     fun checkUrl(url: String, container: ExceptionContainer){
         try {
-            val test : URL = URL(url)
+            URL(url)
         }catch (e : MalformedURLException){
             container.addException(PropertyException("url", "The url is not valid."))
         }
     }
 
-    fun checkUsername(name: String, container: ExceptionContainer){
-        if(name.length < 3) {
+    fun checkUsername(nameResource: String, nameUser: String, container: ExceptionContainer){
+        if(nameResource.length < 3) {
             container.addException(PropertyException("username", "Should be longer than 3 characters"))
         }
-        if(name.length > 30) {
+        if(nameResource.length > 30) {
             container.addException(PropertyException("username", "Should be shorter than 30 characters"))
         }
-        if (userRepository.findByUsernameIgnoreCase(name).isEmpty.not()){
-            container.addException(PropertyException("username", "This username is already in use."))
+        userRepository.findByUsernameIgnoreCase(nameResource).ifPresent {
+            if (it.username != nameUser){
+                container.addException(PropertyException("username", "This username is already in use."))
+            }
         }
     }
 
     fun update(user: User, resource: UserWrapper){
-        val container : ExceptionContainer = ExceptionContainer()
+        val container = ExceptionContainer()
 
         resource.email.ifPresent {
             if(authService.checkEmail(resource.email.get()).not())
                 container.addException(PropertyException("email", "The email is not valid"))
-            checkEmailUnique(resource.email.get(), container)
+            checkEmailUnique(user.email, resource.email.get(), container)
         }
         resource.avatarUrl.ifPresent { checkUrl(resource.avatarUrl.get(), container) }
-        resource.username.ifPresent { checkUsername(resource.username.get(), container) }
+        resource.username.ifPresent { checkUsername(resource.username.get(), user.username, container) }
 
         container.throwIfNotEmpty()
 
@@ -78,8 +80,12 @@ class UsersService {
 
     }
 
-    private fun checkEmailUnique(email: String, container: ExceptionContainer) {
-        userRepository.findByEmail(email).ifPresent { container.addException(PropertyException("email", "Email already exists, try again." )) }
+    private fun checkEmailUnique(emailUser: String, emailResource: String, container: ExceptionContainer) {
+        userRepository.findByEmail(emailResource).ifPresent {
+            if (it.email != emailUser){
+                container.addException(PropertyException("email", "Email already exists, try again." ))
+            }
+        }
     }
 
     fun deleteUser(user: User) {
