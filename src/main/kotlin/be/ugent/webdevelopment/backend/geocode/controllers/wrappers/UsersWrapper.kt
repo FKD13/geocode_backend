@@ -9,6 +9,6 @@ open class UsersWrapper(var id: Optional<Int>,
     constructor(user: User) : this(
             id = Optional.of(user.id),
             username = Optional.of(user.username),
-            avatarUrl = Optional.of(user.avatarUrl!!) //todo why is avatarURL in database String? ????
+            avatarUrl = Optional.of(user.avatarUrl)
     )
 }
