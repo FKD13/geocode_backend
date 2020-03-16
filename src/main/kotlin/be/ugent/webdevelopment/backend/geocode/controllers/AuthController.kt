@@ -7,6 +7,7 @@ import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.UsersService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -21,8 +22,9 @@ class AuthController(val service: AuthService, val jwtService: JWTAuthenticator,
     }
 
     @PostMapping(value = ["/logout"])
-    fun logout() : String {
-        return "Hello"
+    fun logout(request: HttpServletRequest, response: HttpServletResponse) {
+        jwtService.tryAuthenticate(request)
+        jwtService.removeToken(response)
     }
 
     @PostMapping(value = ["/register"])

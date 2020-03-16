@@ -5,6 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.UserReposit
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -41,12 +42,10 @@ class JWTAuthenticator {
             throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
         }
         request.cookies.map {if(it.name.equals(cookieToken)) {token = Optional.of(it.value)}}
-        token.orElseThrow { GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in") }
-        val jwtToken: DecodedJWT = JWT.require(Algorithm.HMAC512(secret))
-                .build().verify(token.get())
-        if (jwtToken.expiresAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(now())) {
-            throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
-        } else {
+        try {
+            token.orElseThrow { GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in") }
+            val jwtToken: DecodedJWT = JWT.require(Algorithm.HMAC512(secret))
+                    .build().verify(token.get())
             try {
                 user = userRepository.findById(jwtToken.subject.toInt())
                 if (user.isEmpty) {
@@ -56,14 +55,24 @@ class JWTAuthenticator {
             } catch (e: NumberFormatException) {
                 throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
             }
+        } catch (e: JWTVerificationException) {
+            throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
         }
+
     }
 
     fun addToken(user: User, response: HttpServletResponse) {
-        response.addCookie(Cookie(cookieToken, JWT.create()
+        response.addCookie(createCookie(JWT.create()
                 .withSubject(user.id.toString())
                 .withExpiresAt(Date(System.currentTimeMillis() + secretDuration.toLong()))
-                .sign(Algorithm.HMAC512(secret))).also {it.isHttpOnly = true}.also {it.path = "/"}) //TODO: be more specific than "/"
-        //TODO: add secure
+                .sign(Algorithm.HMAC512(secret))))
+    }
+
+    fun removeToken(response: HttpServletResponse) {
+        response.addCookie(createCookie(null).also { it.maxAge = 0 })
+    }
+
+    private fun createCookie(s: String?) : Cookie {
+        return Cookie(cookieToken, s).also {it.isHttpOnly = true}.also {it.secure = true}.also {it.path = "/"}
     }
 }
