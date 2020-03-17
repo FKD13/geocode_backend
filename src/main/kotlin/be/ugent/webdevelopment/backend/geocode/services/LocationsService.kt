@@ -23,7 +23,7 @@ class LocationsService {
     @Autowired
     private lateinit var userRepository: UserRepository
 
-    private val descriptionTagsPattern = Pattern.compile("<(\\s|\\t)+([^(li|ul|p|b|i|u|img|br|/|h1|h2|h3)])(\\s|>)")
+    private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3)([^<>]*)>(.*)<\\s*/\\s*\\1>")
 
     fun findAll(): List<LocationsWrapper> {
         return locationRepository.findAllByListedEquals(true).map { LocationsWrapper(it) }
@@ -75,7 +75,7 @@ class LocationsService {
         userRepository.findById(creatorId).ifPresentOrElse({}, {container.addException(PropertyException("creatorId", "The creator with creatorId = $creatorId does not exist."))})
     }
 
-    fun create(resource: LocationWrapper): UUID {
+    fun create(resource: LocationsWrapper): UUID {
         val container : ExceptionContainer = ExceptionContainer()
 
         resource.longitude.ifPresentOrElse({checkLon(resource.longitude.get(), container)}, {container.addException(PropertyException("longitude", "The longitude is an expected value."))})

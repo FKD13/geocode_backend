@@ -28,7 +28,7 @@ class LocationsController(val service : LocationsService, val jwtService: JWTAut
     }
 
     @PostMapping
-    fun create(@RequestBody resource: LocationWrapper,
+    fun create(@RequestBody resource: LocationsWrapper,
                response: HttpServletResponse, request: HttpServletRequest): UUID{
         resource.creatorId = Optional.of(jwtService.tryAuthenticate(request).id)
         return service.create(resource)
@@ -37,7 +37,7 @@ class LocationsController(val service : LocationsService, val jwtService: JWTAut
     @PatchMapping(value = ["/{secret_id}"])
     fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if(jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creatorId)
+        if(jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creatorId.get())
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secret_id, resource)
     }
