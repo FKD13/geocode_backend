@@ -123,7 +123,7 @@ class AuthService {
         }
 
         if (exc.isEmpty().not()){
-            exc.addException(GenericException("Unable to log in."))
+            exc.addException(GenericException("Unable to register."))
             throw exc
         }
 
