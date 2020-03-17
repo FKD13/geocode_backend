@@ -31,7 +31,7 @@ class LocationsService {
 
     fun findBySecretId(secret_id: UUID): LocationsWrapper {
         val loc : Optional<Location> = locationRepository.findBySecretId(secret_id.toString())
-        loc.ifPresentOrElse({}, {throw GenericException("The location that corresponds to this secret id was not found.")})
+        loc.ifPresentOrElse({}, {throw GenericException("Location that corresponds to this secret id was not found.")})
         return LocationsWrapper(loc.get())
     }
 
@@ -41,48 +41,48 @@ class LocationsService {
 
     fun checkLat(lat: Double, container: ExceptionContainer) {
         if(lat > 90 ){
-            container.addException(PropertyException("latitude", "The latitude can not be bigger than 90."))
+            container.addException(PropertyException("latitude", "Latitude can not be bigger than 90."))
         }else if (lat < -90){
-            container.addException(PropertyException("latitude", "The latitude can not be smaller than -90."))
+            container.addException(PropertyException("latitude", "Latitude can not be smaller than -90."))
         }
     }
 
     fun checkLon(lon: Double, container: ExceptionContainer) {
         if (lon > 180){
-            container.addException(PropertyException("longitude", "The longitude can not be bigger than 180."))
+            container.addException(PropertyException("longitude", "Longitude can not be bigger than 180."))
         }else if (lon < -180){
-            container.addException(PropertyException("longitude", "The longitude can not be smaller than -180."))
+            container.addException(PropertyException("longitude", "Longitude can not be smaller than -180."))
         }
     }
 
     fun checkName(name: String, container: ExceptionContainer) {
         if (name.length > 255){
-            container.addException(PropertyException("name", "The name can not be bigger than 255 characters."))
+            container.addException(PropertyException("name", "Name can not be bigger than 255 characters."))
         }else if (name.length < 3){
-            container.addException(PropertyException("name", "The name can not be smaller than 3 characters."))
+            container.addException(PropertyException("name", "Name can not be smaller than 3 characters."))
         }
     }
 
     fun checkDescription(description: String, container: ExceptionContainer) {
         if(descriptionTagsPattern.matcher(description).matches()){
-            container.addException(PropertyException("description", "The description has html tags that are not valid."))
+            container.addException(PropertyException("description", "Description has html tags that are not valid."))
         }
         /* li ul p b i u img br */
         description.replace(Regex("style=[^>]*>"), ">") //this replaces all the style elements
     }
 
     fun checkId(creatorId: Int, container: ExceptionContainer) {
-        userRepository.findById(creatorId).ifPresentOrElse({}, {container.addException(PropertyException("creatorId", "The creator with creatorId = $creatorId does not exist."))})
+        userRepository.findById(creatorId).ifPresentOrElse({}, {container.addException(PropertyException("creatorId", "Creator with creatorId = $creatorId does not exist."))})
     }
 
     fun create(resource: LocationWrapper): UUID {
         val container : ExceptionContainer = ExceptionContainer()
 
-        resource.longitude.ifPresentOrElse({checkLon(resource.longitude.get(), container)}, {container.addException(PropertyException("longitude", "The longitude is an expected value."))})
-        resource.latitude.ifPresentOrElse({checkLat(resource.latitude.get(), container)}, {container.addException(PropertyException("latitude", "The latitude is an expected value."))})
-        resource.name.ifPresentOrElse({checkName(resource.name.get(), container)}, {container.addException(PropertyException("name", "The name is an expected value."))})
-        resource.description.ifPresentOrElse({checkDescription(resource.description.get(), container)},{container.addException(PropertyException("description", "The description is an expected value."))})
-        resource.creatorId.ifPresentOrElse({checkId(resource.creatorId.get(), container)}, {container.addException(PropertyException("creatorId", "The creatorId is an expected value."))})
+        resource.longitude.ifPresentOrElse({checkLon(resource.longitude.get(), container)}, {container.addException(PropertyException("longitude", "Longitude is an expected value."))})
+        resource.latitude.ifPresentOrElse({checkLat(resource.latitude.get(), container)}, {container.addException(PropertyException("latitude", "Latitude is an expected value."))})
+        resource.name.ifPresentOrElse({checkName(resource.name.get(), container)}, {container.addException(PropertyException("name", "Name is an expected value."))})
+        resource.description.ifPresentOrElse({checkDescription(resource.description.get(), container)},{container.addException(PropertyException("description", "Description is an expected value."))})
+        resource.creatorId.ifPresentOrElse({checkId(resource.creatorId.get(), container)}, {container.addException(PropertyException("creatorId", "CreatorId is an expected value."))})
         resource.listed.ifPresentOrElse({}, {container.addException(PropertyException("listed", "Listed is an expected value."))})
 
         container.throwIfNotEmpty()
@@ -131,7 +131,7 @@ class LocationsService {
                 locationRepository.flush()
             }
         }, {
-            throw GenericException("The Location with secretId= $secretId was not found in the database.")
+            throw GenericException("Location with secretId= $secretId was not found in the database.")
         })
 
     }
