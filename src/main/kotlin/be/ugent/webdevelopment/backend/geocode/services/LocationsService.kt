@@ -24,7 +24,7 @@ class LocationsService {
     private lateinit var userRepository: UserRepository
 
     private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
-    private val attributesPattern = Pattern.compile("\\s+(?=[^<>=\\s]*=)(?!src|height|width)[^<>=]+=", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
+    private val attributesPattern = Pattern.compile("\\s+(?!src|height|width)([^<>=]+)=", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
 
     fun findAll(): List<LocationsWrapper> {
         return locationRepository.findAllByListedEquals(true).map { LocationsWrapper(it) }
