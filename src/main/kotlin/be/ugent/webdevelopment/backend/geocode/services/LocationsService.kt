@@ -76,7 +76,8 @@ class LocationsService {
     }
 
     fun create(resource: LocationWrapper): UUID {
-        val container : ExceptionContainer = ExceptionContainer()
+        val container = ExceptionContainer()
+        container.addException(GenericException("Location could not be created"))
 
         resource.longitude.ifPresentOrElse({checkLon(resource.longitude.get(), container)}, {container.addException(PropertyException("longitude", "Longitude is an expected value."))})
         resource.latitude.ifPresentOrElse({checkLat(resource.latitude.get(), container)}, {container.addException(PropertyException("latitude", "Latitude is an expected value."))})

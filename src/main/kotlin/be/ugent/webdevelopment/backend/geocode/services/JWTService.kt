@@ -37,7 +37,6 @@ class JWTAuthenticator {
     fun tryAuthenticate(request: HttpServletRequest) : User {
         val user: Optional<User>
         var token: Optional<String> = Optional.empty()
-        println(request.cookies)
         if (request.cookies == null) {
             throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
         }
