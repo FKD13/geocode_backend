@@ -10,6 +10,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing for branch: ' + env.BRANCH_NAME
+                sh 'mv .env.template .env'
                 sh './runapp.sh test'
             }
         }
@@ -33,6 +34,11 @@ pipeline {
                 sh './runapp.sh bootWar'
                 sh 'sudo cp build/libs/*.war /home/groep29/backend/production/app.war'
                 sh 'sudo systemctl restart backend_prod.service'
+            }
+        }
+        stage('Self Destruct') {
+            steps {
+                sh 'rm -rf .[!.]* *'
             }
         }
     }

@@ -29,9 +29,15 @@ dependencies {
     implementation("org.mariadb.jdbc:mariadb-java-client")
     //swagger
     implementation("org.springdoc:springdoc-openapi-ui:1.2.33")
+    //JWT
+    implementation("com.auth0:java-jwt:3.4.0")
+    //Email
+    implementation("com.sun.mail:javax.mail:1.6.2")
+    //Security
+    implementation("org.springframework.security:spring-security-core")
 
+    implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    //implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -43,10 +49,12 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.h2database:h2")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging.showStandardStreams = true
 }
 
 tasks.withType<KotlinCompile> {
