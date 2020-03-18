@@ -23,7 +23,8 @@ class LocationsService {
     @Autowired
     private lateinit var userRepository: UserRepository
 
-    private val descriptionTagsPattern = Pattern.compile("<(\\s|\\t)+([^(li|ul|p|b|i|u|img|br|/|h1|h2|h3)])(\\s|>)")
+    private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
+    private val attributesPattern = Pattern.compile("<[^<>]*\\s+(?!src|height|width)([^<>=]+)=[^<>]*", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
 
     fun findAll(): List<LocationsWrapper> {
         return locationRepository.findAllByListedEquals(true).map { LocationsWrapper(it) }
@@ -64,6 +65,9 @@ class LocationsService {
     }
 
     fun checkDescription(description: String, container: ExceptionContainer) {
+        if (attributesPattern.matcher(description).matches()){
+            container.addException(PropertyException("description", "Description has html attributes that are not valid."))
+        }
         if(descriptionTagsPattern.matcher(description).matches()){
             container.addException(PropertyException("description", "Description has html tags that are not valid."))
         }
@@ -75,7 +79,7 @@ class LocationsService {
         userRepository.findById(creatorId).ifPresentOrElse({}, {container.addException(PropertyException("creatorId", "Creator with creatorId = $creatorId does not exist."))})
     }
 
-    fun create(resource: LocationWrapper): UUID {
+    fun create(resource: LocationsWrapper): UUID {
         val container = ExceptionContainer()
 
         resource.longitude.ifPresentOrElse({checkLon(resource.longitude.get(), container)}, {container.addException(PropertyException("longitude", "Longitude is an expected value."))})
