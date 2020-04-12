@@ -1,14 +1,11 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
-import be.ugent.webdevelopment.backend.geocode.database.View
-import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonView
-import cz.cvut.kbss.jopa.model.annotations.OWLClass
-import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty
-import cz.cvut.kbss.jopa.model.annotations.Properties
-import java.net.URI
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldId
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldProperty
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldRemoteContext
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldType
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -16,82 +13,113 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "users")
-@OWLClass(iri = "https://schema.org/Person")
+@JsonldType(value = "https://schema.org/Person")
+@JsonldRemoteContext(value = "https://schema.org/Person")
 class User (
-        @cz.cvut.kbss.jopa.model.annotations.Id
+        @JsonldId
         @Id @GeneratedValue
         var id: Int = 0,
-        @Column(nullable = false, unique = true, length = 512) var email: String = "",
-        @Column(nullable = false, unique = true) var username: String = "",
-        @Column(nullable = false, name = "avatar_url") var avatarUrl: String = "",
-        @Column(nullable = false) var admin: Boolean = false,
-        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
+
+        @JsonldProperty(value = "https://schema.org/email")
+        @Column(nullable = false, unique = true, length = 512)
+        var email: String = "",
+
+        @JsonldProperty(value = "https://schema.org/alternateName")
+        @Column(nullable = false, unique = true)
+        var username: String = "",
+
+        @JsonldProperty(value = "https://schema.org/image")
+        @Column(nullable = false, name = "avatar_url")
+        var avatarUrl: String = "",
+
+        @Column(nullable = false)
+        var admin: Boolean = false,
+
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss.SSS")
+        @Column(nullable = false)
+        var time: LocalDateTime = LocalDateTime.now(),
+
+        @JsonIgnore
         @Column(nullable = false) var password: String = "",
 
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY) var locations: Set<Location> = Collections.emptySet(),
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY) var tours: Set<Tour> = Collections.emptySet(),
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY) var comments: Set<Comment> = Collections.emptySet(),
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY) var location_ratings: Set<LocationRating> = Collections.emptySet(),
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY) var check_ins: Set<CheckIn> = Collections.emptySet(),
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY) var reports: Set<Report> = Collections.emptySet(),
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY) var user_tours: Set<UserTour> = Collections.emptySet()
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
+        var locations: Set<Location> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
+        var tours: Set<Tour> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
+        var comments: Set<Comment> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
+        var location_ratings: Set<LocationRating> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
+        var check_ins: Set<CheckIn> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
+        var reports: Set<Report> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
+        var user_tours: Set<UserTour> = Collections.emptySet()
 )
 
 @Entity
 @Table(name = "locations")
-@OWLClass(iri = "https://schema.org/Place")
+@JsonldType(value = "https://schema.org/Place")
+@JsonldRemoteContext(value = "https://schema.org/Place")
 class Location (
 
+        @JsonIgnore
         @Id @GeneratedValue var id: Int = 0,
-        @OWLDataProperty(iri = "https://schema.org/Place#longitude")
+
+        @JsonldProperty(value = "https://schema.org/longitude")
         @Column(nullable = false)
-        @JsonView(View.PublicDetail::class)
-        @JsonAlias("longitude")
         var longitude: Double = 0.0,
 
-        @OWLDataProperty(iri = "https://schema.org/Place#latitude")
+        @JsonldProperty(value = "https://schema.org/latitude")
         @Column(nullable = false)
-        @JsonView(View.PublicDetail::class)
-        @JsonAlias("latitude")
         var latitude: Double = 0.0,
 
-        @cz.cvut.kbss.jopa.model.annotations.Id
+        @JsonldId
         @Column(nullable = false, name = "secret_id", unique = true)
-        @JsonView(View.PublicDetail::class)
-        @JsonAlias("secretId")
         var secretId: String = "",
 
         @Column(nullable = false)
-        @JsonView(View.PublicDetail::class)
-        @JsonAlias("time")
         var time: LocalDateTime = LocalDateTime.now(),
 
         @Column(nullable = false)
-        @JsonView(View.PublicDetail::class)
-        @JsonAlias("listed")
         var listed: Boolean = false,
 
-        @OWLDataProperty(iri = "https://schema.org/Place#name")
-        @JsonView(View.PublicDetail::class)
+        @JsonldProperty(value = "https://schema.org/name")
         @Column(nullable = false)
-        @JsonAlias("name")
         var name: String = "",
 
-        @OWLDataProperty(iri = "https://schema.org/Place#description")
+        @JsonldProperty(value = "https://schema.org/description")
         @Column(nullable = false, length = 2048)
-        @JsonAlias("description")
         var description: String = "",
 
-        @OWLObjectProperty(iri = "https://schema.org/Person")
-        @JsonView(View.PublicDetail::class)
+        @JsonldProperty(value = "https://schema.org/Person")
         @ManyToOne(cascade = [CascadeType.PERSIST] ,fetch = FetchType.LAZY, optional = false)
-        @JsonAlias("creator")
         var creator: User = User(),
 
+        @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var comments: Set<Comment> = Collections.emptySet(),
+        @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var location_ratings: Set<LocationRating> = Collections.emptySet(),
+        @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var check_ins: Set<CheckIn> = Collections.emptySet(),
+        @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var reports: Set<Report> = Collections.emptySet(),
+        @JsonIgnore
         @ManyToMany(cascade = [CascadeType.PERSIST]) var tours: Set<Tour> = Collections.emptySet()
 )
 
