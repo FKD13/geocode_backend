@@ -1,13 +1,26 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
+import be.ugent.webdevelopment.backend.geocode.database.View
+import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonView
+import cz.cvut.kbss.jopa.model.annotations.OWLClass
+import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty
+import cz.cvut.kbss.jopa.model.annotations.Properties
+import java.net.URI
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 
+
 @Entity
 @Table(name = "users")
+@OWLClass(iri = "https://schema.org/Person")
 class User (
-        @Id @GeneratedValue var id: Int = 0,
+        @cz.cvut.kbss.jopa.model.annotations.Id
+        @Id @GeneratedValue
+        var id: Int = 0,
         @Column(nullable = false, unique = true, length = 512) var email: String = "",
         @Column(nullable = false, unique = true) var username: String = "",
         @Column(nullable = false, name = "avatar_url") var avatarUrl: String = "",
@@ -26,16 +39,54 @@ class User (
 
 @Entity
 @Table(name = "locations")
+@OWLClass(iri = "https://schema.org/Place")
 class Location (
+
         @Id @GeneratedValue var id: Int = 0,
-        @Column(nullable = false) var longitude: Double = 0.0,
-        @Column(nullable = false) var latitude: Double = 0.0,
-        @Column(nullable = false, name = "secret_id", unique = true) var secretId: String = "",
-        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
-        @Column(nullable = false) var listed: Boolean = false,
-        @Column(nullable = false) var name: String = "",
-        @Column(nullable = false, length = 2048) var description: String = "",
-        @ManyToOne(cascade = [CascadeType.PERSIST] ,fetch = FetchType.LAZY, optional = false) var creator: User = User(),
+        @OWLDataProperty(iri = "https://schema.org/Place#longitude")
+        @Column(nullable = false)
+        @JsonView(View.PublicDetail::class)
+        @JsonAlias("longitude")
+        var longitude: Double = 0.0,
+
+        @OWLDataProperty(iri = "https://schema.org/Place#latitude")
+        @Column(nullable = false)
+        @JsonView(View.PublicDetail::class)
+        @JsonAlias("latitude")
+        var latitude: Double = 0.0,
+
+        @cz.cvut.kbss.jopa.model.annotations.Id
+        @Column(nullable = false, name = "secret_id", unique = true)
+        @JsonView(View.PublicDetail::class)
+        @JsonAlias("secretId")
+        var secretId: String = "",
+
+        @Column(nullable = false)
+        @JsonView(View.PublicDetail::class)
+        @JsonAlias("time")
+        var time: LocalDateTime = LocalDateTime.now(),
+
+        @Column(nullable = false)
+        @JsonView(View.PublicDetail::class)
+        @JsonAlias("listed")
+        var listed: Boolean = false,
+
+        @OWLDataProperty(iri = "https://schema.org/Place#name")
+        @JsonView(View.PublicDetail::class)
+        @Column(nullable = false)
+        @JsonAlias("name")
+        var name: String = "",
+
+        @OWLDataProperty(iri = "https://schema.org/Place#description")
+        @Column(nullable = false, length = 2048)
+        @JsonAlias("description")
+        var description: String = "",
+
+        @OWLObjectProperty(iri = "https://schema.org/Person")
+        @JsonView(View.PublicDetail::class)
+        @ManyToOne(cascade = [CascadeType.PERSIST] ,fetch = FetchType.LAZY, optional = false)
+        @JsonAlias("creator")
+        var creator: User = User(),
 
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var comments: Set<Comment> = Collections.emptySet(),
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var location_ratings: Set<LocationRating> = Collections.emptySet(),

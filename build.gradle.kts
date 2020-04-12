@@ -22,6 +22,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven(url="https://jitpack.io")
 }
 
 dependencies {
@@ -35,6 +36,8 @@ dependencies {
     implementation("com.sun.mail:javax.mail:1.6.2")
     //Security
     implementation("org.springframework.security:spring-security-core")
+
+    implementation("com.github.kbss-cvut:jb4jsonld-jackson:0.5.1")
 
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

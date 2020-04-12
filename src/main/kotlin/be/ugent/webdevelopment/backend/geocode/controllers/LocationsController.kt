@@ -2,10 +2,15 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
+import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
+import com.fasterxml.jackson.annotation.JsonView
+import cz.cvut.kbss.jsonld.JsonLd
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.util.*
 import javax.servlet.http.HttpServletRequest
@@ -16,8 +21,9 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/locations")
 class LocationsController(val service : LocationsService, val jwtService: JWTAuthenticator) : Controller<LocationsWrapper>{
 
-    @GetMapping
-    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<LocationsWrapper> {
+    @GetMapping(produces = [JsonLd.MEDIA_TYPE, MediaType.APPLICATION_JSON_VALUE])
+    @JsonView(View.PublicDetail::class)
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
         return service.findAll()
     }
 
