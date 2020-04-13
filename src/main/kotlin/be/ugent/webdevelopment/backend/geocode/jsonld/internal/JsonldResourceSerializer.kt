@@ -29,7 +29,7 @@ class JsonldResourceSerializer(src: BeanSerializerBase?) : BeanSerializer(src) {
         if (context.isPresent) {
             jgen.writeObjectField("@context", context.get())
         }
-        super.serializeFields(bean, jgen, provider)
+        super.serializeFields(bean, jgen, provider)//Maybe todo en zelf serializen als JsonViews niet werken
         getLinks(bean).ifPresent { linksMap: Map<String?, String?>? ->
             linksMap!!.forEach { (key: String?, value: String?) ->
                 try {
