@@ -7,7 +7,6 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldTypeFromJ
 import be.ugent.webdevelopment.backend.geocode.jsonld.internal.AnnotationConstants
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ObjectNode
-import org.springframework.beans.factory.annotation.Value
 import java.util.*
 import java.util.function.Function
 
@@ -15,9 +14,6 @@ import java.util.function.Function
  * @author Alexander De Leon (alex.deleon@devialab.com)
  */
 object JsonldResourceUtils {
-
-    @Value("\${GEOCODE_BACKEND_URL}")
-    private lateinit var url : String
 
     fun getContext(scopedObj: Any, provider: SerializerProvider?): Optional<ObjectNode> {
         return fromAnnotations(scopedObj, provider)
@@ -40,41 +36,41 @@ object JsonldResourceUtils {
                 }
     }
 
-    fun getidValueFromClassAnnotation(obj : Any) : Optional<String>{
-        val annot =  obj.javaClass.getAnnotation(JsonldId::class.java)
-        return if (annot == null){
+    fun getidValueFromClassAnnotation(obj: Any): Optional<String> {
+        val annot = obj.javaClass.getAnnotation(JsonldId::class.java)
+        return if (annot == null) {
             Optional.empty()
-        }else{
+        } else {
             Optional.of(annot.value)
         }
     }
 
-    fun appendIfNeeded(string: String, append :String) : String{
-        return if (string.endsWith(append)){
+    fun appendIfNeeded(string: String, append: String): String {
+        return if (string.endsWith(append)) {
             string
-        }else{
+        } else {
             "$string$append"
         }
     }
 
-    fun getFullIdFromObject(obj: Any) : Optional<String>{
+    fun getFullIdFromObject(obj: Any): Optional<String> {
         val id = getidValueFromObject(obj)
-        val idValue  = getidValueFromClassAnnotation(obj)
+        val idValue = getidValueFromClassAnnotation(obj)
 
         return if (id.isPresent && idValue.isPresent) {
             Optional.of(appendIfNeeded(System.getenv("GEOCODE_BACKEND_URL"), "/") + appendIfNeeded(idValue.get(), "/") + id.get())
-        }else{
+        } else {
             Optional.empty()
         }
     }
 
-    fun getidValueFromObject(obj : Any) : Optional<Any>{
+    fun getidValueFromObject(obj: Any): Optional<Any> {
         val listOfFields = obj.javaClass.declaredFields.filter { field -> field.isAnnotationPresent(JsonldId::class.java) }
-        if (listOfFields.isEmpty()){
+        if (listOfFields.isEmpty()) {
             return Optional.empty()
-        }else if (listOfFields.size > 1){
+        } else if (listOfFields.size > 1) {
             return Optional.empty() //this is ambiguous
-        }else{
+        } else {
             val field = listOfFields[0]
             field.isAccessible = true
             return Optional.of(field.get(obj).toString())

@@ -17,7 +17,7 @@ object AnnotationsUtils {
         if (type.annotations.isEmpty()) {
             return false
         }
-        for (a : Annotation in type.annotations) {
+        for (a: Annotation in type.annotations) {
             if (!ignore.contains(a.annotationClass.javaObjectType)) {
                 ignore.add(type)
                 if (isAnnotationPresent(a.annotationClass.javaObjectType, annotationType, ignore)) {

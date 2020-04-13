@@ -1,7 +1,11 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
-import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.*
+import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
+import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
+import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldType
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonView
 import java.util.*
 import javax.persistence.*
 
@@ -13,24 +17,30 @@ import javax.persistence.*
 class User constructor(
         @field:JsonldId
         @Id @GeneratedValue
+        @JsonView(View.PublicDetail::class)
         var id: Int = 0,
 
         @field:JsonldProperty("https://schema.org/email")
         @Column(nullable = false, unique = true, length = 512)
+        @JsonView(View.PublicDetail::class)
         var email: String = "",
 
         @field:JsonldProperty("https://schema.org/alternateName")
         @Column(nullable = false, unique = true)
+        @JsonView(View.PublicDetail::class)
         var username: String = "",
 
         @field:JsonldProperty("https://schema.org/image")
         @Column(nullable = false, name = "avatar_url")
+        @JsonView(View.PublicDetail::class)
         var avatarUrl: String = "",
 
         @Column(nullable = false)
+        @JsonView(View.PrivateDetail::class)
         var admin: Boolean = false,
 
         @Column(nullable = false)
+        @JsonView(View.PrivateDetail::class)
         var time: Date = Date(),
 
         @JsonIgnore
@@ -75,32 +85,40 @@ class Location constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/longitude")
+        @JsonView(View.PublicDetail::class)
         var longitude: Double = 0.0,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/latitude")
+        @JsonView(View.PublicDetail::class)
         var latitude: Double = 0.0,
 
         @Column(nullable = false, name = "secret_id", unique = true)
         @field:JsonldId
+        @JsonView(View.PublicDetail::class)
         var secretId: String = "",
 
         @Column(nullable = false)
+        @JsonView(View.PrivateDetail::class)
         var time: Date = Date(),
 
         @Column(nullable = false)
+        @JsonView(View.PublicDetail::class)
         var listed: Boolean = false,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/name")
+        @JsonView(View.PublicDetail::class)
         var name: String = "",
 
         @Column(nullable = false, length = 2048)
         @field:JsonldProperty("https://schema.org/description")
+        @JsonView(View.PublicDetail::class)
         var description: String = "",
 
         @ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)
         @field:JsonldProperty("https://schema.org/Person")
+        @JsonView(View.PublicDetail::class)
         var creator: User = User(),
 
         @JsonIgnore

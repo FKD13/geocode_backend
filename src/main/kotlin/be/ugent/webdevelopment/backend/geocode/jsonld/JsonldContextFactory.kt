@@ -16,6 +16,8 @@ import java.util.function.Consumer
 
 /**
  * @author Alexander De Leon
+ * Edited by:
+ * @author Arthur Deruytter
  */
 object JsonldContextFactory {
 
@@ -48,8 +50,8 @@ object JsonldContextFactory {
         var namespace: Optional<JsonldNamespace> = Optional.ofNullable(currentClass.getAnnotation(JsonldNamespace::class.java))
 
         var optionalview = Optional.empty<Class<out Annotation>>()
-        if (provider != null && provider.activeView != null){
-            optionalview = Optional.of(provider.activeView as Class<out Annotation> )
+        if (provider != null && provider.activeView != null) {
+            optionalview = Optional.of(provider.activeView as Class<out Annotation>)
         }
 
         while (currentClass != Any::class.java) {
@@ -58,7 +60,7 @@ object JsonldContextFactory {
                 if (f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") {
                     continue
                 }
-                if (optionalview.isPresent && !f.isAnnotationPresent(optionalview.get())){
+                if (optionalview.isPresent && !f.isAnnotationPresent(optionalview.get())) {
                     continue
                 }
                 val jsonldProperty = f.getAnnotation(JsonldProperty::class.java)
@@ -67,9 +69,8 @@ object JsonldContextFactory {
                     propertyId = Optional.of(jsonldProperty.value)
                 }
                 propertyId.ifPresent { id: String? ->
-                    if (f.type.declaredFields.any { df -> df.isAnnotationPresent(JsonldId::class.java)}) {
-                        val idfield = f.type.declaredFields.filter{
-                            df -> df.isAnnotationPresent(JsonldId::class.java) }[0]//dit gaat altijd maar 1 element hebben
+                    if (f.type.declaredFields.any { df -> df.isAnnotationPresent(JsonldId::class.java) }) {
+                        val idfield = f.type.declaredFields.filter { df -> df.isAnnotationPresent(JsonldId::class.java) }[0]//dit gaat altijd maar 1 element hebben
                         idfield.isAccessible = true
                         f.isAccessible = true
                         val node = JsonNodeFactory.withExactBigDecimals(true).objectNode()
