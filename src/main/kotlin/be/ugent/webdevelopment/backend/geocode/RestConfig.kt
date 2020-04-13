@@ -18,13 +18,12 @@ class RestConfig : WebMvcConfigurationSupport() {
     @Bean(name = ["jsonLdMapper"])
     fun jsonLdObjectMapper(): ObjectMapper {
         val objectMapper = ObjectMapper()
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        objectMapper.configure(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS, true)
+        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        //objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        //objectMapper.configure(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS, true)
         // Here we register the JSON-LD serialization/deserialization module
-        val module = JsonldModule()
         // Package scan is important for polymorphic deserialization
-        objectMapper.registerModule(JsonldModule { objectMapper.createObjectNode() })
+        objectMapper.registerModule(JsonldModule())
         //objectMapper.writer().writeValue(System.out, JsonldResource.Builder.create<Location>().build(Location()))
         return objectMapper
     }

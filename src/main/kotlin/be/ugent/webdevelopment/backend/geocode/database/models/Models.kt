@@ -3,8 +3,8 @@ package be.ugent.webdevelopment.backend.geocode.database.models
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldId
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldNamespace
 import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldProperty
-import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldRemoteContext
 import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldType
 import java.time.LocalDateTime
 import java.util.*
@@ -13,22 +13,21 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "users")
-@JsonldType(value = "https://schema.org/Person")
-@JsonldRemoteContext(value = "https://schema.org/Person")
+@JsonldType("http://schema.org/Person")
 class User (
         @JsonldId
         @Id @GeneratedValue
         var id: Int = 0,
 
-        @JsonldProperty(value = "https://schema.org/email")
+        @JsonldProperty("https://schema.org/email")
         @Column(nullable = false, unique = true, length = 512)
         var email: String = "",
 
-        @JsonldProperty(value = "https://schema.org/alternateName")
+        @JsonldProperty("https://schema.org/alternateName")
         @Column(nullable = false, unique = true)
         var username: String = "",
 
-        @JsonldProperty(value = "https://schema.org/image")
+        @JsonldProperty("https://schema.org/image")
         @Column(nullable = false, name = "avatar_url")
         var avatarUrl: String = "",
 
@@ -74,23 +73,22 @@ class User (
 
 @Entity
 @Table(name = "locations")
-@JsonldType(value = "https://schema.org/Place")
-@JsonldRemoteContext(value = "https://schema.org/Place")
+@JsonldType("http://schema.org/Place")
 class Location (
 
         @JsonIgnore
         @Id @GeneratedValue var id: Int = 0,
 
-        @JsonldProperty(value = "https://schema.org/longitude")
         @Column(nullable = false)
+        @JsonldProperty("https://schema.org/longitude")
         var longitude: Double = 0.0,
 
-        @JsonldProperty(value = "https://schema.org/latitude")
         @Column(nullable = false)
+        @JsonldProperty("https://schema.org/latitude")
         var latitude: Double = 0.0,
 
-        @JsonldId
         @Column(nullable = false, name = "secret_id", unique = true)
+        @JsonldId
         var secretId: String = "",
 
         @Column(nullable = false)
@@ -99,16 +97,16 @@ class Location (
         @Column(nullable = false)
         var listed: Boolean = false,
 
-        @JsonldProperty(value = "https://schema.org/name")
         @Column(nullable = false)
+        @JsonldProperty("https://schema.org/name")
         var name: String = "",
 
-        @JsonldProperty(value = "https://schema.org/description")
         @Column(nullable = false, length = 2048)
+        @JsonldProperty("https://schema.org/description")
         var description: String = "",
 
-        @JsonldProperty(value = "https://schema.org/Person")
         @ManyToOne(cascade = [CascadeType.PERSIST] ,fetch = FetchType.LAZY, optional = false)
+        @JsonldProperty("https://schema.org/Person")
         var creator: User = User(),
 
         @JsonIgnore
@@ -184,3 +182,8 @@ class UserTour (
         @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY) var tour: Tour = Tour(),
         @Column(nullable = false) var completed: Boolean = false
 )
+
+@JsonldType("http://schema.org/Place")
+class TestClass{
+        @JsonldProperty(value = "WOOHOOOO") var test :String = "WOOOHOOOOO"
+}

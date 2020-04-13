@@ -37,8 +37,7 @@ dependencies {
     //Security
     implementation("org.springframework.security:spring-security-core")
 
-    //implementation("com.io-informatics.oss:jackson-jsonld:0.1.1")
-    implementation("com.github.DeruytterA:jackson-jsonld:0.1.2")
+    implementation("com.github.DeruytterA:jackson-jsonld:v0.1.1.2-alpha")
 
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
