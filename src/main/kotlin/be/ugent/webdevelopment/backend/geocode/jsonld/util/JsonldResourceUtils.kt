@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.jsonld.util
 
 import be.ugent.webdevelopment.backend.geocode.jsonld.JsonldContextFactory.fromAnnotations
+import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldType
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldTypeFromJavaClass
 import be.ugent.webdevelopment.backend.geocode.jsonld.internal.AnnotationConstants
@@ -32,5 +33,42 @@ object JsonldResourceUtils {
                     }
                     prefix + objType.simpleName
                 }
+    }
+
+    fun getidValueFromClassAnnotation(obj : Any) : Optional<String>{
+        val annot =  obj.javaClass.getAnnotation(JsonldId::class.java)
+        return if (annot == null){
+            Optional.empty()
+        }else{
+            Optional.of(annot.value)
+        }
+    }
+
+    fun getFullIdFromObject(obj: Any) : Optional<String>{
+        val id = getidValueFromObject(obj)
+        val idValue  = getidValueFromClassAnnotation(obj)
+
+        return if (id.isPresent && idValue.isPresent) {
+            if (idValue.get().endsWith("/")){
+                Optional.of( idValue.get() + id.get())
+            } else{
+                Optional.of( idValue.get() + "/" + id.get())
+            }
+        }else{
+            Optional.empty()
+        }
+    }
+
+    fun getidValueFromObject(obj : Any) : Optional<Any>{
+        val listOfFields = obj.javaClass.declaredFields.filter { field -> field.isAnnotationPresent(JsonldId::class.java) }
+        if (listOfFields.isEmpty()){
+            return Optional.empty()
+        }else if (listOfFields.size > 1){
+            return Optional.empty() //this is ambiguous
+        }else{
+            val field = listOfFields[0]
+            field.isAccessible = true
+            return Optional.of(field.get(obj).toString())
+        }
     }
 }

@@ -4,13 +4,13 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldLink
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldNamespace
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
+import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils.getFullIdFromObject
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
-import org.apache.commons.lang3.ClassUtils
 import java.util.*
 import java.util.function.Consumer
 
@@ -50,16 +50,13 @@ object JsonldContextFactory {
             val fields = currentClass.declaredFields
             for (f in fields) {
                 if (f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") {
-                    contexts["@id"] = TextNode.valueOf(f.name)
                     continue
                 }
                 val jsonldProperty = f.getAnnotation(JsonldProperty::class.java)
-
                 var propertyId: Optional<String> = Optional.empty()
                 if (jsonldProperty != null) {
                     propertyId = Optional.of(jsonldProperty.value)
                 }
-                val className = currentClass.name
                 propertyId.ifPresent { id: String? ->
                     if (f.type.declaredFields.any { df -> df.isAnnotationPresent(JsonldId::class.java)}) {
                         val idfield = f.type.declaredFields.filter{
@@ -67,7 +64,9 @@ object JsonldContextFactory {
                         idfield.isAccessible = true
                         f.isAccessible = true
                         val node = JsonNodeFactory.withExactBigDecimals(true).objectNode()
-                        node.set<JsonNode>("@id", TextNode.valueOf(idfield.get(f.get(objType)).toString()))
+                        getFullIdFromObject(f.get(objType)).ifPresent {
+                            node.set<JsonNode>("@id", TextNode.valueOf(it))
+                        }
                         node.set<JsonNode>("@type", TextNode.valueOf(id))
                         contexts[f.name] = node
                     } else {

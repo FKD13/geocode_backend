@@ -9,6 +9,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "users")
 @JsonldType("https://schema.org/Person")
+@JsonldId("https://api.geocode.ga/users")
 class User constructor(
         @field:JsonldId
         @Id @GeneratedValue
@@ -67,6 +68,7 @@ class User constructor(
 @Entity
 @Table(name = "locations")
 @JsonldType("https://schema.org/Place")
+@JsonldId("https://api.geocode.ga/locations")
 class Location constructor(
         @JsonIgnore
         @Id @GeneratedValue var id: Int = 0,

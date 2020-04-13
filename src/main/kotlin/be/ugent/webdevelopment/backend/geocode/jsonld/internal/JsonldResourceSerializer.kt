@@ -21,6 +21,10 @@ class JsonldResourceSerializer(src: BeanSerializerBase?) : BeanSerializer(src) {
         if (type.isPresent) {
             jgen.writeStringField("@type", type.get())
         }
+
+        val id = JsonldResourceUtils.getFullIdFromObject(bean)
+        id.ifPresent {jgen.writeStringField("@id", id.get())}
+
         val context = JsonldResourceUtils.getContext(bean, provider)
         if (context.isPresent) {
             jgen.writeObjectField("@context", context.get())
