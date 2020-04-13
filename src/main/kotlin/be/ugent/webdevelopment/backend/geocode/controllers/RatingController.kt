@@ -17,12 +17,12 @@ class RatingController : Controller<Wrapper> {
     }
 
     @PatchMapping("/{ratingId}")
-    fun updateRatingById(@PathVariable ratingId: Int) {
+    fun updateRatingById(@PathVariable ratingId: Int, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
     }
 
     @DeleteMapping("/{ratingId}")
-    fun updateRatingById(@PathVariable ratingId: Int, request: HttpServletRequest, response: HttpServletResponse) {
+    fun delateRatingById(@PathVariable ratingId: Int, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
     }
 }
