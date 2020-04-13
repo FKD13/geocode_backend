@@ -47,4 +47,22 @@ class LocationsController(val service : LocationsService, val jwtService: JWTAut
                response: HttpServletResponse, request: HttpServletRequest) {
         service.deleteById(jwtService.tryAuthenticate(request), secret_id)
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Visits
+
+    @PostMapping(value = ["/visits/{visitSecret}"])
+    fun visitLocation(@PathVariable visitSecret: UUID) {
+        //TODO
+    }
+
+    @GetMapping(value = ["/visits/{visitSecret}"])
+    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID) {
+        //TODO
+    }
+
+    @GetMapping(value = ["/{secretId}/visits"])
+    fun getVisitsBySecretId(@PathVariable secretId: UUID) {
+        //TODO
+    }
 }

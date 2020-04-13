@@ -7,8 +7,10 @@ import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import be.ugent.webdevelopment.backend.geocode.services.UsersService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.websocket.server.PathParam
 
 
 @RestController
@@ -34,10 +36,21 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
     }
 
     @DeleteMapping
-    fun delete(
-            response: HttpServletResponse, request: HttpServletRequest) {
+    fun delete(response: HttpServletResponse, request: HttpServletRequest) {
         usersService.deleteUser(jwtService.tryAuthenticate(request))
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // Visits
 
+    @GetMapping("/visits")
+    fun getVisitsForUser(response: HttpServletResponse, request: HttpServletRequest) {
+        //TODO
+    }
+
+    @GetMapping("/visits/{secretId}")
+    fun getVisitsForUserByLocationSecret(@PathVariable secretId: UUID,
+                                         response: HttpServletResponse, request: HttpServletRequest) {
+        //TODO
+    }
 }
