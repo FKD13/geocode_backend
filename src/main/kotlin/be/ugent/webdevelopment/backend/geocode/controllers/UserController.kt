@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.websocket.server.PathParam
 
 
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/user")
-class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator, val locationsService: LocationsService) : Controller<UserWrapper>{
+class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator, val locationsService: LocationsService) {
 
     @GetMapping
     fun findByLoggedIn(

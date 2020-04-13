@@ -7,6 +7,7 @@ import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import java.awt.image.BufferedImage
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -14,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/locations")
-class LocationsController(val service : LocationsService, val jwtService: JWTAuthenticator) : Controller<LocationsWrapper>{
+class LocationsController(val service : LocationsService, val jwtService: JWTAuthenticator) {
 
     @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<LocationsWrapper> {
@@ -90,5 +91,29 @@ class LocationsController(val service : LocationsService, val jwtService: JWTAut
     @PostMapping(value = ["/{secretId}/reports"])
     fun addReports(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Reports
+
+    @GetMapping(value = ["/{secretId}/comments"])
+    fun getCommentsByLocation(@PathVariable secretId: UUID) {
+        //TODO
+    }
+
+    @PostMapping(value = ["/{secretId}/comments"])
+    fun addComments(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+        //TODO
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    @GetMapping("/{secretId}/qrcode")
+    fun getQrcode(
+            @RequestParam("frontend") frontendUrl: String,
+            @RequestParam("size") size: Int,
+            request: HttpServletRequest,
+            response: HttpServletResponse) : BufferedImage {
+        return BufferedImage(0,0,0)
     }
 }
