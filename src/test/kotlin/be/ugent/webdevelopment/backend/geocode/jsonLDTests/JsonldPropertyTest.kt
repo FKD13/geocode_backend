@@ -1,29 +1,21 @@
 package be.ugent.webdevelopment.backend.geocode.jsonLDTests
 
-import ioinformarics.oss.jackson.module.jsonld.JsonldContextFactory
-import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldProperty
-import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldType
+import be.ugent.webdevelopment.backend.geocode.jsonld.JsonldContextFactory
+import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
+import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldType
 import org.junit.jupiter.api.Test
 
 class JsonldPropertyTest {
 
     @Test
     fun contextTest(){
-        val result = JsonldContextFactory.fromAnnotations(TestClass("PLEASE WERK"))
+        val result = JsonldContextFactory.fromAnnotations(TestClass("whoopsiedaisie").javaClass, null)
         println(result)
     }
 
 }
 
 
-@JsonldType("http://schema.org/Place")
-class TestClass{
-
-    @JsonldProperty(value = "WOOHOOOO")
-    var test :String = "WOOOHOOOOO"
-
-    constructor(test : String = "WOOOHOOOOO"){
-        this.test = test
-    }
+class TestClass constructor( @field:JsonldProperty(value = "WOOHOOOO") var test :String){
 
 }

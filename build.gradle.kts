@@ -37,8 +37,6 @@ dependencies {
     //Security
     implementation("org.springframework.security:spring-security-core")
 
-    implementation("com.github.DeruytterA:jackson-jsonld:v0.1.1.3-alpha")
-
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -46,6 +44,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.session:spring-session-core")
+    implementation("com.github.jsonld-java:jsonld-java:0.13.0")
+    implementation("io.github.lukehutch:fast-classpath-scanner:1.99.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {

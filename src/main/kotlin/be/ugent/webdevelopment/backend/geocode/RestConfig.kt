@@ -1,9 +1,9 @@
 package be.ugent.webdevelopment.backend.geocode
 
+import be.ugent.webdevelopment.backend.geocode.jsonld.JsonldModule
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import ioinformarics.oss.jackson.module.jsonld.JsonldModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
