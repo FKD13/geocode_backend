@@ -46,10 +46,19 @@ object JsonldContextFactory {
         val contexts: MutableMap<String, JsonNode> = HashMap()
         var currentClass: Class<*> = objType.javaClass
         var namespace: Optional<JsonldNamespace> = Optional.ofNullable(currentClass.getAnnotation(JsonldNamespace::class.java))
+
+        var optionalview = Optional.empty<Class<out Annotation>>()
+        if (provider != null && provider.activeView != null){
+            optionalview = Optional.of(provider.activeView as Class<out Annotation> )
+        }
+
         while (currentClass != Any::class.java) {
             val fields = currentClass.declaredFields
             for (f in fields) {
                 if (f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") {
+                    continue
+                }
+                if (optionalview.isPresent && !f.isAnnotationPresent(optionalview.get())){
                     continue
                 }
                 val jsonldProperty = f.getAnnotation(JsonldProperty::class.java)
