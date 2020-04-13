@@ -7,6 +7,7 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldTypeFromJ
 import be.ugent.webdevelopment.backend.geocode.jsonld.internal.AnnotationConstants
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ObjectNode
+import org.springframework.beans.factory.annotation.Value
 import java.util.*
 import java.util.function.Function
 
@@ -14,6 +15,10 @@ import java.util.function.Function
  * @author Alexander De Leon (alex.deleon@devialab.com)
  */
 object JsonldResourceUtils {
+
+    @Value("\${GEOCODE_BACKEND_URL}")
+    private lateinit var url : String
+
     fun getContext(scopedObj: Any, provider: SerializerProvider?): Optional<ObjectNode> {
         return fromAnnotations(scopedObj, provider)
     }
@@ -44,16 +49,20 @@ object JsonldResourceUtils {
         }
     }
 
+    fun appendIfNeeded(string: String, append :String) : String{
+        return if (string.endsWith(append)){
+            string
+        }else{
+            "$string$append"
+        }
+    }
+
     fun getFullIdFromObject(obj: Any) : Optional<String>{
         val id = getidValueFromObject(obj)
         val idValue  = getidValueFromClassAnnotation(obj)
 
         return if (id.isPresent && idValue.isPresent) {
-            if (idValue.get().endsWith("/")){
-                Optional.of( idValue.get() + id.get())
-            } else{
-                Optional.of( idValue.get() + "/" + id.get())
-            }
+            Optional.of(appendIfNeeded(System.getenv("GEOCODE_BACKEND_URL"), "/") + appendIfNeeded(idValue.get(), "/") + id.get())
         }else{
             Optional.empty()
         }
