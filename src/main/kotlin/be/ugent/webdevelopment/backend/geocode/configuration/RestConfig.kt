@@ -1,4 +1,4 @@
-package be.ugent.webdevelopment.backend.geocode
+package be.ugent.webdevelopment.backend.geocode.configuration
 
 import be.ugent.webdevelopment.backend.geocode.jsonld.JsonldModule
 import com.fasterxml.jackson.annotation.JsonInclude
@@ -11,6 +11,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
+
 
 @Configuration
 class RestConfig : WebMvcConfigurationSupport() {
