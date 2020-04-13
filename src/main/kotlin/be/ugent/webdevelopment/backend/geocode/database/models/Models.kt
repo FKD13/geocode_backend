@@ -1,10 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.*
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 
@@ -32,9 +29,8 @@ class User constructor(
         @Column(nullable = false)
         var admin: Boolean = false,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss.SSS")
         @Column(nullable = false)
-        var time: LocalDateTime = LocalDateTime.now(),
+        var time: Date = Date(),
 
         @JsonIgnore
         @Column(nullable = false) var password: String = "",
@@ -66,7 +62,7 @@ class User constructor(
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
         var user_tours: Set<UserTour> = Collections.emptySet()
-) {}
+)
 
 @Entity
 @Table(name = "locations")
@@ -88,7 +84,7 @@ class Location constructor(
         var secretId: String = "",
 
         @Column(nullable = false)
-        var time: LocalDateTime = LocalDateTime.now(),
+        var time: Date = Date(),
 
         @Column(nullable = false)
         var listed: Boolean = false,
@@ -115,9 +111,7 @@ class Location constructor(
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var reports: Set<Report> = Collections.emptySet(),
         @JsonIgnore
         @ManyToMany(cascade = [CascadeType.PERSIST]) var tours: Set<Tour> = Collections.emptySet()
-) {
-
-}
+)
 
 @Entity
 @Table(name = "tours")
@@ -127,7 +121,7 @@ class Tour(
         @ManyToMany(cascade = [CascadeType.PERSIST]) var locations: Set<Location> = Collections.emptySet(),
         @Column(nullable = false) var name: String = "",
         @Column(length = 2048, nullable = false) var description: String = "",
-        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
+        @Column(nullable = false) var time: Date = Date(),
 
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour") var user_tours: Set<UserTour> = Collections.emptySet()
 )
@@ -138,7 +132,7 @@ class Comment(
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
-        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
+        @Column(nullable = false) var time: Date = Date(),
         @Column(nullable = false, length = 1024) var comment: String = ""
 )
 
@@ -157,7 +151,7 @@ class CheckIn(
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
-        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now()
+        @Column(nullable = false) var time: Date = Date()
 )
 
 @Entity
@@ -166,7 +160,7 @@ class Report(
         @Id @GeneratedValue var id: Int = 0,
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
-        @Column(nullable = false) var time: LocalDateTime = LocalDateTime.now(),
+        @Column(nullable = false) var time: Date = Date(),
         @Column(nullable = false) var reason: String = "",
         @Column(nullable = false) var resolved: Boolean = false,
         @Column(nullable = false, name = "image_url", length = 1024) var imageUrl: String = ""

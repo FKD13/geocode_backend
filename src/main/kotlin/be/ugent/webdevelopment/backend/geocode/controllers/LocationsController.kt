@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/locations")
 class LocationsController(val service : LocationsService, val jwtService: JWTAuthenticator) : Controller<LocationsWrapper>{
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping()
     @JsonView(View.PublicDetail::class)
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
         return service.findAll()
