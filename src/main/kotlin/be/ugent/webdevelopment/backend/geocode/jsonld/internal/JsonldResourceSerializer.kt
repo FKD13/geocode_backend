@@ -14,6 +14,7 @@ import java.util.*
  * @author Alexander De Leon (alex.deleon@devialab.com)
  */
 class JsonldResourceSerializer(src: BeanSerializerBase?) : BeanSerializer(src) {
+
     @Throws(IOException::class, JsonGenerationException::class)
     override fun serializeFields(bean: Any, jgen: JsonGenerator, provider: SerializerProvider) {
         val type = JsonldResourceUtils.dynamicTypeLookup(bean.javaClass)

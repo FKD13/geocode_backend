@@ -9,5 +9,4 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.VALUE_PARAMETER)
 @JacksonAnnotationsInside
-@JsonProperty("@id")
 annotation class JsonldId

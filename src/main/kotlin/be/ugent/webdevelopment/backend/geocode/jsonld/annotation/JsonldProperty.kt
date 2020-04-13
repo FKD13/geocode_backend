@@ -7,7 +7,6 @@ import java.lang.annotation.Inherited
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER,
-        AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.CONSTRUCTOR,
-AnnotationTarget.CLASS, AnnotationTarget.LOCAL_VARIABLE, AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
+        AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.VALUE_PARAMETER)
 @Inherited
 annotation class JsonldProperty(val value: String)

@@ -81,13 +81,15 @@ object JsonldContextFactory {
     private fun generateContextsForFields(objType: Class<*>, ignoreTypes: List<Class<*>>, provider: SerializerProvider?): Map<String, JsonNode> {
         val contexts: MutableMap<String, JsonNode> = HashMap()
         var currentClass: Class<*> = objType
-        System.out.println("IN the generator, Class= " + currentClass.name)
+        System.out.println("IN the generator, JsonView= " + provider?.activeView?.name)
+        //System.out.println("IN the generator, Class= " + currentClass.name)
         var namespace: Optional<JsonldNamespace> = Optional.ofNullable(currentClass.getAnnotation(JsonldNamespace::class.java))
         while (currentClass != Any::class.java) {
             val fields = currentClass.declaredFields
             for (f in fields) {
                 if (f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") {
-                    System.out.println("Skipped in JsonldId if")
+                    //System.out.println("Skipped in JsonldId if")
+                    contexts["@id"] = TextNode.valueOf(f.name)
                     continue
                 }
                 val jsonldProperty = f.getAnnotation(JsonldProperty::class.java)
@@ -96,7 +98,7 @@ object JsonldContextFactory {
                 if (jsonldProperty != null) {
                     propertyId = Optional.of(jsonldProperty.value)
                 } else {
-                    System.out.println("Field: " + f.name + ". Of class: " + currentClass.name + ". Does not have a JsonldProperty.")
+                    //System.out.println("Field: " + f.name + ". Of class: " + currentClass.name + ". Does not have a JsonldProperty.")
                 }
                 val className = currentClass.name
                 propertyId.ifPresent { id: String? ->
@@ -104,14 +106,16 @@ object JsonldContextFactory {
                             ClassUtils.getAllSuperclasses(f.type).any {
                                 t -> t.declaredFields.any {
                                 df -> df.isAnnotationPresent(JsonldId::class.java)} }) {
-                        System.out.println("isRelation returned true for Field: " + f.name + ". Of class: " + className)
+                        //System.out.println("isRelation returned true for Field: " + f.name + ". Of class: " + className)
                         val node = JsonNodeFactory.withExactBigDecimals(true).objectNode()
                         node.set<JsonNode>("@id", TextNode.valueOf(id))
                         node.set<JsonNode>("@type", TextNode.valueOf("@id"))
                         contexts[f.name] = node
+                        System.out.println("NODE=" + node)
                     } else {
-                        System.out.println("isRelation returned false for Field: " + f.name + ". Of class: " + className)
+                        //System.out.println("isRelation returned false for Field: " + f.name + ". Of class: " + className)
                         contexts[f.name] = TextNode.valueOf(id)
+                        System.out.println("context: " + f.name + " and " + TextNode.valueOf(id))
                     }
                 }
             }

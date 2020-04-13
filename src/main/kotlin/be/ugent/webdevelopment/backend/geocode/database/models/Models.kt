@@ -1,10 +1,9 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
-import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
-import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
-import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldType
+import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.*
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -12,7 +11,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "users")
-@JsonldType("http://schema.org/Person")
+@JsonldType("https://schema.org/Person")
 class User constructor(
         @field:JsonldId
         @Id @GeneratedValue
@@ -71,7 +70,7 @@ class User constructor(
 
 @Entity
 @Table(name = "locations")
-@JsonldType("http://schema.org/Place")
+@JsonldType("https://schema.org/Place")
 class Location constructor(
         @JsonIgnore
         @Id @GeneratedValue var id: Int = 0,
@@ -85,7 +84,7 @@ class Location constructor(
         var latitude: Double = 0.0,
 
         @Column(nullable = false, name = "secret_id", unique = true)
-        @JsonldId
+        @field:JsonldId
         var secretId: String = "",
 
         @Column(nullable = false)

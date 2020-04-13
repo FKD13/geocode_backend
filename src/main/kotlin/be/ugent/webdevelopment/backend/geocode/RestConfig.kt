@@ -15,20 +15,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 class RestConfig : WebMvcConfigurationSupport() {
 
+    @Primary
     @Bean(name = ["jsonLdMapper"])
     fun jsonLdObjectMapper(): ObjectMapper {
         val objectMapper = ObjectMapper()
-        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        //objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         //objectMapper.configure(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS, true)
         // Here we register the JSON-LD serialization/deserialization module
         // Package scan is important for polymorphic deserialization
         objectMapper.registerModule(JsonldModule())
-        //objectMapper.writer().writeValue(System.out, JsonldResource.Builder.create<Location>().build(Location()))
         return objectMapper
     }
 
-    @Primary
     @Bean(name = ["objectMapper"])
     fun objectMapper(): ObjectMapper {
         val objectMapper = ObjectMapper()
