@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/users")
-class UsersController(val service: UsersService): Controller<UsersWrapper>{
+class UsersController(val service: UsersService) {
 
     @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<UsersWrapper> {

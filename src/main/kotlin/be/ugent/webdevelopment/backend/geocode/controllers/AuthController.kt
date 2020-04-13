@@ -33,7 +33,7 @@ class AuthController(val service: AuthService, val jwtService: JWTAuthenticator,
     }
 
     @GetMapping(value = ["/taken/{username}"])
-    fun checkUser(@PathVariable username: String) : Boolean {
+    fun checkUser(@PathVariable username: String): Boolean {
         return service.checkUser(username)
     }
 }
