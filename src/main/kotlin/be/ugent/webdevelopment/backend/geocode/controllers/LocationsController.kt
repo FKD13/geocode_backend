@@ -65,4 +65,17 @@ class LocationsController(val service : LocationsService, val jwtService: JWTAut
     fun getVisitsBySecretId(@PathVariable secretId: UUID) {
         //TODO
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Ratings
+
+    @GetMapping(value = ["/{secretId}/ratings"])
+    fun getRatingsByLocation(@PathVariable secretId: UUID) {
+        //TODO
+    }
+
+    @PostMapping(value = ["/{secretId}/visits"])
+    fun addRating(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+        //TODO
+    }
 }
