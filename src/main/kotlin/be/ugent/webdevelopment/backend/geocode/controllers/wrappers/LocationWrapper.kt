@@ -8,7 +8,7 @@ class LocationWrapper (
         var longitude: Optional<Double>,
         var latitude: Optional<Double>,
         var secretId: Optional<String>,
-        var time: Optional<LocalDateTime>,
+        var time: Optional<Date>,
         var listed: Optional<Boolean>,
         var name: Optional<String>,
         var description: Optional<String>,
