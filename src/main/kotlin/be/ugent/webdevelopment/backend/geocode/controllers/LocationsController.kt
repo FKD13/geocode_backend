@@ -20,8 +20,7 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/locations")
 class LocationsController(val service : LocationsService, val jwtService: JWTAuthenticator) : Controller<LocationsWrapper>{
 
-    @GetMapping()
-    @JsonView(View.PublicDetail::class)
+    @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
         return service.findAll()
     }
