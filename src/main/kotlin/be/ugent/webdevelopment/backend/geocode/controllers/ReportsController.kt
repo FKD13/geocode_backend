@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/reports")
 class ReportsController {
+
     @GetMapping("/{reportId}")
     fun getReportById(@PathVariable reportId: Int) {
         //TODO

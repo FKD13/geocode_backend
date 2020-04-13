@@ -19,12 +19,12 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
 
     @GetMapping
     fun findByLoggedIn(
-                 response: HttpServletResponse, request: HttpServletRequest): UserWrapper {
+            response: HttpServletResponse, request: HttpServletRequest): UserWrapper {
         return UserWrapper(jwtService.tryAuthenticate(request))
     }
 
     @GetMapping(value = ["/locations"])
-    fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper>{
+    fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper> {
         return locationsService.findAllByUser(jwtService.tryAuthenticate(request))
     }
 
