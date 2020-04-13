@@ -14,112 +14,132 @@ import javax.persistence.*
 @Entity
 @Table(name = "users")
 @JsonldType("http://schema.org/Person")
-class User (
+class User (){
+
         @JsonldId
         @Id @GeneratedValue
-        var id: Int = 0,
+        var id: Int = 0
 
         @JsonldProperty("https://schema.org/email")
         @Column(nullable = false, unique = true, length = 512)
-        var email: String = "",
+        var email: String = ""
 
         @JsonldProperty("https://schema.org/alternateName")
         @Column(nullable = false, unique = true)
-        var username: String = "",
+        var username: String = ""
 
         @JsonldProperty("https://schema.org/image")
         @Column(nullable = false, name = "avatar_url")
-        var avatarUrl: String = "",
+        var avatarUrl: String = ""
 
         @Column(nullable = false)
-        var admin: Boolean = false,
-
+        var admin: Boolean = false
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss.SSS")
         @Column(nullable = false)
-        var time: LocalDateTime = LocalDateTime.now(),
+        var time: LocalDateTime = LocalDateTime.now()
 
         @JsonIgnore
-        @Column(nullable = false) var password: String = "",
-
-        @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var locations: Set<Location> = Collections.emptySet(),
+        @Column(nullable = false) var password: String = ""
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var tours: Set<Tour> = Collections.emptySet(),
+        var locations: Set<Location> = Collections.emptySet()
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var comments: Set<Comment> = Collections.emptySet(),
+        var tours: Set<Tour> = Collections.emptySet()
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var location_ratings: Set<LocationRating> = Collections.emptySet(),
+        var comments: Set<Comment> = Collections.emptySet()
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var check_ins: Set<CheckIn> = Collections.emptySet(),
+        var location_ratings: Set<LocationRating> = Collections.emptySet()
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var reports: Set<Report> = Collections.emptySet(),
+        var check_ins: Set<CheckIn> = Collections.emptySet()
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
+        var reports: Set<Report> = Collections.emptySet()
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
         var user_tours: Set<UserTour> = Collections.emptySet()
-)
+
+        constructor(email : String = "", username: String = "", password : String = ""){
+                val justATest = "whoops"
+                this.email = email
+                this.username = username
+                this.password = password
+        }
+}
 
 @Entity
 @Table(name = "locations")
 @JsonldType("http://schema.org/Place")
-class Location (
+class Location (){
 
         @JsonIgnore
-        @Id @GeneratedValue var id: Int = 0,
+        @Id @GeneratedValue var id: Int = 0
 
         @Column(nullable = false)
         @JsonldProperty("https://schema.org/longitude")
-        var longitude: Double = 0.0,
+        var longitude: Double = 0.0
 
         @Column(nullable = false)
         @JsonldProperty("https://schema.org/latitude")
-        var latitude: Double = 0.0,
+        var latitude: Double = 0.0
 
         @Column(nullable = false, name = "secret_id", unique = true)
         @JsonldId
-        var secretId: String = "",
+        var secretId: String = ""
 
         @Column(nullable = false)
-        var time: LocalDateTime = LocalDateTime.now(),
+        var time: LocalDateTime = LocalDateTime.now()
 
         @Column(nullable = false)
-        var listed: Boolean = false,
+        var listed: Boolean = false
 
         @Column(nullable = false)
         @JsonldProperty("https://schema.org/name")
-        var name: String = "",
+        var name: String = ""
 
         @Column(nullable = false, length = 2048)
         @JsonldProperty("https://schema.org/description")
-        var description: String = "",
+        var description: String = ""
 
         @ManyToOne(cascade = [CascadeType.PERSIST] ,fetch = FetchType.LAZY, optional = false)
         @JsonldProperty("https://schema.org/Person")
-        var creator: User = User(),
+        var creator: User = User()
 
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var comments: Set<Comment> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var comments: Set<Comment> = Collections.emptySet()
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var location_ratings: Set<LocationRating> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var location_ratings: Set<LocationRating> = Collections.emptySet()
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var check_ins: Set<CheckIn> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var check_ins: Set<CheckIn> = Collections.emptySet()
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var reports: Set<Report> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var reports: Set<Report> = Collections.emptySet()
         @JsonIgnore
         @ManyToMany(cascade = [CascadeType.PERSIST]) var tours: Set<Tour> = Collections.emptySet()
-)
+
+        constructor(longitude : Double = 0.0, latitude: Double = 0.0, secretId: String = "",
+                    listed: Boolean = false, name: String = "", description: String = "",
+                    creator: User = User()){
+                val justATest = "whoops"
+                this.longitude = longitude
+                this.latitude = latitude
+                this.secretId = secretId
+                this.listed = listed
+                this.name = name
+                this.description = description
+                this.creator = creator
+        }
+}
 
 @Entity
 @Table(name = "tours")
@@ -183,7 +203,3 @@ class UserTour (
         @Column(nullable = false) var completed: Boolean = false
 )
 
-@JsonldType("http://schema.org/Place")
-class TestClass{
-        @JsonldProperty(value = "WOOHOOOO") var test :String = "WOOOHOOOOO"
-}
