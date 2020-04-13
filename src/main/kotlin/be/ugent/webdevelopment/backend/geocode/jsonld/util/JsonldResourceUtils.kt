@@ -14,7 +14,7 @@ import java.util.function.Function
  */
 object JsonldResourceUtils {
     fun getContext(scopedObj: Any, provider: SerializerProvider?): Optional<ObjectNode> {
-        return fromAnnotations(scopedObj.javaClass, provider)
+        return fromAnnotations(scopedObj, provider)
     }
 
     fun dynamicTypeLookup(objType: Class<*>): Optional<String> {

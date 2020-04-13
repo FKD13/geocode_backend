@@ -19,14 +19,14 @@ import java.util.function.Consumer
  */
 object JsonldContextFactory {
 
-    fun fromAnnotations(objType: Class<*>, provider: SerializerProvider?): Optional<ObjectNode> {
+    fun fromAnnotations(objType: Any, provider: SerializerProvider?): Optional<ObjectNode> {
         val generatedContext = JsonNodeFactory.withExactBigDecimals(true).objectNode()
-        generateNamespaces(objType).forEach { (name: String?, uri: String?) -> generatedContext.set<JsonNode>(name, TextNode(uri)) }
+        generateNamespaces(objType.javaClass).forEach { (name: String?, uri: String?) -> generatedContext.set<JsonNode>(name, TextNode(uri)) }
         //TODO: This is bad...it does not consider other Jackson annotations. Need to use a AnnotationIntrospector?
         val fieldContexts = generateContextsForFields(objType, provider)
         fieldContexts.forEach { (fieldName: String?, value: JsonNode?) -> generatedContext.set<JsonNode>(fieldName, value) }
         //add links
-        val links = objType.getAnnotationsByType(JsonldLink::class.java)
+        val links = objType.javaClass.getAnnotationsByType(JsonldLink::class.java)
         for (link in links) {
             val linkNode = JsonNodeFactory.withExactBigDecimals(true)
                     .objectNode()
@@ -38,13 +38,13 @@ object JsonldContextFactory {
         return if (generatedContext.size() != 0) Optional.of(generatedContext) else Optional.empty()
     }
 
-    private fun generateContextsForFields(objType: Class<*>, provider: SerializerProvider?): Map<String, JsonNode> {
+    private fun generateContextsForFields(objType: Any, provider: SerializerProvider?): Map<String, JsonNode> {
         return generateContextsForFields(objType, ArrayList(), provider)
     }
 
-    private fun generateContextsForFields(objType: Class<*>, ignoreTypes: List<Class<*>>, provider: SerializerProvider?): Map<String, JsonNode> {
+    private fun generateContextsForFields(objType: Any, ignoreTypes: List<Class<*>>, provider: SerializerProvider?): Map<String, JsonNode> {
         val contexts: MutableMap<String, JsonNode> = HashMap()
-        var currentClass: Class<*> = objType
+        var currentClass: Class<*> = objType.javaClass
         var namespace: Optional<JsonldNamespace> = Optional.ofNullable(currentClass.getAnnotation(JsonldNamespace::class.java))
         while (currentClass != Any::class.java) {
             val fields = currentClass.declaredFields
@@ -61,20 +61,17 @@ object JsonldContextFactory {
                 }
                 val className = currentClass.name
                 propertyId.ifPresent { id: String? ->
-                    if (f.isAnnotationPresent(JsonldId::class.java) ||
-                            ClassUtils.getAllSuperclasses(f.type).any { t ->
-                                t.declaredFields.any { df -> df.isAnnotationPresent(JsonldId::class.java) }
-                            }) {
-                        //System.out.println("isRelation returned true for Field: " + f.name + ". Of class: " + className)
+                    if (f.type.declaredFields.any { df -> df.isAnnotationPresent(JsonldId::class.java)}) {
+                        val idfield = f.type.declaredFields.filter{
+                            df -> df.isAnnotationPresent(JsonldId::class.java) }[0]//dit gaat altijd maar 1 element hebben
+                        idfield.isAccessible = true
+                        f.isAccessible = true
                         val node = JsonNodeFactory.withExactBigDecimals(true).objectNode()
-                        node.set<JsonNode>("@id", TextNode.valueOf(id))
-                        node.set<JsonNode>("@type", TextNode.valueOf("@id"))
+                        node.set<JsonNode>("@id", TextNode.valueOf(idfield.get(f.get(objType)).toString()))
+                        node.set<JsonNode>("@type", TextNode.valueOf(id))
                         contexts[f.name] = node
-                        System.out.println("NODE=" + node)
                     } else {
-                        //System.out.println("isRelation returned false for Field: " + f.name + ". Of class: " + className)
                         contexts[f.name] = TextNode.valueOf(id)
-                        System.out.println("context: " + f.name + " and " + TextNode.valueOf(id))
                     }
                 }
             }
