@@ -46,7 +46,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.session:spring-session-core")
     implementation("com.github.jsonld-java:jsonld-java:0.13.0")
-    implementation("io.github.lukehutch:fast-classpath-scanner:1.99.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
