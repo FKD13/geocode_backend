@@ -45,24 +45,19 @@ object JsonldContextFactory {
     private fun generateContextsForFields(objType: Class<*>, ignoreTypes: List<Class<*>>, provider: SerializerProvider?): Map<String, JsonNode> {
         val contexts: MutableMap<String, JsonNode> = HashMap()
         var currentClass: Class<*> = objType
-        System.out.println("IN the generator, JsonView= " + provider?.activeView?.name)
-        //System.out.println("IN the generator, Class= " + currentClass.name)
         var namespace: Optional<JsonldNamespace> = Optional.ofNullable(currentClass.getAnnotation(JsonldNamespace::class.java))
         while (currentClass != Any::class.java) {
             val fields = currentClass.declaredFields
             for (f in fields) {
                 if (f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") {
-                    //System.out.println("Skipped in JsonldId if")
                     contexts["@id"] = TextNode.valueOf(f.name)
                     continue
                 }
                 val jsonldProperty = f.getAnnotation(JsonldProperty::class.java)
+
                 var propertyId: Optional<String> = Optional.empty()
-                // Most concrete field overrides any field with the same name defined higher up the hierarchy
                 if (jsonldProperty != null) {
                     propertyId = Optional.of(jsonldProperty.value)
-                } else {
-                    //System.out.println("Field: " + f.name + ". Of class: " + currentClass.name + ". Does not have a JsonldProperty.")
                 }
                 val className = currentClass.name
                 propertyId.ifPresent { id: String? ->

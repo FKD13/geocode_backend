@@ -2,7 +2,6 @@ package be.ugent.webdevelopment.backend.geocode.jsonld.util
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import ioinformarics.oss.jackson.module.jsonld.util.JsonUtils
 
 /**
  * @author Alexander De Leon (alex.deleon@devialab.com)
