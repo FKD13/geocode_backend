@@ -281,8 +281,13 @@ class CheckIn(
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/DiscoverAction#location#endTime")
         @JsonView(View.PrivateDetail::class)
-        var time: Date = Date()
-) : Model()
+        var time: Date = Date(),
+
+        @Column(nullable = false)
+        @JsonView(View.PublicDetail::class)
+        var visitSecret : String = ""
+
+) : JsonLDSerializable()
 
 @Entity
 @Table(name = "reports")
