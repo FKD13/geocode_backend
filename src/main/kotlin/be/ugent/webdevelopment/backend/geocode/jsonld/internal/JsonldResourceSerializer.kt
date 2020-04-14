@@ -46,14 +46,19 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
     }
 
     fun serializeUnwrapped(value: JsonLDSerializable, gen: JsonGenerator, provider: SerializerProvider) {
+        /* Als je hem unwrapt dan moet je geen context meer genereren.
+        Dit wordt hierboven gedaan
+
+        val context = JsonldResourceUtils.getContext(value, provider)
+        context.ifPresent { gen.writeObjectField("@context", context.get()) }
+        */
 
         val type = JsonldResourceUtils.dynamicTypeLookup(value.javaClass)
         val id = JsonldResourceUtils.getFullIdFromObject(value)
-        val context = JsonldResourceUtils.getContext(value, provider)
-
         type.ifPresent { gen.writeStringField("@type", type.get()) }
         id.ifPresent { gen.writeStringField("@id", id.get()) }
-        context.ifPresent { gen.writeObjectField("@context", context.get()) }
+
+
 
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
                 .filter { !it.isAnnotationPresent(JsonView::class.java) || it.getAnnotation(JsonView::class.java).value.any { it == provider.activeView.kotlin } }
