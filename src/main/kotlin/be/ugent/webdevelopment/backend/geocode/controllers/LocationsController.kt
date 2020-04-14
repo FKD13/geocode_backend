@@ -2,14 +2,15 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
+import be.ugent.webdevelopment.backend.geocode.services.RatingsService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.awt.image.BufferedImage
 import java.util.*
@@ -19,7 +20,11 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/locations")
-class LocationsController(val service: LocationsService, val jwtService: JWTAuthenticator) {
+class LocationsController(
+        val service: LocationsService,
+        val jwtService: JWTAuthenticator,
+        val ratingsService: RatingsService
+) {
 
     @GetMapping
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
@@ -75,13 +80,16 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     // Ratings
 
     @GetMapping(value = ["/{secretId}/ratings"])
+    @JsonView(View.List::class)
     fun getRatingsByLocation(@PathVariable secretId: UUID) {
-        //TODO
+        ratingsService.getRatingsByLocation(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/ratings"])
-    fun addRating(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
-        //TODO
+    fun addRating(@PathVariable secretId: UUID, @RequestBody ratingsWrapper: RatingsWrapper,
+                  request: HttpServletRequest, response: HttpServletResponse) {
+        val user = jwtService.tryAuthenticate(request)
+        ratingsService.addRating(user, secretId, ratingsWrapper)
     }
 
     //------------------------------------------------------------------------------------------------------------------
