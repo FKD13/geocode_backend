@@ -22,11 +22,13 @@ import javax.servlet.http.HttpServletResponse
 class LocationsController(val service: LocationsService, val jwtService: JWTAuthenticator) {
 
     @GetMapping
+    @JsonView(View.PublicDetail::class)
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{secret_id}"])
+    @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable secret_id: UUID,
                  response: HttpServletResponse, request: HttpServletRequest): LocationsWrapper {
         return service.findBySecretId(secret_id)
@@ -62,11 +64,13 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     }
 
     @GetMapping(value = ["/visits/{visitSecret}"])
+    @JsonView(View.PublicDetail::class)
     fun getLocationByVisitSecret(@PathVariable visitSecret: UUID) {
         //TODO
     }
 
     @GetMapping(value = ["/{secretId}/visits"])
+    @JsonView(View.PublicDetail::class)
     fun getVisitsBySecretId(@PathVariable secretId: UUID) {
         //TODO
     }
@@ -75,6 +79,7 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     // Ratings
 
     @GetMapping(value = ["/{secretId}/ratings"])
+    @JsonView(View.PublicDetail::class)
     fun getRatingsByLocation(@PathVariable secretId: UUID) {
         //TODO
     }
@@ -88,6 +93,7 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     // Reports
 
     @GetMapping(value = ["/{secretId}/reports"])
+    @JsonView(View.AdminDetail::class)
     fun getReportsByLocation(@PathVariable secretId: UUID) {
         //TODO
     }
@@ -101,6 +107,7 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     // Reports
 
     @GetMapping(value = ["/{secretId}/comments"])
+    @JsonView(View.PublicDetail::class)
     fun getCommentsByLocation(@PathVariable secretId: UUID) {
         //TODO
     }

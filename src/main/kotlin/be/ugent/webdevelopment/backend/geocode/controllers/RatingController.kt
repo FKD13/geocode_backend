@@ -1,5 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.database.View
+import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/ratings")
+@JsonView(View.PublicDetail::class) //todo nog eens goed checken
 class RatingController {
 
     @GetMapping("/{ratingId}")
