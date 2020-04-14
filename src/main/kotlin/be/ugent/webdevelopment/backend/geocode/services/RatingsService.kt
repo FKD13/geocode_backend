@@ -41,9 +41,6 @@ class RatingsService(
 
         checkRatingsWrapper(rating)
 
-        val checkIn = checkInRepository.findAllByCreatorAndLocation(creator, location)
-        checkIn.orElseThrow { GenericException("You have not visited this location") }
-
         val optRating = ratingRepository.findByCreatorAndLocation(creator = creator, location = location)
         optRating.ifPresent { throw GenericException("You have already rated this location", code = HttpStatus.UNPROCESSABLE_ENTITY) }
 
