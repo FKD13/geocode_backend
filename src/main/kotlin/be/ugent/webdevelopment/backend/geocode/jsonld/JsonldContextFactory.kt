@@ -37,15 +37,16 @@ object JsonldContextFactory {
             val fields = currentClass.declaredFields
             for (f in fields) {
                 f.isAccessible = true
-                if (f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") {
+                if ((f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") ||
+                        (f.isAnnotationPresent(JsonView::class.java) &&
+                                !f.getAnnotation(JsonView::class.java).value.any { it == provider.activeView.kotlin })) {
                     continue
                 }
-                if (f.isAnnotationPresent(JsonView::class.java) && !f.getAnnotation(JsonView::class.java).value.any { it == provider.activeView.kotlin }) {
-                    continue
-                }
-                if (f.isAnnotationPresent(JsonUnwrapped::class.java)){
-                    generateContextsForFields(f.get(objType), provider).forEach {
-                        (fieldName: String, value: JsonNode) -> contexts[fieldName] = value
+                if (f.isAnnotationPresent(JsonUnwrapped::class.java)) {
+                    generateContextsForFields(f.get(objType), provider).forEach { (fieldName, value) ->
+                        if (!contexts.containsKey(fieldName)) {
+                            contexts[fieldName] = value
+                        }
                     }
                     continue
                 }
