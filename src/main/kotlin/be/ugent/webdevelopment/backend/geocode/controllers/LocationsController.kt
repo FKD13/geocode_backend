@@ -2,6 +2,7 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.TestWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
@@ -23,8 +24,8 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
 
     @GetMapping
     @JsonView(View.PublicDetail::class)
-    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
-        return service.findAll()
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<TestWrapper> {
+        return service.findAll().map { TestWrapper(it) }
     }
 
     @GetMapping(value = ["/{secret_id}"])
