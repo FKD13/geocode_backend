@@ -16,8 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 class RestConfig : WebMvcConfigurationSupport() {
 
-    //@Bean(name = ["jsonLdMapper"])
-    /*
+    //@Bean(name = ["jsonLdMapper"]
     fun jsonLdObjectMapper(): ObjectMapper {
 
         //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
@@ -31,7 +30,6 @@ class RestConfig : WebMvcConfigurationSupport() {
         objectMapper.registerModule(module)
         return objectMapper
     }
-     */
 
     @Primary
     @Bean(name = ["objectMapper"])
