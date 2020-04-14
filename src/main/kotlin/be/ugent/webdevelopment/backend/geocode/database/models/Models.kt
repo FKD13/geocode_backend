@@ -4,8 +4,10 @@ import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldType
+import be.ugent.webdevelopment.backend.geocode.jsonld.internal.JsonldResourceSerializer
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonView
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.util.*
 import javax.persistence.*
 
@@ -14,6 +16,7 @@ import javax.persistence.*
 @Table(name = "users")
 @JsonldType("https://schema.org/Person")
 @JsonldId("users")
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class User constructor(
 
         @field:JsonldId
@@ -81,6 +84,7 @@ class User constructor(
 @Table(name = "locations")
 @JsonldType("https://schema.org/Place")
 @JsonldId("locations")
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class Location constructor(
 
         @Id
@@ -152,6 +156,7 @@ class Location constructor(
 @Table(name = "tours")
 @JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
 @JsonldId("tours") //todo check of dit klopt met de endpoints
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class Tour(
         @Id
         @GeneratedValue
@@ -193,6 +198,7 @@ class Tour(
 @Table(name = "comments")
 @JsonldType("https://schema.org/Comment")
 @JsonldId("comments") //todo check of dit klopt met de endpoints
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class Comment(
         @Id
         @GeneratedValue
@@ -225,6 +231,7 @@ class Comment(
 @Table(name = "location_ratings")
 @JsonldType("https://schema.org/AggregateRating")
 @JsonldId("ratings") //todo check of dit klopt met de endpoints
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class LocationRating(
         @Id
         @GeneratedValue
@@ -252,6 +259,7 @@ class LocationRating(
 @Table(name = "check_ins")
 @JsonldType("https://schema.org/DiscoverAction")
 @JsonldId("checkIn") //todo check of dit klopt met de endpoints
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class CheckIn(
         @Id
         @GeneratedValue
@@ -279,6 +287,7 @@ class CheckIn(
 @Table(name = "reports")
 @JsonldType("https://schema.org/Review")
 @JsonldId("reports") //todo check of dit klopt met de endpoints
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class Report(
         @Id
         @GeneratedValue
@@ -319,6 +328,7 @@ class Report(
 @Entity
 @Table(name = "user_tours")
 @JsonldType("https://schema.org/Action")
+@JsonSerialize(using = JsonldResourceSerializer::class)
 class UserTour(
         @Id
         @GeneratedValue
