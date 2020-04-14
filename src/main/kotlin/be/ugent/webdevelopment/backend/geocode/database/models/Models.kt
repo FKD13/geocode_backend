@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.util.*
 import javax.persistence.*
 
+open class Model
 
 @Entity
 @Table(name = "users")
@@ -21,30 +22,30 @@ class User constructor(
 
         @field:JsonldId
         @Id @GeneratedValue
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var id: Int = 0,
 
         @field:JsonldProperty("https://schema.org/email")
         @Column(nullable = false, unique = true, length = 512)
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var email: String = "",
 
         @field:JsonldProperty("https://schema.org/alternateName")
         @Column(nullable = false, unique = true)
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var username: String = "",
 
         @field:JsonldProperty("https://schema.org/image")
         @Column(nullable = false, name = "avatar_url")
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var avatarUrl: String = "",
 
         @Column(nullable = false)
-        @JsonView(View.PrivateDetail::class)
+        @field:JsonView(View.PrivateDetail::class)
         var admin: Boolean = false,
 
         @Column(nullable = false)
-        @JsonView(View.PrivateDetail::class)
+        @field:JsonView(View.PrivateDetail::class)
         var time: Date = Date(),
 
         @JsonIgnore
@@ -78,7 +79,7 @@ class User constructor(
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
         var user_tours: Set<UserTour> = Collections.emptySet()
-)
+) : Model()
 
 @Entity
 @Table(name = "locations")
@@ -94,40 +95,40 @@ class Location constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/longitude")
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var longitude: Double = 0.0,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/latitude")
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var latitude: Double = 0.0,
 
         @Column(nullable = false, name = "secret_id", unique = true)
         @field:JsonldId
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var secretId: String = "",
 
         @Column(nullable = false)
-        @JsonView(View.PrivateDetail::class)
+        @field:JsonView(View.PrivateDetail::class)
         var time: Date = Date(),
 
         @Column(nullable = false)
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var listed: Boolean = false,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/name")
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var name: String = "",
 
         @Column(nullable = false, length = 2048)
         @field:JsonldProperty("https://schema.org/description")
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var description: String = "",
 
         @ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)
         @field:JsonldProperty("https://schema.org/Person")
-        @JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PublicDetail::class)
         var creator: User = User(),
 
         @JsonIgnore
@@ -149,7 +150,7 @@ class Location constructor(
         @JsonIgnore
         @ManyToMany(cascade = [CascadeType.PERSIST])
         var tours: Set<Tour> = Collections.emptySet()
-)
+) : Model()
 
 
 @Entity
@@ -192,7 +193,7 @@ class Tour(
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
         var user_tours: Set<UserTour> = Collections.emptySet()
-)
+) : Model()
 
 @Entity
 @Table(name = "comments")
@@ -225,7 +226,7 @@ class Comment(
         @field:JsonldProperty("https://schema.org/Comment#text")
         @JsonView(View.PublicDetail::class)
         var comment: String = ""
-)
+) : Model()
 
 @Entity
 @Table(name = "location_ratings")
@@ -253,7 +254,7 @@ class LocationRating(
         @field:JsonldProperty("https://schema.org/Rating#ratingValue")
         @JsonView(View.PublicDetail::class)
         var rating: Int = 0
-)
+) : Model()
 
 @Entity
 @Table(name = "check_ins")
@@ -281,7 +282,7 @@ class CheckIn(
         @field:JsonldProperty("https://schema.org/DiscoverAction#location#endTime")
         @JsonView(View.PrivateDetail::class)
         var time: Date = Date()
-)
+) : Model()
 
 @Entity
 @Table(name = "reports")
@@ -323,7 +324,7 @@ class Report(
         @field:JsonldProperty("https://schema.org/Review#image")
         @JsonView(View.AdminDetail::class)
         var imageUrl: String = ""
-)
+) : Model()
 
 @Entity
 @Table(name = "user_tours")
@@ -350,5 +351,5 @@ class UserTour(
         @field:JsonldProperty("https://schema.org/Action#actionStatus")
         @JsonView(View.PublicDetail::class)
         var completed: Boolean = false
-)
+) : Model()
 

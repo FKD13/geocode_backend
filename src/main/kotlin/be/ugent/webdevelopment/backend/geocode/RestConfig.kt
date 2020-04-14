@@ -16,17 +16,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 class RestConfig : WebMvcConfigurationSupport() {
 
-    @Bean(name = ["jsonLdMapper"])
+    //@Bean(name = ["jsonLdMapper"])
+    /*
     fun jsonLdObjectMapper(): ObjectMapper {
-        val objectMapper = ObjectMapper()
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+
+        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
         //objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         //objectMapper.configure(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS, true)
         // Here we register the JSON-LD serialization/deserialization module
         // Package scan is important for polymorphic deserialization
-        objectMapper.registerModule(JsonldModule())
+        val objectMapper = ObjectMapper()
+        val module = SimpleModule()
+        module.addSerializer(JsonldResourceSerializer())
+        objectMapper.registerModule(module)
         return objectMapper
     }
+     */
 
     @Primary
     @Bean(name = ["objectMapper"])
@@ -43,10 +48,14 @@ class RestConfig : WebMvcConfigurationSupport() {
     }
 
     private fun createJsonLdMessageConverter(): HttpMessageConverter<*> {
-        val converter = MappingJackson2HttpMessageConverter(
-                jsonLdObjectMapper())
+        val objectMapper = ObjectMapper()
+        val module = SimpleModule()
+        module.addSerializer(JsonldResourceSerializer())
+        objectMapper.registerModule(module)
+        val converter = MappingJackson2HttpMessageConverter(objectMapper)
         //converter.supportedMediaTypes = listOf(MediaType.APPLICATION_JSON)
         return converter
     }
 }
+
  */
