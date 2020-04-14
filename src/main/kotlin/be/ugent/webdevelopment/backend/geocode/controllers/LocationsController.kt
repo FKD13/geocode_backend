@@ -1,9 +1,9 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
-import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
@@ -22,7 +22,7 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
 
     @GetMapping
     @JsonView(View.PublicDetail::class)
-    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return service.findAll()
     }
 

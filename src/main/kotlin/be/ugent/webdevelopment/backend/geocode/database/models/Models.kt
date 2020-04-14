@@ -156,7 +156,7 @@ class Location constructor(
 @Table(name = "tours")
 @JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
 @JsonldId("tours") //todo check of dit klopt met de endpoints
-class Tour(
+class Tour constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -197,7 +197,7 @@ class Tour(
 @Table(name = "comments")
 @JsonldType("https://schema.org/Comment")
 @JsonldId("comments") //todo check of dit klopt met de endpoints
-class Comment(
+class Comment constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -229,7 +229,7 @@ class Comment(
 @Table(name = "location_ratings")
 @JsonldType("https://schema.org/AggregateRating")
 @JsonldId("ratings") //todo check of dit klopt met de endpoints
-class LocationRating(
+class LocationRating constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -256,7 +256,7 @@ class LocationRating(
 @Table(name = "check_ins")
 @JsonldType("https://schema.org/DiscoverAction")
 @JsonldId("checkIn") //todo check of dit klopt met de endpoints
-class CheckIn(
+class CheckIn constructor(
         @Id
         @GeneratedValue
         @JsonldId
@@ -283,7 +283,7 @@ class CheckIn(
 @Table(name = "reports")
 @JsonldType("https://schema.org/Review")
 @JsonldId("reports") //todo check of dit klopt met de endpoints
-class Report(
+class Report constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -323,7 +323,7 @@ class Report(
 @Entity
 @Table(name = "user_tours")
 @JsonldType("https://schema.org/Action")
-class UserTour(
+class UserTour constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
