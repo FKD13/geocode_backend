@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 /**
@@ -25,18 +24,17 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
         val type = JsonldResourceUtils.dynamicTypeLookup(value.javaClass)
         val id = JsonldResourceUtils.getFullIdFromObject(value)
         val context = JsonldResourceUtils.getContext(value, provider)
-        val body = JsonNodeFactory.withExactBigDecimals(true).objectNode()
 
         gen.writeStartObject()
 
         type.ifPresent { gen.writeStringField("@type", type.get()) }
         id.ifPresent { gen.writeStringField("@id", id.get()) }
         context.ifPresent { gen.writeObjectField("@context", context.get()) }
+
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
                 .filter { !it.isAnnotationPresent(JsonView::class.java) || it.getAnnotation(JsonView::class.java).value.any { it == provider.activeView.kotlin } }
                 .forEach {
                     it.isAccessible = true
-                    System.out.println("FIELD = $it")
                     if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
                         serializeUnwrapped(it.get(value) as JsonLDSerializable, gen, provider)
                     } else {
@@ -60,7 +58,6 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
                 .filter { !it.isAnnotationPresent(JsonView::class.java) || it.getAnnotation(JsonView::class.java).value.any { it == provider.activeView.kotlin } }
                 .forEach {
-                    System.out.println("UNWRAPPED FIELD = $it")
                     it.isAccessible = true
                     if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
 
