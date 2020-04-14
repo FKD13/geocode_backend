@@ -15,6 +15,7 @@ import javax.persistence.*
 @JsonldType("https://schema.org/Person")
 @JsonldId("users")
 class User constructor(
+
         @field:JsonldId
         @Id @GeneratedValue
         @JsonView(View.PublicDetail::class)
@@ -44,7 +45,8 @@ class User constructor(
         var time: Date = Date(),
 
         @JsonIgnore
-        @Column(nullable = false) var password: String = "",
+        @Column(nullable = false)
+        var password: String = "",
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
@@ -80,8 +82,11 @@ class User constructor(
 @JsonldType("https://schema.org/Place")
 @JsonldId("locations")
 class Location constructor(
+
+        @Id
         @JsonIgnore
-        @Id @GeneratedValue var id: Int = 0,
+        @GeneratedValue
+        var id: Int = 0,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/longitude")
@@ -122,76 +127,218 @@ class Location constructor(
         var creator: User = User(),
 
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var comments: Set<Comment> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location")
+        var comments: Set<Comment> = Collections.emptySet(),
+
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var location_ratings: Set<LocationRating> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location")
+        var location_ratings: Set<LocationRating> = Collections.emptySet(),
+
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var check_ins: Set<CheckIn> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location")
+        var check_ins: Set<CheckIn> = Collections.emptySet(),
+
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location") var reports: Set<Report> = Collections.emptySet(),
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location")
+        var reports: Set<Report> = Collections.emptySet(),
+
         @JsonIgnore
-        @ManyToMany(cascade = [CascadeType.PERSIST]) var tours: Set<Tour> = Collections.emptySet()
+        @ManyToMany(cascade = [CascadeType.PERSIST])
+        var tours: Set<Tour> = Collections.emptySet()
 )
+
 
 @Entity
 @Table(name = "tours")
+@JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
+@JsonldId("tours") //todo check of dit klopt met de endpoints
 class Tour(
-        @Id @GeneratedValue var id: Int = 0,
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
-        @ManyToMany(cascade = [CascadeType.PERSIST]) var locations: Set<Location> = Collections.emptySet(),
-        @Column(nullable = false) var name: String = "",
-        @Column(length = 2048, nullable = false) var description: String = "",
-        @Column(nullable = false) var time: Date = Date(),
+        @Id
+        @GeneratedValue
+        @field:JsonldId
+        @JsonView(View.PublicDetail::class)
+        var id: Int = 0,
 
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour") var user_tours: Set<UserTour> = Collections.emptySet()
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/CreativeWork#creator")
+        @JsonView(View.PublicDetail::class)
+        var creator: User = User(),
+
+        @ManyToMany(cascade = [CascadeType.PERSIST])
+        @field:JsonldProperty("https://schema.org/CreativeWork#about")
+        @JsonView(View.PublicDetail::class)
+        var locations: Set<Location> = Collections.emptySet(),
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/Thing#name")
+        @JsonView(View.PublicDetail::class)
+        var name: String = "",
+
+        @Column(length = 2048, nullable = false)
+        @field:JsonldProperty("https://schema.org/CreativeWork#abstract")
+        @JsonView(View.PublicDetail::class)
+        var description: String = "",
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/CreativeWork#dateCreated")
+        @JsonView(View.PrivateDetail::class)
+        var time: Date = Date(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
+        var user_tours: Set<UserTour> = Collections.emptySet()
 )
 
 @Entity
 @Table(name = "comments")
+@JsonldType("https://schema.org/Comment")
+@JsonldId("comments") //todo check of dit klopt met de endpoints
 class Comment(
-        @Id @GeneratedValue var id: Int = 0,
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
-        @Column(nullable = false) var time: Date = Date(),
-        @Column(nullable = false, length = 1024) var comment: String = ""
+        @Id
+        @GeneratedValue
+        @field:JsonldId
+        @JsonView(View.PublicDetail::class)
+        var id: Int = 0,
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Comment#creator")
+        @JsonView(View.PublicDetail::class)
+        var creator: User = User(),
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Comment#about")
+        @JsonView(View.PublicDetail::class)
+        var location: Location = Location(),
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/Comment#dateCreated")
+        @JsonView(View.PrivateDetail::class)
+        var time: Date = Date(),
+
+        @Column(nullable = false, length = 1024)
+        @field:JsonldProperty("https://schema.org/Comment#text")
+        @JsonView(View.PublicDetail::class)
+        var comment: String = ""
 )
 
 @Entity
 @Table(name = "location_ratings")
+@JsonldType("https://schema.org/AggregateRating")
+@JsonldId("ratings") //todo check of dit klopt met de endpoints
 class LocationRating(
-        @Id @GeneratedValue var id: Int = 0,
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
-        @Column(nullable = false) var rating: Int = 0
+        @Id
+        @GeneratedValue
+        @field:JsonldId
+        @JsonView(View.PublicDetail::class)
+        var id: Int = 0,
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Rating#author")
+        @JsonView(View.PublicDetail::class)
+        var creator: User = User(),
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Rating#about")
+        @JsonView(View.PublicDetail::class)
+        var location: Location = Location(),
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/Rating#ratingValue")
+        @JsonView(View.PublicDetail::class)
+        var rating: Int = 0
 )
 
 @Entity
 @Table(name = "check_ins")
+@JsonldType("https://schema.org/DiscoverAction")
+@JsonldId("checkIn") //todo check of dit klopt met de endpoints
 class CheckIn(
-        @Id @GeneratedValue var id: Int = 0,
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
-        @Column(nullable = false) var time: Date = Date()
+        @Id
+        @GeneratedValue
+        @JsonldId
+        @JsonView(View.PublicDetail::class)
+        var id: Int = 0,
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/DiscoverAction#agent")
+        @JsonView(View.PublicDetail::class)
+        var creator: User = User(),
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/DiscoverAction#location")
+        @JsonView(View.PublicDetail::class)
+        var location: Location = Location(),
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/DiscoverAction#location#endTime")
+        @JsonView(View.PrivateDetail::class)
+        var time: Date = Date()
 )
 
 @Entity
 @Table(name = "reports")
+@JsonldType("https://schema.org/Review")
+@JsonldId("reports") //todo check of dit klopt met de endpoints
 class Report(
-        @Id @GeneratedValue var id: Int = 0,
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var creator: User = User(),
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY) var location: Location = Location(),
-        @Column(nullable = false) var time: Date = Date(),
-        @Column(nullable = false) var reason: String = "",
-        @Column(nullable = false) var resolved: Boolean = false,
-        @Column(nullable = false, name = "image_url", length = 1024) var imageUrl: String = ""
+        @Id
+        @GeneratedValue
+        @field:JsonldId
+        @JsonView(View.AdminDetail::class)
+        var id: Int = 0,
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Review#creator")
+        @JsonView(View.AdminDetail::class)
+        var creator: User = User(),
+
+        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Review#itemReviewed")
+        @JsonView(View.AdminDetail::class)
+        var location: Location = Location(),
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/Review#dateCreated")
+        @JsonView(View.AdminDetail::class)
+        var time: Date = Date(),
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/Review#reviewBody")
+        @JsonView(View.AdminDetail::class)
+        var reason: String = "",
+
+        @Column(nullable = false)
+        @JsonView(View.AdminDetail::class)
+        var resolved: Boolean = false,
+
+        @Column(nullable = false, name = "image_url", length = 1024)
+        @field:JsonldProperty("https://schema.org/Review#image")
+        @JsonView(View.AdminDetail::class)
+        var imageUrl: String = ""
 )
 
 @Entity
 @Table(name = "user_tours")
+@JsonldType("https://schema.org/Action")
 class UserTour(
-        @Id @GeneratedValue var id: Int = 0,
-        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY) var user: User = User(),
-        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY) var tour: Tour = Tour(),
-        @Column(nullable = false) var completed: Boolean = false
+        @Id
+        @GeneratedValue
+        @field:JsonldId
+        @JsonView(View.PublicDetail::class)
+        var id: Int = 0,
+
+        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Action#agent")
+        @JsonView(View.PublicDetail::class)
+        var user: User = User(),
+
+        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        @field:JsonldProperty("https://schema.org/Action#object")
+        @JsonView(View.PublicDetail::class)
+        var tour: Tour = Tour(),
+
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/Action#actionStatus")
+        @JsonView(View.PublicDetail::class)
+        var completed: Boolean = false
 )
 
