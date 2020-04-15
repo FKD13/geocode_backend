@@ -220,7 +220,7 @@ class Comment(
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Comment#dateCreated")
         @JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        var createdAt: Date = Date(),
 
         @Column(nullable = false, length = 1024)
         @field:JsonldProperty("https://schema.org/Comment#text")

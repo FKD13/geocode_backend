@@ -5,7 +5,6 @@ import be.ugent.webdevelopment.backend.geocode.database.models.Comment
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.CommentRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
-import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,7 +41,7 @@ class CommentsService {
             comment.comment!!
         }
         commentRepository.saveAndFlush(
-                Comment(creator = user, location = location.get(), time = Date.from(Instant.now()), comment = commentString))
+                Comment(creator = user, location = location.get(), createdAt = Date.from(Instant.now()), comment = commentString))
     }
 
     fun getCommentById(id: Int): Comment {
