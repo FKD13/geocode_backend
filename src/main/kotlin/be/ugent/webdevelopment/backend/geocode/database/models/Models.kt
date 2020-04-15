@@ -133,16 +133,16 @@ class Location constructor(
         @Column(nullable = false, length = 128)
         @field:JsonldProperty("https://schema.org/GeoCoordinates#addressCountry")
         @field:JsonView(View.PublicDetail::class)
-        val country: String = "",
+        var country: String = "",
 
         @Column(nullable = false, length = 512)
         @field:JsonldProperty("https://schema.org/GeoCoordinates#address")
         @field:JsonView(View.PublicDetail::class)
-        val address: String = "",
+        var address: String = "",
 
         @Column(nullable = false)
         @field:JsonView(View.PublicDetail::class)
-        val active: Boolean = false,
+        var active: Boolean = false,
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location")
@@ -264,7 +264,7 @@ class LocationRating constructor(
         @field:JsonldProperty("https://schema.org/Rating#ratingValue")
         @JsonView(View.PublicDetail::class)
         var rating: Int = 0,
-  
+
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Rating#ratingExplanation")
         @JsonView(View.PublicDetail::class)

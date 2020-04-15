@@ -31,22 +31,37 @@ class LocationsService {
     private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
     private val attributesPattern = Pattern.compile("<[^<>]*\\s+(?!src|height|width)([^<>=]+)=[^<>]*", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
 
+    private val counties = mutableListOf<String>()
+
+    /*
+    * Fill the list of countries with known countries
+    * */
+    init {
+        val countryCodes = Locale.getISOCountries()
+        for (code in countryCodes) {
+            val locale = Locale("en", code)
+            counties.add(locale.displayCountry.toLowerCase())
+        }
+        counties.sort()
+    }
+
+
     fun findAll(): List<ExtendedLocationWrapper> {
         return locationRepository.findAllByListedEquals(true).map { ExtendedLocationWrapper(it, getRating(it)) }
     }
 
     fun findBySecretId(secret_id: UUID): Location {
-        val loc : Optional<Location> = locationRepository.findBySecretId(secret_id.toString())
-        loc.ifPresentOrElse({}, {throw GenericException("Location that corresponds to this secret id was not found.")})
+        val loc: Optional<Location> = locationRepository.findBySecretId(secret_id.toString())
+        loc.ifPresentOrElse({}, { throw GenericException("Location that corresponds to this secret id was not found.") })
         return loc.get()
     }
-    
+
     private fun getRating(location: Location): Double {
         val ratings = locationRatingRepository.findAllByLocation(location).map { locationRating -> locationRating.rating }
         if (ratings.isEmpty()) return 0.0
         return ratings.sum().div(ratings.size.toDouble())
     }
-    
+
 
     fun findAllByUser(user: User): List<LocationWrapper> {
         return locationRepository.findByCreator(user).map { LocationWrapper(it) }
@@ -91,6 +106,16 @@ class LocationsService {
         userRepository.findById(creatorId).ifPresentOrElse({}, { container.addException(PropertyException("creatorId", "Creator with creatorId = $creatorId does not exist.")) })
     }
 
+    private fun checkCountry(country: String, exceptionContainer: ExceptionContainer) {
+        val found: Int = counties.binarySearch(country.toLowerCase())
+        if (found == -1) {
+            exceptionContainer.addException(PropertyException(
+                    field = "country",
+                    message = "This is not a valid country"
+            ))
+        }
+    }
+
     fun create(resource: LocationsWrapper): UUID {
         val container = ExceptionContainer()
 
@@ -100,26 +125,30 @@ class LocationsService {
         resource.description.ifPresentOrElse({ checkDescription(resource.description.get(), container) }, { container.addException(PropertyException("description", "Description is an expected value.")) })
         resource.creatorId.ifPresentOrElse({ checkId(resource.creatorId.get(), container) }, { container.addException(PropertyException("creatorId", "CreatorId is an expected value.")) })
         resource.listed.ifPresentOrElse({}, { container.addException(PropertyException("listed", "Listed is an expected value.")) })
+        resource.country.ifPresentOrElse({ checkCountry(resource.country.get(), container) }, { container.addException(PropertyException("country", "Country is an expected value.")) })
+        resource.address.ifPresentOrElse({}, { container.addException(PropertyException("address", "Address is an expected value.")) })
 
         if (container.isEmpty().not()) {
-            container.addException(GenericException("Location could not be created"))
-            throw container
+            throw container.also { it.addException(GenericException("Location could not be created")) }
         }
 
-        val loc: Location = Location(
+        val loc = Location(
                 longitude = resource.longitude.get(),
                 latitude = resource.latitude.get(),
                 secretId = UUID.randomUUID().toString(),
                 listed = resource.listed.get(),
                 name = resource.name.get(),
                 description = resource.description.get(),
-                creator = userRepository.findById(resource.creatorId.get()).get()
+                creator = userRepository.findById(resource.creatorId.get()).get(),
+                country = resource.country.get(),
+                address = resource.address.get(),
+                active = resource.active.orElseGet { false }
         )
         return UUID.fromString(locationRepository.saveAndFlush(loc).secretId)
     }
 
     fun update(secretId: UUID, resource: LocationWrapper) {
-        val container: ExceptionContainer = ExceptionContainer()
+        val container = ExceptionContainer()
 
         resource.longitude.ifPresent { checkLon(resource.longitude.get(), container) }
         resource.latitude.ifPresent { checkLat(resource.latitude.get(), container) }
@@ -136,6 +165,7 @@ class LocationsService {
             resource.name.ifPresent { location.name = resource.name.get() }
             resource.description.ifPresent { location.description = resource.description.get() }
             resource.creatorId.ifPresent { location.creator = userRepository.findById(resource.creatorId.get()).get() }
+            resource.active.ifPresent { location.active = resource.active.get() }
             locationRepository.saveAndFlush(location)
         }, {
             throw GenericException("Location with secretId=$secretId does not exist in the database.")
