@@ -24,7 +24,7 @@ class CommentsService {
     fun getCommentsBySecretId(secret_id: UUID): List<Comment> {
         val location = locationRepository.findBySecretId(secret_id = secret_id.toString())
         if (location.isEmpty) {
-            throw PropertyException("secret_id", "Secret id is not linked to any location.")
+            throw GenericException("Secret id is not linked to any location.")
         }
         return commentRepository.findAllByLocation(location = location.get())
     }
@@ -34,12 +34,7 @@ class CommentsService {
         if (location.isEmpty) {
             throw PropertyException("secret_id", "Secret id is not linked to any location.")
         }
-        //TODO comment checken op bepaalde waarden? probably zelfde checks als description van location
-        val commentString: String = if (comment.comment.isNullOrBlank()) {
-            ""
-        } else {
-            comment.comment!!
-        }
+        val commentString: String = comment.comment.orElseGet {""}
         commentRepository.saveAndFlush(
                 Comment(creator = user, location = location.get(), createdAt = Date.from(Instant.now()), comment = commentString))
     }
@@ -58,11 +53,7 @@ class CommentsService {
             if (it.creator.id != user.id){
                 throw GenericException("The currently logged in user did not create this comment and can therefor not edit it.")
             }else{
-                if (comment.comment.isNullOrBlank()){
-                    it.comment = ""
-                }else{
-                    it.comment = comment.comment!!
-                }
+                it.comment = comment.comment.orElseGet {""}
             }
         }, {
             throw PropertyException("commentId", "Comment with id = $id was not found.")

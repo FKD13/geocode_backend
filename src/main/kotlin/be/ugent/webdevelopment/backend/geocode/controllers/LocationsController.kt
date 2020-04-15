@@ -34,11 +34,11 @@ class LocationsController(
         return service.findAll()
     }
 
-    @GetMapping(value = ["/{secret_id}"])
+    @GetMapping(value = ["/{secretId}"])
     @JsonView(View.PublicDetail::class)
-    fun findById(@PathVariable secret_id: UUID,
+    fun findById(@PathVariable secretId: UUID,
                  response: HttpServletResponse, request: HttpServletRequest): Location {
-        return service.findBySecretId(secret_id)
+        return service.findBySecretId(secretId)
     }
 
     @PostMapping
@@ -48,18 +48,18 @@ class LocationsController(
         return service.create(resource)
     }
 
-    @PatchMapping(value = ["/{secret_id}"])
-    fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
+    @PatchMapping(value = ["/{secretId}"])
+    fun update(@PathVariable secretId: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creator.id)
+        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secretId).creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
-        service.update(secret_id, resource)
+        service.update(secretId, resource)
     }
 
-    @DeleteMapping(value = ["/{secret_id}"])
-    fun delete(@PathVariable secret_id: UUID,
+    @DeleteMapping(value = ["/{secretId}"])
+    fun delete(@PathVariable secretId: UUID,
                response: HttpServletResponse, request: HttpServletRequest) {
-        service.deleteById(jwtService.tryAuthenticate(request), secret_id)
+        service.deleteById(jwtService.tryAuthenticate(request), secretId)
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -118,14 +118,14 @@ class LocationsController(
 
     @GetMapping(value = ["/{secretId}/comments"])
     @JsonView(View.PublicDetail::class)
-    fun getCommentsByLocation(@PathVariable secret_id: UUID): List<Comment> {
-        return commentsService.getCommentsBySecretId(secret_id)
+    fun getCommentsByLocation(@PathVariable secretId: UUID): List<Comment> {
+        return commentsService.getCommentsBySecretId(secretId)
     }
 
-    @PostMapping(value = ["/{secret_id}/comments"])
-    fun addComments(@PathVariable secret_id: UUID, @RequestBody comment: CommentWrapper,
+    @PostMapping(value = ["/{secretId}/comments"])
+    fun addComments(@PathVariable secretId: UUID, @RequestBody comment: CommentWrapper,
                     request: HttpServletRequest, response: HttpServletResponse) {
-        commentsService.createComment(jwtService.tryAuthenticate(request), secret_id, comment)
+        commentsService.createComment(jwtService.tryAuthenticate(request), secretId, comment)
     }
 
     //------------------------------------------------------------------------------------------------------------------
