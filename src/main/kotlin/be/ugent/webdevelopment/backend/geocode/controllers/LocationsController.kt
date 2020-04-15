@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
@@ -29,7 +30,7 @@ class LocationsController(
 
     @GetMapping
     @JsonView(View.PublicDetail::class)
-    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return service.findAll()
     }
 
