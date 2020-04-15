@@ -30,10 +30,10 @@ class LocationsService {
         return locationRepository.findAllByListedEquals(true)
     }
 
-    fun findBySecretId(secret_id: UUID): LocationsWrapper {
+    fun findBySecretId(secret_id: UUID): Location {
         val loc : Optional<Location> = locationRepository.findBySecretId(secret_id.toString())
         loc.ifPresentOrElse({}, {throw GenericException("Location that corresponds to this secret id was not found.")})
-        return LocationsWrapper(loc.get())
+        return loc.get()
     }
 
     fun findAllByUser(user: User): List<LocationWrapper> {
