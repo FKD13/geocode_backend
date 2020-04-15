@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.controllers.wrappers
 
 import be.ugent.webdevelopment.backend.geocode.database.models.User
+import org.springframework.context.annotation.Bean
 import org.springframework.validation.annotation.Validated
 import java.util.*
 import javax.validation.constraints.Email

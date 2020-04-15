@@ -27,13 +27,15 @@ class LocationsController(
 ) {
 
     @GetMapping
+    @JsonView(View.PublicDetail::class)
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{secret_id}"])
+    @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable secret_id: UUID,
-                 response: HttpServletResponse, request: HttpServletRequest): LocationsWrapper {
+                 response: HttpServletResponse, request: HttpServletRequest): Location {
         return service.findBySecretId(secret_id)
     }
 
@@ -47,7 +49,7 @@ class LocationsController(
     @PatchMapping(value = ["/{secret_id}"])
     fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creatorId.get())
+        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secret_id, resource)
     }
@@ -67,11 +69,13 @@ class LocationsController(
     }
 
     @GetMapping(value = ["/visits/{visitSecret}"])
+    @JsonView(View.PublicDetail::class)
     fun getLocationByVisitSecret(@PathVariable visitSecret: UUID) {
         //TODO
     }
 
     @GetMapping(value = ["/{secretId}/visits"])
+    @JsonView(View.PublicDetail::class)
     fun getVisitsBySecretId(@PathVariable secretId: UUID) {
         //TODO
     }
@@ -80,7 +84,7 @@ class LocationsController(
     // Ratings
 
     @GetMapping(value = ["/{secretId}/ratings"])
-    @JsonView(View.List::class)
+    @JsonView(View.PublicDetail::class)
     fun getRatingsByLocation(@PathVariable secretId: UUID) {
         ratingsService.getRatingsByLocation(secretId)
     }
@@ -96,6 +100,7 @@ class LocationsController(
     // Reports
 
     @GetMapping(value = ["/{secretId}/reports"])
+    @JsonView(View.AdminDetail::class)
     fun getReportsByLocation(@PathVariable secretId: UUID) {
         //TODO
     }
@@ -109,6 +114,7 @@ class LocationsController(
     // Reports
 
     @GetMapping(value = ["/{secretId}/comments"])
+    @JsonView(View.PublicDetail::class)
     fun getCommentsByLocation(@PathVariable secretId: UUID) {
         //TODO
     }

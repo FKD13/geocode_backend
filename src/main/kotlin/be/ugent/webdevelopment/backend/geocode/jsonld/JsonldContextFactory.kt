@@ -5,6 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldLink
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldNamespace
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
 import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils.getFullIdFromObject
+import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ArrayNode
@@ -21,7 +22,7 @@ import java.util.function.Consumer
  */
 object JsonldContextFactory {
 
-    fun fromAnnotations(objType: Any, provider: SerializerProvider?): Optional<ObjectNode> {
+    fun fromAnnotations(objType: Any, provider: SerializerProvider): Optional<ObjectNode> {
         val generatedContext = JsonNodeFactory.withExactBigDecimals(true).objectNode()
         generateNamespaces(objType.javaClass).forEach { (name: String?, uri: String?) -> generatedContext.set<JsonNode>(name, TextNode(uri)) }
         //TODO: This is bad...it does not consider other Jackson annotations. Need to use a AnnotationIntrospector?
@@ -40,19 +41,14 @@ object JsonldContextFactory {
         return if (generatedContext.size() != 0) Optional.of(generatedContext) else Optional.empty()
     }
 
-    private fun generateContextsForFields(objType: Any, provider: SerializerProvider?): Map<String, JsonNode> {
+    private fun generateContextsForFields(objType: Any, provider: SerializerProvider): Map<String, JsonNode> {
         return generateContextsForFields(objType, ArrayList(), provider)
     }
 
-    private fun generateContextsForFields(objType: Any, ignoreTypes: List<Class<*>>, provider: SerializerProvider?): Map<String, JsonNode> {
+    private fun generateContextsForFields(objType: Any, ignoreTypes: List<Class<*>>, provider: SerializerProvider): Map<String, JsonNode> {
         val contexts: MutableMap<String, JsonNode> = HashMap()
         var currentClass: Class<*> = objType.javaClass
         var namespace: Optional<JsonldNamespace> = Optional.ofNullable(currentClass.getAnnotation(JsonldNamespace::class.java))
-
-        var optionalview = Optional.empty<Class<out Annotation>>()
-        if (provider != null && provider.activeView != null) {
-            optionalview = Optional.of(provider.activeView as Class<out Annotation>)
-        }
 
         while (currentClass != Any::class.java) {
             val fields = currentClass.declaredFields
@@ -60,7 +56,7 @@ object JsonldContextFactory {
                 if (f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") {
                     continue
                 }
-                if (optionalview.isPresent && !f.isAnnotationPresent(optionalview.get())) {
+                if (f.isAnnotationPresent(JsonView::class.java) && !f.getAnnotation(JsonView::class.java).value.any { it == provider.activeView.kotlin }) {
                     continue
                 }
                 val jsonldProperty = f.getAnnotation(JsonldProperty::class.java)
