@@ -27,8 +27,11 @@ class RatingsService(
 
     private fun checkRatingsWrapper(ratingsWrapper: RatingsWrapper) {
         if (ratingsWrapper.rating.isPresent) {
-            if (ratingsWrapper.rating.get() !in 0..4) {
-                throw PropertyException("rating", "Rating should be between 0 and 4.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            if (ratingsWrapper.rating.get() !in 1..5) {
+                throw PropertyException(
+                        field = "rating",
+                        message = "A ${ratingsWrapper.rating.get()} star rating is incorrect, should be between 1 and 5.",
+                        code = HttpStatus.UNPROCESSABLE_ENTITY)
             }
         } else {
             throw PropertyException("rating", "Rating should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
@@ -36,6 +39,8 @@ class RatingsService(
         if (ratingsWrapper.message.isPresent) {
             if (ratingsWrapper.message.get().length < 5){
                 throw PropertyException("message", "Message should be at least 5 characters.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            } else if (ratingsWrapper.message.get().length > 1024) {
+                throw PropertyException("message", "Message should be at most 1024 characters.", code = HttpStatus.UNPROCESSABLE_ENTITY)
             }
         }else{
             throw PropertyException("message", "Message should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
@@ -71,13 +76,14 @@ class RatingsService(
 
     fun updateRatingById(ratingId: Int, ratingsWrapper: RatingsWrapper, user: User) {
 
-        checkRatingsWrapper(ratingsWrapper)
-
         val rating = ratingRepository.findById(ratingId)
         rating.orElseThrow { GenericException("Rating not found") }
 
         if (rating.get().creator == user) {
-            ratingRepository.saveAndFlush(rating.get().also { it.rating = ratingsWrapper.rating.get() })
+            ratingsWrapper.rating.ifPresent { rating.get().rating = ratingsWrapper.rating.get() }
+            ratingsWrapper.message.ifPresent { rating.get().message = ratingsWrapper.message.get() }
+
+            ratingRepository.saveAndFlush(rating.get())
         } else {
             throw GenericException(
                     code = HttpStatus.FORBIDDEN,

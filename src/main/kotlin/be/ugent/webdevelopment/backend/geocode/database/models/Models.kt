@@ -255,7 +255,7 @@ class LocationRating(
         @JsonView(View.PublicDetail::class)
         var rating: Int = 0,
 
-        @Column(nullable = false)
+        @Column(nullable = false, length = 1024)
         @field:JsonldProperty("https://schema.org/Rating#ratingExplanation")
         @JsonView(View.PublicDetail::class)
         var message: String = ""
