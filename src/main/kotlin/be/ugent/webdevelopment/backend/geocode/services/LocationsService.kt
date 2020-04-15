@@ -11,6 +11,7 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.UserReposit
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
+import be.ugent.webdevelopment.backend.geocode.utils.CountryUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -30,21 +31,7 @@ class LocationsService {
 
     private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
     private val attributesPattern = Pattern.compile("<[^<>]*\\s+(?!src|height|width)([^<>=]+)=[^<>]*", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
-
-    private val counties = mutableListOf<String>()
-
-    /*
-    * Fill the list of countries with known countries
-    * */
-    init {
-        val countryCodes = Locale.getISOCountries()
-        for (code in countryCodes) {
-            val locale = Locale("en", code)
-            counties.add(locale.displayCountry.toLowerCase())
-        }
-        counties.sort()
-    }
-
+    private val countryUtil = CountryUtil()
 
     fun findAll(): List<ExtendedLocationWrapper> {
         return locationRepository.findAllByListedEquals(true).map { ExtendedLocationWrapper(it, getRating(it)) }
@@ -107,8 +94,7 @@ class LocationsService {
     }
 
     private fun checkCountry(country: String, exceptionContainer: ExceptionContainer) {
-        val found: Int = counties.binarySearch(country.toLowerCase())
-        if (found == -1) {
+        if (countryUtil.countries.contains(country.toLowerCase()).not()) {
             exceptionContainer.addException(PropertyException(
                     field = "country",
                     message = "This is not a valid country"
