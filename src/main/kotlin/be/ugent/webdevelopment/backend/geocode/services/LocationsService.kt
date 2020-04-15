@@ -98,6 +98,7 @@ class LocationsService {
                 longitude = resource.longitude.get(),
                 latitude =  resource.latitude.get(),
                 secretId = UUID.randomUUID().toString(),
+                visitSecret = UUID.randomUUID().toString(),
                 listed = resource.listed.get(),
                 name = resource.name.get(),
                 description = resource.description.get(),

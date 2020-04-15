@@ -66,8 +66,8 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
 
     @GetMapping(value = ["/visits/{visitSecret}"])
     @JsonView(View.PublicDetail::class)
-    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID) {
-        //TODO
+    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID) : Location {
+        return visitsService.getByVisitSecret(visitSecret)
     }
 
     @GetMapping(value = ["/{secretId}/visits"])

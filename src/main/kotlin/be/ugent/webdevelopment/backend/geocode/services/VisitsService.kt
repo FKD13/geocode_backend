@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
+import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.CheckInRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
@@ -32,6 +33,16 @@ class VisitsService {
             container.addException(PropertyException("visitSecret", "VisitSecret is not linked to any location."))
         })
         container.throwIfNotEmpty()
+    }
+
+    fun getByVisitSecret(visitSecret: UUID): Location {
+        val container = ExceptionContainer()
+        val location = locationRepository.findByVisitSecret(visitSecret = visitSecret.toString())
+        if(location.isEmpty){
+            container.addException(PropertyException("visitSecret", "VisitSecret is not linked to any location."))
+        }
+        container.throwIfNotEmpty()
+        return location.get()
     }
 
 }
