@@ -30,7 +30,7 @@ class RatingController(val ratingsService: RatingsService, val jwtAuthenticator:
     }
 
     @DeleteMapping("/{ratingId}")
-    fun delateRatingById(@PathVariable ratingId: Int, request: HttpServletRequest, response: HttpServletResponse) {
+    fun deleteRatingById(@PathVariable ratingId: Int, request: HttpServletRequest, response: HttpServletResponse) {
         val user = jwtAuthenticator.tryAuthenticate(request)
         ratingsService.deleteRatingById(ratingId, user)
     }
