@@ -17,7 +17,7 @@ class UserWrapper(
             avatarUrl = Optional.of(user.avatarUrl),
             email = Optional.of(user.email),
             admin = Optional.of(user.admin),
-            time = Optional.of(user.time)
+            time = Optional.of(user.createdAt)
     )
 }
 

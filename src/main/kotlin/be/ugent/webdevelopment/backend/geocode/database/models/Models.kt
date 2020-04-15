@@ -46,7 +46,7 @@ class User constructor(
 
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        var createdAt: Date = Date(),
 
         @JsonIgnore
         @Column(nullable = false)
@@ -108,8 +108,8 @@ class Location constructor(
         var secretId: String = "",
 
         @Column(nullable = false)
-        @field:JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        @field:JsonView(View.PublicDetail::class)
+        var createdAt: Date = Date(),
 
         @Column(nullable = false)
         @field:JsonView(View.PublicDetail::class)
@@ -185,8 +185,8 @@ class Tour constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/CreativeWork#dateCreated")
-        @JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        @JsonView(View.PublicDetail::class)
+        var createdAt: Date = Date(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
@@ -216,7 +216,7 @@ class Comment constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Comment#dateCreated")
-        @JsonView(View.PrivateDetail::class)
+        @JsonView(View.PublicDetail::class)
         var createdAt: Date = Date(),
 
         @Column(nullable = false, length = 1024)
@@ -280,8 +280,8 @@ class CheckIn constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/DiscoverAction#location#endTime")
-        @JsonView(View.PrivateDetail::class)
-        var time: Date = Date()
+        @JsonView(View.PublicDetail::class)
+        var createdAt: Date = Date()
 ) : JsonLDSerializable()
 
 @Entity
@@ -308,7 +308,7 @@ class Report constructor(
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Review#dateCreated")
         @JsonView(View.AdminDetail::class)
-        var time: Date = Date(),
+        var createdAt: Date = Date(),
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Review#reviewBody")
