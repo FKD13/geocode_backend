@@ -5,4 +5,4 @@ import java.util.*
 class RatingsWrapper(
         val rating: Optional<Int>,
         val message: Optional<String>
-): Wrapper
+) : Wrapper()
