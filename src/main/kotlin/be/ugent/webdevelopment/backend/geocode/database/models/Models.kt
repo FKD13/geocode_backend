@@ -131,6 +131,20 @@ class Location constructor(
         @field:JsonView(View.PublicDetail::class)
         var creator: User = User(),
 
+        @Column(nullable = false, length = 128)
+        @field:JsonldProperty("https://schema.org/GeoCoordinates#addressCountry")
+        @field:JsonView(View.PublicDetail::class)
+        val country: String = "",
+
+        @Column(nullable = false, length = 512)
+        @field:JsonldProperty("https://schema.org/GeoCoordinates#address")
+        @field:JsonView(View.PublicDetail::class)
+        val address: String = "",
+
+        @Column(nullable = false)
+        @field:JsonView(View.PublicDetail::class)
+        val active: Boolean = false,
+
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location")
         var comments: Set<Comment> = Collections.emptySet(),
