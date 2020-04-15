@@ -29,7 +29,7 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     @GetMapping(value = ["/{secret_id}"])
     @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable secret_id: UUID,
-                 response: HttpServletResponse, request: HttpServletRequest): LocationsWrapper {
+                 response: HttpServletResponse, request: HttpServletRequest): Location {
         return service.findBySecretId(secret_id)
     }
 
@@ -43,7 +43,7 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     @PatchMapping(value = ["/{secret_id}"])
     fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creatorId.get())
+        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secret_id, resource)
     }

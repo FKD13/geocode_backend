@@ -35,17 +35,18 @@ class LocationsService {
         return locationRepository.findAllByListedEquals(true).map { ExtendedLocationWrapper(it, getRating(it)) }
     }
 
+    fun findBySecretId(secret_id: UUID): Location {
+        val loc : Optional<Location> = locationRepository.findBySecretId(secret_id.toString())
+        loc.ifPresentOrElse({}, {throw GenericException("Location that corresponds to this secret id was not found.")})
+        return loc.get()
+    }
+    
     private fun getRating(location: Location): Double {
         val ratings = locationRatingRepository.findAllByLocation(location).map { locationRating -> locationRating.rating }
         if (ratings.isEmpty()) return 0.0
         return ratings.sum().div(ratings.size.toDouble())
     }
-
-    fun findBySecretId(secret_id: UUID): LocationsWrapper {
-        val loc: Optional<Location> = locationRepository.findBySecretId(secret_id.toString())
-        loc.ifPresentOrElse({}, { throw GenericException("Location that corresponds to this secret id was not found.") })
-        return LocationsWrapper(loc.get())
-    }
+    
 
     fun findAllByUser(user: User): List<LocationWrapper> {
         return locationRepository.findByCreator(user).map { LocationWrapper(it) }
