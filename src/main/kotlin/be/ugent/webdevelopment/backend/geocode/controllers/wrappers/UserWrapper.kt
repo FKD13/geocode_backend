@@ -1,8 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers.wrappers
 
 import be.ugent.webdevelopment.backend.geocode.database.models.User
-import org.hibernate.validator.constraints.URL
-import java.time.LocalDateTime
 import java.util.*
 
 class UserWrapper(
@@ -19,7 +17,7 @@ class UserWrapper(
             avatarUrl = Optional.of(user.avatarUrl),
             email = Optional.of(user.email),
             admin = Optional.of(user.admin),
-            time = Optional.of(user.time)
+            time = Optional.of(user.createdAt)
     )
 }
 
