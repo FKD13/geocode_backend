@@ -1,7 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers.wrappers
 
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
-import java.time.LocalDateTime
 import java.util.*
 
 class LocationWrapper (
@@ -19,7 +18,7 @@ class LocationWrapper (
             latitude = Optional.of(loc.latitude),
             longitude = Optional.of(loc.longitude),
             secretId = Optional.of(loc.secretId),
-            time = Optional.of(loc.time),
+            time = Optional.of(loc.createdAt),
             listed = Optional.of(loc.listed),
             name = Optional.of(loc.name),
             description = Optional.of(loc.description),
