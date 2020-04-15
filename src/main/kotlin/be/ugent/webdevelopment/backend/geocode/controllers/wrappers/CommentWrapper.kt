@@ -4,6 +4,4 @@ import java.util.*
 
 class CommentWrapper(
         var comment: Optional<String> = Optional.of("")
-) : Wrapper(){
-
-}
+) : Wrapper()

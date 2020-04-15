@@ -16,7 +16,7 @@ class QRCodeService {
      * @param size the size in pixels of the image
      * @return a Bufferedimage representing the qrcode
      */
-    fun getQRCode(visitSecret: String, frontendUrl: String, size: Int) : BufferedImage {
+    fun getQRCode(visitSecret: String, frontendUrl: String, size: Int): BufferedImage {
         // A little safe check
         val url = if (frontendUrl.endsWith("/")) frontendUrl + visitSecret else "$frontendUrl/$visitSecret"
 

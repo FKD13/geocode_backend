@@ -11,15 +11,15 @@ import java.net.URI
 import java.util.regex.Pattern
 
 class CaptchaResponse(
-    val success: Boolean?,
+        val success: Boolean?,
 
-    @JsonProperty("challenge_ts")
-    val challengeTs: String?,
-    val action: String?,
-    val hostname: String?,
+        @JsonProperty("challenge_ts")
+        val challengeTs: String?,
+        val action: String?,
+        val hostname: String?,
 
-    @JsonProperty("error-codes")
-    val errorCodes: List<String>?
+        @JsonProperty("error-codes")
+        val errorCodes: List<String>?
 )
 
 @Service
@@ -35,7 +35,7 @@ class CaptchaService {
 
     private val captchaPattern = Pattern.compile("[A-Za-z0-9_-]+")
 
-    fun checkRespone(response: String) : Boolean {
+    fun checkRespone(response: String): Boolean {
         return response.isNotEmpty() && captchaPattern.matcher(response).matches()
     }
 
@@ -45,8 +45,8 @@ class CaptchaService {
         }
         val verifyUri: URI = URI.create(
                 "https://www.google.com/recaptcha/api/siteverify?secret=${captchaSecret}&response=${response}")
-        val captchaResponse : CaptchaResponse = RestTemplate().postForObject(verifyUri, CaptchaResponse::class.java)
-        if (captchaResponse.success == null || !captchaResponse.success ) {
+        val captchaResponse: CaptchaResponse = RestTemplate().postForObject(verifyUri, CaptchaResponse::class.java)
+        if (captchaResponse.success == null || !captchaResponse.success) {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Captcha failed")
         } else if (captchaResponse.action == null || captchaResponse.action != action) {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Actions did not match")
