@@ -7,9 +7,9 @@ import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
+import be.ugent.webdevelopment.backend.geocode.services.VisitsService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.awt.image.BufferedImage
 import java.util.*
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/locations")
-class LocationsController(val service: LocationsService, val jwtService: JWTAuthenticator) {
+class LocationsController(val service: LocationsService, val jwtService: JWTAuthenticator, val visitsService: VisitsService) {
 
     @GetMapping
     @JsonView(View.PublicDetail::class)
@@ -59,8 +59,9 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     // Visits
 
     @PostMapping(value = ["/visits/{visitSecret}"])
-    fun visitLocation(@PathVariable visitSecret: UUID) {
-        //TODO
+    fun visitLocation(@PathVariable visitSecret: UUID,
+                      response: HttpServletResponse, request: HttpServletRequest) {
+        visitsService.visit(jwtService.tryAuthenticate(request), visitSecret)
     }
 
     @GetMapping(value = ["/visits/{visitSecret}"])
