@@ -4,6 +4,7 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLoca
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
