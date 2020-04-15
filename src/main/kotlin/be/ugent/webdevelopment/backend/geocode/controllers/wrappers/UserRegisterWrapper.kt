@@ -10,7 +10,7 @@ class UserRegisterWrapper(var email: String,
                           var username: String,
                           var password: String,
                           var passwordRepeat: String?,
-                          var captcha: Optional<String>) : Wrapper {
+                          var captcha: Optional<String>) : Wrapper() {
     constructor(user: User) : this(
             email = user.email,
             username = user.username,
