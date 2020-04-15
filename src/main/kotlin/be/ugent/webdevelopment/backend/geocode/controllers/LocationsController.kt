@@ -5,6 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWra
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
+import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
@@ -85,8 +86,8 @@ class LocationsController(
 
     @GetMapping(value = ["/{secretId}/ratings"])
     @JsonView(View.PublicDetail::class)
-    fun getRatingsByLocation(@PathVariable secretId: UUID) {
-        ratingsService.getRatingsByLocation(secretId)
+    fun getRatingsByLocation(@PathVariable secretId: UUID): List<LocationRating> {
+        return ratingsService.getRatingsByLocation(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/ratings"])
