@@ -91,10 +91,11 @@ class LocationsController(
     }
 
     @PostMapping(value = ["/{secretId}/ratings"])
+    @JsonView(View.PublicDetail::class)
     fun addRating(@PathVariable secretId: UUID, @RequestBody ratingsWrapper: RatingsWrapper,
-                  request: HttpServletRequest, response: HttpServletResponse) {
+                  request: HttpServletRequest, response: HttpServletResponse): LocationRating {
         val user = jwtService.tryAuthenticate(request)
-        ratingsService.addRating(user, secretId, ratingsWrapper)
+        return ratingsService.addRating(user, secretId, ratingsWrapper)
     }
 
     //------------------------------------------------------------------------------------------------------------------

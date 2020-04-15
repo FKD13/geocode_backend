@@ -28,14 +28,21 @@ class RatingsService(
     private fun checkRatingsWrapper(ratingsWrapper: RatingsWrapper) {
         if (ratingsWrapper.rating.isPresent) {
             if (ratingsWrapper.rating.get() !in 0..4) {
-                throw PropertyException("rating", "rating should be between 0 and 4", code = HttpStatus.UNPROCESSABLE_ENTITY)
+                throw PropertyException("rating", "Rating should be between 0 and 4.", code = HttpStatus.UNPROCESSABLE_ENTITY)
             }
         } else {
-            throw PropertyException("rating", "rating should be present", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            throw PropertyException("rating", "Rating should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+        }
+        if (ratingsWrapper.message.isPresent) {
+            if (ratingsWrapper.message.get().length < 5){
+                throw PropertyException("message", "Message should be at least 5 characters.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            }
+        }else{
+            throw PropertyException("message", "Message should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
         }
     }
 
-    fun addRating(creator: User, secretId: UUID, rating: RatingsWrapper) {
+    fun addRating(creator: User, secretId: UUID, rating: RatingsWrapper): LocationRating {
 
         val location = getLocation(secretId)
 
@@ -44,7 +51,8 @@ class RatingsService(
         val optRating = ratingRepository.findByCreatorAndLocation(creator = creator, location = location)
         optRating.ifPresent { throw GenericException("You have already rated this location", code = HttpStatus.UNPROCESSABLE_ENTITY) }
 
-        ratingRepository.save(LocationRating(
+        return ratingRepository.saveAndFlush(LocationRating(
+                message = rating.message.get(),
                 creator = creator,
                 location = location,
                 rating = rating.rating.get()
@@ -69,7 +77,7 @@ class RatingsService(
         rating.orElseThrow { GenericException("Rating not found") }
 
         if (rating.get().creator == user) {
-            ratingRepository.save(rating.get().also { it.rating = ratingsWrapper.rating.get() })
+            ratingRepository.saveAndFlush(rating.get().also { it.rating = ratingsWrapper.rating.get() })
         } else {
             throw GenericException(
                     code = HttpStatus.FORBIDDEN,
