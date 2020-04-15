@@ -41,13 +41,13 @@ class CaptchaService {
 
     fun validateCaptcha(response: String) {
         if (!checkRespone(response)) {
-            throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Not a valid captha response")
+            throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Not a valid captcha response")
         }
         val verifyUri: URI = URI.create(
                 "https://www.google.com/recaptcha/api/siteverify?secret=${captchaSecret}&response=${response}")
         val captchaResponse : CaptchaResponse = RestTemplate().postForObject(verifyUri, CaptchaResponse::class.java)
         if (captchaResponse.success == null || !captchaResponse.success ) {
-            throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Captha failed")
+            throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Captcha failed")
         } else if (captchaResponse.action == null || captchaResponse.action != action) {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Actions did not match")
         }
