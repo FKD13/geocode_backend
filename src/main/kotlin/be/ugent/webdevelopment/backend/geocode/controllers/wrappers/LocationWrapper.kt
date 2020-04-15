@@ -12,7 +12,7 @@ class LocationWrapper (
         var name: Optional<String>,
         var description: Optional<String>,
         var creatorId: Optional<Int>
-        ): Wrapper{
+        ): Wrapper(){
 
     constructor(loc: Location) : this(
             latitude = Optional.of(loc.latitude),
