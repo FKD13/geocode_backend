@@ -1,15 +1,17 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.CommentWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.Comment
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
+import be.ugent.webdevelopment.backend.geocode.services.CommentsService
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import java.awt.image.BufferedImage
 import java.util.*
@@ -19,7 +21,8 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/locations")
-class LocationsController(val service: LocationsService, val jwtService: JWTAuthenticator) {
+class LocationsController(val service: LocationsService, val jwtService: JWTAuthenticator,
+                          val commentsService: CommentsService) {
 
     @GetMapping
     @JsonView(View.PublicDetail::class)
@@ -104,17 +107,18 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // Reports
+    // Comments
 
     @GetMapping(value = ["/{secretId}/comments"])
     @JsonView(View.PublicDetail::class)
-    fun getCommentsByLocation(@PathVariable secretId: UUID) {
-        //TODO
+    fun getCommentsByLocation(@PathVariable secret_id: UUID): List<Comment> {
+        return commentsService.getCommentsBySecretId(secret_id)
     }
 
-    @PostMapping(value = ["/{secretId}/comments"])
-    fun addComments(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
-        //TODO
+    @PostMapping(value = ["/{secret_id}/comments"])
+    fun addComments(@PathVariable secret_id: UUID, @RequestBody comment: CommentWrapper,
+                    request: HttpServletRequest, response: HttpServletResponse) {
+        commentsService.createComment(jwtService.tryAuthenticate(request), secret_id, comment)
     }
 
     //------------------------------------------------------------------------------------------------------------------
