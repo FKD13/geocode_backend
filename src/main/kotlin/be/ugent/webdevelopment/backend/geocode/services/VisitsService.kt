@@ -5,6 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.CheckInRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
+import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,6 +54,20 @@ class VisitsService {
         }
         container.throwIfNotEmpty()
         return checkInRepository.findAllByLocationOrderByTime(location = location.get())
+    }
+
+    fun getVisitsByUser(user: User): List<CheckIn> {
+        return checkInRepository.findAllByCreator(user)
+    }
+
+    fun getVisitsByUserForLocation(user: User, secret_id: UUID): List<CheckIn> {
+        val container = ExceptionContainer()
+        val location = locationRepository.findBySecretId(secret_id = secret_id.toString())
+        if (location.isEmpty){
+            container.addException(PropertyException("secret_id", "Secret id is not linked to any location."))
+        }
+        container.throwIfNotEmpty()
+        return checkInRepository.findAllByLocationAndCreator(location.get(), user)
     }
 
 }

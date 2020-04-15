@@ -71,57 +71,57 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
         return visitsService.getByVisitSecret(visitSecret)
     }
 
-    @GetMapping(value = ["/{secretId}/visits"])
+    @GetMapping(value = ["/{secret_id}/visits"])
     @JsonView(View.PublicDetail::class)
-    fun getVisitsBySecretId(@PathVariable secretId: UUID) : List<CheckIn> {
-        return visitsService.getVisitsBySecretId(secretId)
+    fun getVisitsBySecretId(@PathVariable secret_id: UUID) : List<CheckIn> {
+        return visitsService.getVisitsBySecretId(secret_id)
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Ratings
 
-    @GetMapping(value = ["/{secretId}/ratings"])
+    @GetMapping(value = ["/{secret_id}/ratings"])
     @JsonView(View.PublicDetail::class)
-    fun getRatingsByLocation(@PathVariable secretId: UUID) {
+    fun getRatingsByLocation(@PathVariable secret_id: UUID) {
         //TODO
     }
 
-    @PostMapping(value = ["/{secretId}/ratings"])
-    fun addRating(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+    @PostMapping(value = ["/{secret_id}/ratings"])
+    fun addRating(@PathVariable secret_id: UUID, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Reports
 
-    @GetMapping(value = ["/{secretId}/reports"])
+    @GetMapping(value = ["/{secret_id}/reports"])
     @JsonView(View.AdminDetail::class)
-    fun getReportsByLocation(@PathVariable secretId: UUID) {
+    fun getReportsByLocation(@PathVariable secret_id: UUID) {
         //TODO
     }
 
-    @PostMapping(value = ["/{secretId}/reports"])
-    fun addReports(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+    @PostMapping(value = ["/{secret_id}/reports"])
+    fun addReports(@PathVariable secret_id: UUID, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Reports
 
-    @GetMapping(value = ["/{secretId}/comments"])
+    @GetMapping(value = ["/{secret_id}/comments"])
     @JsonView(View.PublicDetail::class)
-    fun getCommentsByLocation(@PathVariable secretId: UUID) {
+    fun getCommentsByLocation(@PathVariable secret_id: UUID) {
         //TODO
     }
 
-    @PostMapping(value = ["/{secretId}/comments"])
-    fun addComments(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+    @PostMapping(value = ["/{secret_id}/comments"])
+    fun addComments(@PathVariable secret_id: UUID, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    @GetMapping("/{secretId}/qrcode")
+    @GetMapping("/{secret_id}/qrcode")
     fun getQrcode(
             @RequestParam("frontend") frontendUrl: String,
             @RequestParam("size") size: Int,
