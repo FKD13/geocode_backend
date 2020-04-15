@@ -129,7 +129,7 @@ class LocationsService {
 
         container.throwIfNotEmpty()
 
-        locationRepository.findBySecretId(secret_id = secretId.toString()).ifPresentOrElse({
+        locationRepository.findBySecretId(secretId = secretId.toString()).ifPresentOrElse({
             val location: Location = it
             resource.longitude.ifPresent { location.longitude = resource.longitude.get() }
             resource.latitude.ifPresent { location.latitude = resource.latitude.get() }
