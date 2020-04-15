@@ -1,15 +1,19 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.CommentWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Comment
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
+import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.CommentsService
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
+import be.ugent.webdevelopment.backend.geocode.services.RatingsService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -21,19 +25,23 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/locations")
-class LocationsController(val service: LocationsService, val jwtService: JWTAuthenticator,
-                          val commentsService: CommentsService) {
+class LocationsController(
+        val service: LocationsService,
+        val jwtService: JWTAuthenticator,
+        val ratingsService: RatingsService,
+        val commentsService: CommentsService
+) {
 
     @GetMapping
     @JsonView(View.PublicDetail::class)
-    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{secret_id}"])
     @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable secret_id: UUID,
-                 response: HttpServletResponse, request: HttpServletRequest): LocationsWrapper {
+                 response: HttpServletResponse, request: HttpServletRequest): Location {
         return service.findBySecretId(secret_id)
     }
 
@@ -47,7 +55,7 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
     @PatchMapping(value = ["/{secret_id}"])
     fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creatorId.get())
+        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secret_id, resource)
     }
@@ -83,13 +91,16 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
 
     @GetMapping(value = ["/{secretId}/ratings"])
     @JsonView(View.PublicDetail::class)
-    fun getRatingsByLocation(@PathVariable secretId: UUID) {
-        //TODO
+    fun getRatingsByLocation(@PathVariable secretId: UUID): List<LocationRating> {
+        return ratingsService.getRatingsByLocation(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/ratings"])
-    fun addRating(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
-        //TODO
+    @JsonView(View.PublicDetail::class)
+    fun addRating(@PathVariable secretId: UUID, @RequestBody ratingsWrapper: RatingsWrapper,
+                  request: HttpServletRequest, response: HttpServletResponse): LocationRating {
+        val user = jwtService.tryAuthenticate(request)
+        return ratingsService.addRating(user, secretId, ratingsWrapper)
     }
 
     //------------------------------------------------------------------------------------------------------------------
