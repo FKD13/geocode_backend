@@ -7,8 +7,8 @@ import java.util.*
 
 interface LocationRepository : JpaRepository<Location, Int> {
     fun findByCreator(creator: User): List<Location>
-    fun findBySecretId(secret_id: String): Optional<Location>
-    fun deleteBySecretId(secret_id: String)
+    fun findBySecretId(secretId: String): Optional<Location>
+    fun deleteBySecretId(secretId: String)
     fun findAllByListedEquals(listed: Boolean) : List<Location>
     fun findByVisitSecret(visitSecret: String) : Optional<Location>
 }

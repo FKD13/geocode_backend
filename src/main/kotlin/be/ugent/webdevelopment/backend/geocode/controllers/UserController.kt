@@ -53,9 +53,9 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
         return visitsService.getVisitsByUser(jwtService.tryAuthenticate(request))
     }
 
-    @GetMapping("/visits/{secret_id}")
-    fun getVisitsForUserByLocationSecret(@PathVariable secret_id: UUID,
+    @GetMapping("/visits/{secretId}")
+    fun getVisitsForUserByLocationSecret(@PathVariable secretId: UUID,
                                          response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
-        return visitsService.getVisitsByUserForLocation(jwtService.tryAuthenticate(request), secret_id)
+        return visitsService.getVisitsByUserForLocation(jwtService.tryAuthenticate(request), secretId)
     }
 }

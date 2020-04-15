@@ -37,11 +37,11 @@ class LocationsController(
         return service.findAll()
     }
 
-    @GetMapping(value = ["/{secret_id}"])
+    @GetMapping(value = ["/{secretId}"])
     @JsonView(View.PublicDetail::class)
-    fun findById(@PathVariable secret_id: UUID,
+    fun findById(@PathVariable secretId: UUID,
                  response: HttpServletResponse, request: HttpServletRequest): Location {
-        return service.findBySecretId(secret_id)
+        return service.findBySecretId(secretId)
     }
 
     @PostMapping
@@ -51,18 +51,18 @@ class LocationsController(
         return service.create(resource)
     }
 
-    @PatchMapping(value = ["/{secret_id}"])
-    fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
+    @PatchMapping(value = ["/{secretId}"])
+    fun update(@PathVariable secretId: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creator.id)
+        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secretId).creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
-        service.update(secret_id, resource)
+        service.update(secretId, resource)
     }
 
-    @DeleteMapping(value = ["/{secret_id}"])
-    fun delete(@PathVariable secret_id: UUID,
+    @DeleteMapping(value = ["/{secretId}"])
+    fun delete(@PathVariable secretId: UUID,
                response: HttpServletResponse, request: HttpServletRequest) {
-        service.deleteById(jwtService.tryAuthenticate(request), secret_id)
+        service.deleteById(jwtService.tryAuthenticate(request), secretId)
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -80,16 +80,16 @@ class LocationsController(
         return visitsService.getByVisitSecret(visitSecret)
     }
 
-    @GetMapping(value = ["/{secret_id}/visits"])
+    @GetMapping(value = ["/{secretId}/visits"])
     @JsonView(View.PublicDetail::class)
-    fun getVisitsBySecretId(@PathVariable secret_id: UUID): List<CheckIn> {
-        return visitsService.getVisitsBySecretId(secret_id)
+    fun getVisitsBySecretId(@PathVariable secretId: UUID): List<CheckIn> {
+        return visitsService.getVisitsBySecretId(secretId)
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Ratings
 
-    @GetMapping(value = ["/{secret_id}/ratings"])
+    @GetMapping(value = ["/{secretId}/ratings"])
     @JsonView(View.PublicDetail::class)
     fun getRatingsByLocation(@PathVariable secretId: UUID): List<LocationRating> {
         return ratingsService.getRatingsByLocation(secretId)
@@ -106,34 +106,34 @@ class LocationsController(
     //------------------------------------------------------------------------------------------------------------------
     // Reports
 
-    @GetMapping(value = ["/{secret_id}/reports"])
+    @GetMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
-    fun getReportsByLocation(@PathVariable secret_id: UUID) {
+    fun getReportsByLocation(@PathVariable secretId: UUID) {
         //TODO
     }
 
-    @PostMapping(value = ["/{secret_id}/reports"])
-    fun addReports(@PathVariable secret_id: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+    @PostMapping(value = ["/{secretId}/reports"])
+    fun addReports(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Reports
 
-    @GetMapping(value = ["/{secret_id}/comments"])
+    @GetMapping(value = ["/{secretId}/comments"])
     @JsonView(View.PublicDetail::class)
-    fun getCommentsByLocation(@PathVariable secret_id: UUID) {
+    fun getCommentsByLocation(@PathVariable secretId: UUID) {
         //TODO
     }
 
-    @PostMapping(value = ["/{secret_id}/comments"])
-    fun addComments(@PathVariable secret_id: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+    @PostMapping(value = ["/{secretId}/comments"])
+    fun addComments(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
         //TODO
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    @GetMapping("/{secret_id}/qrcode")
+    @GetMapping("/{secretId}/qrcode")
     fun getQrcode(
             @RequestParam("frontend") frontendUrl: String,
             @RequestParam("size") size: Int,

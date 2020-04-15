@@ -23,7 +23,7 @@ class ReportsController {
         //TODO
     }
 
-    @GetMapping //todo deze mag misschien public detail krijgen?
+    @GetMapping
     fun getReports() {
         //TODO
     }

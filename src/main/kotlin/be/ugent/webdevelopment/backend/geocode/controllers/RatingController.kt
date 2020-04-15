@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/ratings")
-@JsonView(View.PublicDetail::class) //todo nog eens goed checken
+@JsonView(View.PublicDetail::class)
 class RatingController(val ratingsService: RatingsService, val jwtAuthenticator: JWTAuthenticator) {
 
     @GetMapping("/{ratingId}")
