@@ -3,6 +3,7 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
@@ -72,8 +73,8 @@ class LocationsController(val service: LocationsService, val jwtService: JWTAuth
 
     @GetMapping(value = ["/{secretId}/visits"])
     @JsonView(View.PublicDetail::class)
-    fun getVisitsBySecretId(@PathVariable secretId: UUID) {
-        //TODO
+    fun getVisitsBySecretId(@PathVariable secretId: UUID) : List<CheckIn> {
+        return visitsService.getVisitsBySecretId(secretId)
     }
 
     //------------------------------------------------------------------------------------------------------------------

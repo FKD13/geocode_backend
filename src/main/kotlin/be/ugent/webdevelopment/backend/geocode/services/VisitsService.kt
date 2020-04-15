@@ -45,4 +45,14 @@ class VisitsService {
         return location.get()
     }
 
+    fun getVisitsBySecretId(secret_id: UUID): List<CheckIn> {
+        val container = ExceptionContainer()
+        val location = locationRepository.findBySecretId(secret_id = secret_id.toString())
+        if (location.isEmpty){
+            container.addException(PropertyException("secret_id", "Secret id is not linked to any location."))
+        }
+        container.throwIfNotEmpty()
+        return checkInRepository.findAllByLocationOrderByTime(location = location.get())
+    }
+
 }
