@@ -1,10 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.CommentWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Comment
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
