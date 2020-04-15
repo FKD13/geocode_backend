@@ -11,8 +11,8 @@ import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
-import be.ugent.webdevelopment.backend.geocode.services.VisitsService
 import be.ugent.webdevelopment.backend.geocode.services.RatingsService
+import be.ugent.webdevelopment.backend.geocode.services.VisitsService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -76,13 +76,13 @@ class LocationsController(
 
     @GetMapping(value = ["/visits/{visitSecret}"])
     @JsonView(View.PublicDetail::class)
-    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID) : Location {
+    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID): Location {
         return visitsService.getByVisitSecret(visitSecret)
     }
 
     @GetMapping(value = ["/{secret_id}/visits"])
     @JsonView(View.PublicDetail::class)
-    fun getVisitsBySecretId(@PathVariable secret_id: UUID) : List<CheckIn> {
+    fun getVisitsBySecretId(@PathVariable secret_id: UUID): List<CheckIn> {
         return visitsService.getVisitsBySecretId(secret_id)
     }
 

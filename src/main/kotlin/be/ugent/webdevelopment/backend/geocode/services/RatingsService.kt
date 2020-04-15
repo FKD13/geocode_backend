@@ -34,10 +34,10 @@ class RatingsService(
             throw PropertyException("rating", "Rating should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
         }
         if (ratingsWrapper.message.isPresent) {
-            if (ratingsWrapper.message.get().length < 5){
+            if (ratingsWrapper.message.get().length < 5) {
                 throw PropertyException("message", "Message should be at least 5 characters.", code = HttpStatus.UNPROCESSABLE_ENTITY)
             }
-        }else{
+        } else {
             throw PropertyException("message", "Message should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
         }
     }

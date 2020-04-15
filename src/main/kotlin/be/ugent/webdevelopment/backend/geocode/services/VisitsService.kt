@@ -5,7 +5,6 @@ import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.CheckInRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
-import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,7 +38,7 @@ class VisitsService {
     fun getByVisitSecret(visitSecret: UUID): Location {
         val container = ExceptionContainer()
         val location = locationRepository.findByVisitSecret(visitSecret = visitSecret.toString())
-        if(location.isEmpty){
+        if (location.isEmpty) {
             container.addException(PropertyException("visitSecret", "VisitSecret is not linked to any location."))
         }
         container.throwIfNotEmpty()
@@ -49,7 +48,7 @@ class VisitsService {
     fun getVisitsBySecretId(secret_id: UUID): List<CheckIn> {
         val container = ExceptionContainer()
         val location = locationRepository.findBySecretId(secret_id = secret_id.toString())
-        if (location.isEmpty){
+        if (location.isEmpty) {
             container.addException(PropertyException("secret_id", "Secret id is not linked to any location."))
         }
         container.throwIfNotEmpty()
@@ -63,7 +62,7 @@ class VisitsService {
     fun getVisitsByUserForLocation(user: User, secret_id: UUID): List<CheckIn> {
         val container = ExceptionContainer()
         val location = locationRepository.findBySecretId(secret_id = secret_id.toString())
-        if (location.isEmpty){
+        if (location.isEmpty) {
             container.addException(PropertyException("secret_id", "Secret id is not linked to any location."))
         }
         container.throwIfNotEmpty()
