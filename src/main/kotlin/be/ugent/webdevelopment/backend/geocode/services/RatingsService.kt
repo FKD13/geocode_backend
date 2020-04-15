@@ -54,7 +54,7 @@ class RatingsService(
         checkRatingsWrapper(rating)
 
         val optRating = ratingRepository.findByCreatorAndLocation(creator = creator, location = location)
-        optRating.ifPresent { throw GenericException("You have already rated this location", code = HttpStatus.UNPROCESSABLE_ENTITY) }
+        optRating.ifPresent { throw GenericException("You have already rated this location, update your previous rating instead.", code = HttpStatus.UNPROCESSABLE_ENTITY) }
 
         return ratingRepository.saveAndFlush(LocationRating(
                 message = rating.message.get(),
