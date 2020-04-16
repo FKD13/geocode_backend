@@ -8,6 +8,7 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRep
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
@@ -22,12 +23,15 @@ class VisitsService {
     lateinit var locationRepository: LocationRepository
 
     fun visit(user: User, visitSecret: UUID) {
-        //TODO checken of dat men hier effectief mag inchecken? Location zou activated moeten zijn
         val location = locationRepository.findByVisitSecret(visitSecret.toString())
         location.ifPresentOrElse({
-            checkInRepository.saveAndFlush(
-                    CheckIn(creator = user, location = location.get(), createdAt = Date.from(Instant.now()))
-            )
+            if (it.active){
+                checkInRepository.saveAndFlush(
+                        CheckIn(creator = user, location = location.get(), createdAt = Date.from(Instant.now()))
+                )
+            }else{
+                throw GenericException("The location you tried to visit is not active yet.", HttpStatus.FORBIDDEN)
+            }
         }, {
             throw GenericException("VisitSecret is not linked to any location.")
         })
