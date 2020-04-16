@@ -125,8 +125,8 @@ class LocationsController(
 
     @PostMapping(value = ["/{secretId}/comments"])
     fun addComments(@PathVariable secretId: UUID, @RequestBody comment: CommentWrapper,
-                    request: HttpServletRequest, response: HttpServletResponse) {
-        commentsService.createComment(jwtService.tryAuthenticate(request), secretId, comment)
+                    request: HttpServletRequest, response: HttpServletResponse): Comment {
+        return commentsService.createComment(jwtService.tryAuthenticate(request), secretId, comment)
     }
 
     //------------------------------------------------------------------------------------------------------------------

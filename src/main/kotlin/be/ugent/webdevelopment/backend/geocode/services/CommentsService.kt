@@ -28,13 +28,13 @@ class CommentsService {
         return commentRepository.findAllByLocation(location = location.get())
     }
 
-    fun createComment(user: User, secretId: UUID, comment: CommentWrapper) {
+    fun createComment(user: User, secretId: UUID, comment: CommentWrapper): Comment {
         val location = locationRepository.findBySecretId(secretId = secretId.toString())
         if (location.isEmpty) {
             throw GenericException("Secret id is not linked to any location.")
         }
         val commentString: String = comment.comment.orElseGet { "" }
-        commentRepository.saveAndFlush(
+        return commentRepository.saveAndFlush(
                 Comment(creator = user, location = location.get(), createdAt = Date.from(Instant.now()), comment = commentString))
     }
 
