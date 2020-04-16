@@ -11,6 +11,7 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.UserReposit
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
+import be.ugent.webdevelopment.backend.geocode.utils.CountryUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
@@ -30,6 +31,7 @@ class LocationsService {
 
     private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
     private val attributesPattern = Pattern.compile("<[^<>]*\\s+(?!src|height|width)([^<>=]+)=[^<>]*", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
+    private val countryUtil = CountryUtil()
 
     fun findAll(): List<ExtendedLocationWrapper> {
         return locationRepository.findAllByListedEquals(true).map { ExtendedLocationWrapper(it, getRating(it)) }
@@ -91,6 +93,15 @@ class LocationsService {
         userRepository.findById(creatorId).ifPresentOrElse({}, { container.addException(PropertyException("creatorId", "Creator with creatorId = $creatorId does not exist.")) })
     }
 
+    private fun checkCountry(country: String, exceptionContainer: ExceptionContainer) {
+        if (countryUtil.countries.contains(country.toLowerCase()).not()) {
+            exceptionContainer.addException(PropertyException(
+                    field = "country",
+                    message = "This is not a valid country"
+            ))
+        }
+    }
+
     fun create(resource: LocationsWrapper): UUID {
         val container = ExceptionContainer()
 
@@ -100,13 +111,14 @@ class LocationsService {
         resource.description.ifPresentOrElse({ checkDescription(resource.description.get(), container) }, { container.addException(PropertyException("description", "Description is an expected value.")) })
         resource.creatorId.ifPresentOrElse({ checkId(resource.creatorId.get(), container) }, { container.addException(PropertyException("creatorId", "CreatorId is an expected value.")) })
         resource.listed.ifPresentOrElse({}, { container.addException(PropertyException("listed", "Listed is an expected value.")) })
+        resource.country.ifPresentOrElse({ checkCountry(resource.country.get(), container) }, { container.addException(PropertyException("country", "Country is an expected value.")) })
+        resource.address.ifPresentOrElse({}, { container.addException(PropertyException("address", "Address is an expected value.")) })
 
         if (container.isEmpty().not()) {
-            container.addException(GenericException("Location could not be created"))
-            throw container
+            throw container.also { it.addException(GenericException("Location could not be created")) }
         }
 
-        val loc: Location = Location(
+        val loc = Location(
                 longitude = resource.longitude.get(),
                 latitude = resource.latitude.get(),
                 secretId = UUID.randomUUID().toString(),
@@ -114,13 +126,16 @@ class LocationsService {
                 listed = resource.listed.get(),
                 name = resource.name.get(),
                 description = resource.description.get(),
-                creator = userRepository.findById(resource.creatorId.get()).get()
+                creator = userRepository.findById(resource.creatorId.get()).get(),
+                country = resource.country.get(),
+                address = resource.address.get(),
+                active = resource.active.orElseGet { false }
         )
         return UUID.fromString(locationRepository.saveAndFlush(loc).secretId)
     }
 
     fun update(secretId: UUID, resource: LocationWrapper) {
-        val container: ExceptionContainer = ExceptionContainer()
+        val container = ExceptionContainer()
 
         resource.longitude.ifPresent { checkLon(resource.longitude.get(), container) }
         resource.latitude.ifPresent { checkLat(resource.latitude.get(), container) }
@@ -137,6 +152,7 @@ class LocationsService {
             resource.name.ifPresent { location.name = resource.name.get() }
             resource.description.ifPresent { location.description = resource.description.get() }
             resource.creatorId.ifPresent { location.creator = userRepository.findById(resource.creatorId.get()).get() }
+            resource.active.ifPresent { location.active = resource.active.get() }
             locationRepository.saveAndFlush(location)
         }, {
             throw GenericException("Location with secretId=$secretId does not exist in the database.")

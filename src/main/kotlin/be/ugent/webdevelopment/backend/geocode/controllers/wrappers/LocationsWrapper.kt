@@ -9,7 +9,10 @@ class LocationsWrapper(var longitude: Optional<Double>,
                        var description: Optional<String>,
                        var creatorId: Optional<Int>,
                        var secretId: Optional<String>,
-                       var listed: Optional<Boolean>
+                       var listed: Optional<Boolean>,
+                       var active: Optional<Boolean>,
+                       var address: Optional<String>,
+                       var country: Optional<String>
 ) : Wrapper() {
     constructor(loc: Location) : this(
             longitude = Optional.of(loc.longitude),
@@ -18,7 +21,9 @@ class LocationsWrapper(var longitude: Optional<Double>,
             description = Optional.of(loc.description),
             creatorId = Optional.of(loc.creator.id),
             secretId = Optional.of(loc.secretId),
-            listed = Optional.of(loc.listed)
+            listed = Optional.of(loc.listed),
+            active = Optional.of(loc.active),
+            address = Optional.of(loc.address),
+            country = Optional.of(loc.country)
     )
-
 }
