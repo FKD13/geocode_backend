@@ -33,10 +33,11 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
 
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
                 .filter {
-                    !it.isAnnotationPresent(JsonView::class.java) ||
-                            it.getAnnotation(JsonView::class.java).value.any {
-                                it.java.isAssignableFrom(provider.activeView)
-                            }
+                    provider.activeView != null &&
+                            (!it.isAnnotationPresent(JsonView::class.java) ||
+                                    it.getAnnotation(JsonView::class.java).value.any {
+                                        it.java.isAssignableFrom(provider.activeView)
+                                    })
                 }
                 .forEach {
                     it.isAccessible = true
@@ -66,10 +67,11 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
 
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
                 .filter {
-                    !it.isAnnotationPresent(JsonView::class.java) ||
-                            it.getAnnotation(JsonView::class.java).value.any {
-                                it.java.isAssignableFrom(provider.activeView)
-                            }
+                    provider.activeView != null &&
+                            (!it.isAnnotationPresent(JsonView::class.java) ||
+                                    it.getAnnotation(JsonView::class.java).value.any {
+                                        it.java.isAssignableFrom(provider.activeView)
+                                    })
                 }
                 .forEach {
                     it.isAccessible = true
