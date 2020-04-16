@@ -27,7 +27,7 @@ class RatingsService(
     }
 
     private fun checkRatingsWrapper(ratingsWrapper: RatingsWrapper) {
-        val ec = ExceptionContainer()
+        val ec = ExceptionContainer(code = HttpStatus.UNPROCESSABLE_ENTITY)
 
         if (ratingsWrapper.rating.isPresent) {
             if (ratingsWrapper.rating.get() !in 1..5) {
