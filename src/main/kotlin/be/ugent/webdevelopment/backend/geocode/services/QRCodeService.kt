@@ -20,7 +20,7 @@ class QRCodeService {
     fun getQRCode(visitSecret: String, frontendUrl: String, size: Int): BufferedImage {
         // A little safe check
         val url = if (frontendUrl.endsWith("/")) frontendUrl + visitSecret else "$frontendUrl/$visitSecret"
-        if (size > 1024){
+        if (size > 1024) {
             throw GenericException("Size is to big, should be maximum 1024.")
         }
         val qrCodeWriter = QRCodeWriter()

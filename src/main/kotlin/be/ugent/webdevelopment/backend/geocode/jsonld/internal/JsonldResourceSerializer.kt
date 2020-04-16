@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import kotlin.reflect.full.isSubclassOf
 
 /**
  * @author Alexander De Leon (alex.deleon@devialab.com)
@@ -33,9 +32,12 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
         context.ifPresent { gen.writeObjectField("@context", context.get()) }
 
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
-                .filter { !it.isAnnotationPresent(JsonView::class.java) ||
-                        it.getAnnotation(JsonView::class.java).value.any {
-                            it.java.isAssignableFrom(provider.activeView) } }
+                .filter {
+                    !it.isAnnotationPresent(JsonView::class.java) ||
+                            it.getAnnotation(JsonView::class.java).value.any {
+                                it.java.isAssignableFrom(provider.activeView)
+                            }
+                }
                 .forEach {
                     it.isAccessible = true
                     if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
@@ -63,9 +65,12 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
 
 
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
-                .filter { !it.isAnnotationPresent(JsonView::class.java) ||
-                        it.getAnnotation(JsonView::class.java).value.any {
-                            it.java.isAssignableFrom(provider.activeView) } }
+                .filter {
+                    !it.isAnnotationPresent(JsonView::class.java) ||
+                            it.getAnnotation(JsonView::class.java).value.any {
+                                it.java.isAssignableFrom(provider.activeView)
+                            }
+                }
                 .forEach {
                     it.isAccessible = true
                     if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
