@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import java.util.*
+import kotlin.reflect.full.isSubclassOf
 
 /**
  * @author Alexander De Leon
@@ -39,7 +40,8 @@ object JsonldContextFactory {
                 f.isAccessible = true
                 if ((f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") ||
                         (f.isAnnotationPresent(JsonView::class.java) &&
-                                !f.getAnnotation(JsonView::class.java).value.any { it == provider.activeView.kotlin })) {
+                                !f.getAnnotation(JsonView::class.java).value.any {
+                                    it.java.isAssignableFrom(provider.activeView)})) {
                     continue
                 }
                 if (f.isAnnotationPresent(JsonUnwrapped::class.java)) {
