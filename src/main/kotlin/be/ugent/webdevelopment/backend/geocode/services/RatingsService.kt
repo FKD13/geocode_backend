@@ -7,6 +7,7 @@ import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.CheckInRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRatingRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
+import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.http.HttpStatus
@@ -26,25 +27,28 @@ class RatingsService(
     }
 
     private fun checkRatingsWrapper(ratingsWrapper: RatingsWrapper) {
+        val ec = ExceptionContainer()
+
         if (ratingsWrapper.rating.isPresent) {
             if (ratingsWrapper.rating.get() !in 1..5) {
                 throw PropertyException(
                         field = "rating",
-                        message = "A ${ratingsWrapper.rating.get()} star rating is incorrect, should be between 1 and 5.",
-                        code = HttpStatus.UNPROCESSABLE_ENTITY)
+                        message = "A ${ratingsWrapper.rating.get()} star rating is incorrect, should be between 1 and 5.")
             }
         } else {
-            throw PropertyException("rating", "Rating should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            ec.addException(PropertyException("rating", "Rating should be present."))
         }
         if (ratingsWrapper.message.isPresent) {
-            if (ratingsWrapper.message.get().length < 5){
-                throw PropertyException("message", "Message should be at least 5 characters.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            if (ratingsWrapper.message.get().length < 5) {
+                ec.addException(PropertyException("message", "Message should be at least 5 characters."))
             } else if (ratingsWrapper.message.get().length > 1024) {
-                throw PropertyException("message", "Message should be at most 1024 characters.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+                ec.addException(PropertyException("message", "Message should be at most 1024 characters."))
             }
-        }else{
-            throw PropertyException("message", "Message should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+        } else {
+            ec.addException(PropertyException("message", "Message should be present."))
         }
+
+        ec.throwIfNotEmpty()
     }
 
     fun addRating(creator: User, secretId: UUID, rating: RatingsWrapper): LocationRating {
