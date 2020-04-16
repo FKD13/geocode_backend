@@ -250,7 +250,7 @@ class LocationRating constructor(
         @field:JsonldProperty("https://schema.org/Rating#ratingValue")
         @JsonView(View.PublicDetail::class)
         var rating: Int = 0,
-  
+
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Rating#ratingExplanation")
         @JsonView(View.PublicDetail::class)
