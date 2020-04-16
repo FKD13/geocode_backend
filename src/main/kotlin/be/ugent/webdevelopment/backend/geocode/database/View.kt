@@ -8,6 +8,7 @@ interface View {
     interface Id
     interface List : Id
     interface PublicDetail : List
-    interface PrivateDetail : PublicDetail
-    interface AdminDetail : PublicDetail //todo miss private ipv public
+    interface PrivateDetail : PublicDetail, PrettyPrivate
+    interface AdminDetail : PublicDetail, PrettyPrivate
+    interface PrettyPrivate : PublicDetail
 }
