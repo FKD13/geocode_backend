@@ -31,21 +31,8 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
         id.ifPresent { gen.writeStringField("@id", id.get()) }
         context.ifPresent { gen.writeObjectField("@context", context.get()) }
 
-        value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
-                .filter {
-                    !it.isAnnotationPresent(JsonView::class.java) ||
-                            it.getAnnotation(JsonView::class.java).value.any {
-                                it.java.isAssignableFrom(provider.activeView)
-                            }
-                }
-                .forEach {
-                    it.isAccessible = true
-                    if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
-                        serializeUnwrapped(it.get(value) as JsonLDSerializable, gen, provider)
-                    } else {
-                        provider.defaultSerializeField(it.name, it.get(value), gen)
-                    }
-                }
+        serializeBody(value, gen, provider)
+
         gen.writeEndObject()
     }
 
@@ -63,13 +50,19 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
         id.ifPresent { gen.writeStringField("@id", id.get()) }
 
 
+        serializeBody(value, gen, provider)
+
+    }
+
+    private fun serializeBody(value: JsonLDSerializable, gen: JsonGenerator, provider: SerializerProvider) {
 
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
                 .filter {
-                    !it.isAnnotationPresent(JsonView::class.java) ||
-                            it.getAnnotation(JsonView::class.java).value.any {
-                                it.java.isAssignableFrom(provider.activeView)
-                            }
+                    provider.activeView != null ||
+                            (!it.isAnnotationPresent(JsonView::class.java) ||
+                                    it.getAnnotation(JsonView::class.java).value.any {
+                                        it.java.isAssignableFrom(provider.activeView)
+                                    })
                 }
                 .forEach {
                     it.isAccessible = true
@@ -81,6 +74,5 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
                     //body.set<JsonNode>(it.name, TextNode.valueOf(it.get(value).toString()))
                 }
     }
-
 
 }

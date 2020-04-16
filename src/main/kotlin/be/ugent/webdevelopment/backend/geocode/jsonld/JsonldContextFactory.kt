@@ -38,10 +38,11 @@ object JsonldContextFactory {
             for (f in fields) {
                 f.isAccessible = true
                 if ((f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") ||
-                        (f.isAnnotationPresent(JsonView::class.java) &&
-                                !f.getAnnotation(JsonView::class.java).value.any {
-                                    it.java.isAssignableFrom(provider.activeView)
-                                })) {
+                        (provider.activeView != null && (
+                                f.isAnnotationPresent(JsonView::class.java) &&
+                                        !f.getAnnotation(JsonView::class.java).value.any {
+                                            it.java.isAssignableFrom(provider.activeView)
+                                        }))) {
                     continue
                 }
                 if (f.isAnnotationPresent(JsonUnwrapped::class.java)) {
