@@ -15,7 +15,7 @@ import java.util.function.Function
  */
 object JsonldResourceUtils {
 
-    fun getContext(scopedObj: Any, provider: SerializerProvider?): Optional<ObjectNode> {
+    fun getContext(scopedObj: Any, provider: SerializerProvider): Optional<ObjectNode> {
         return fromAnnotations(scopedObj, provider)
     }
 

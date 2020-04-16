@@ -1,54 +1,86 @@
 package be.ugent.webdevelopment.backend.geocode.jsonld.internal
 
-import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldLink
+import be.ugent.webdevelopment.backend.geocode.database.models.JsonLDSerializable
 import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils
-import com.fasterxml.jackson.core.JsonGenerationException
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonUnwrapped
+import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.ser.BeanSerializer
-import com.fasterxml.jackson.databind.ser.std.BeanSerializerBase
-import java.io.IOException
-import java.util.*
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 /**
  * @author Alexander De Leon (alex.deleon@devialab.com)
  */
-class JsonldResourceSerializer(src: BeanSerializerBase?) : BeanSerializer(src) {
 
-    @Throws(IOException::class, JsonGenerationException::class)
-    override fun serializeFields(bean: Any, jgen: JsonGenerator, provider: SerializerProvider) {
-        val type = JsonldResourceUtils.dynamicTypeLookup(bean.javaClass)
-        if (type.isPresent) {
-            jgen.writeStringField("@type", type.get())
-        }
+class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSerializable::class.java) {
 
-        val id = JsonldResourceUtils.getFullIdFromObject(bean)
-        id.ifPresent { jgen.writeStringField("@id", id.get()) }
+    override fun handledType(): Class<JsonLDSerializable> {
+        return JsonLDSerializable::class.java
+    }
 
-        val context = JsonldResourceUtils.getContext(bean, provider)
-        if (context.isPresent) {
-            jgen.writeObjectField("@context", context.get())
-        }
-        super.serializeFields(bean, jgen, provider)//Maybe todo en zelf serializen als JsonViews niet werken
-        getLinks(bean).ifPresent { linksMap: Map<String?, String?>? ->
-            linksMap!!.forEach { (key: String?, value: String?) ->
-                try {
-                    jgen.writeStringField(key, value)
-                } catch (e: Exception) {
-                    throw RuntimeException(e)
+    override fun serialize(value: JsonLDSerializable, gen: JsonGenerator, provider: SerializerProvider) {
+
+        val type = JsonldResourceUtils.dynamicTypeLookup(value.javaClass)
+        val id = JsonldResourceUtils.getFullIdFromObject(value)
+        val context = JsonldResourceUtils.getContext(value, provider)
+
+        gen.writeStartObject()
+
+        type.ifPresent { gen.writeStringField("@type", type.get()) }
+        id.ifPresent { gen.writeStringField("@id", id.get()) }
+        context.ifPresent { gen.writeObjectField("@context", context.get()) }
+
+        value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
+                .filter {
+                    !it.isAnnotationPresent(JsonView::class.java) ||
+                            it.getAnnotation(JsonView::class.java).value.any {
+                                it.java.isAssignableFrom(provider.activeView)
+                            }
                 }
-            }
-        }
+                .forEach {
+                    it.isAccessible = true
+                    if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
+                        serializeUnwrapped(it.get(value) as JsonLDSerializable, gen, provider)
+                    } else {
+                        provider.defaultSerializeField(it.name, it.get(value), gen)
+                    }
+                }
+        gen.writeEndObject()
     }
 
-    protected fun getLinks(resource: Any): Optional<Map<String?, String?>> {
-        var linksNodes: MutableMap<String?, String?>? = null
-        val beanType: Class<*> = resource.javaClass
-        val links = beanType.getAnnotationsByType(JsonldLink::class.java)
-        linksNodes = HashMap(links.size)
-        for (i in links.indices) {
-            linksNodes[links[i].name] = links[i].href
-        }
-        return Optional.ofNullable(linksNodes)
+    fun serializeUnwrapped(value: JsonLDSerializable, gen: JsonGenerator, provider: SerializerProvider) {
+        /* Als je hem unwrapt dan moet je geen context meer genereren.
+        Dit wordt hierboven gedaan
+
+        val context = JsonldResourceUtils.getContext(value, provider)
+        context.ifPresent { gen.writeObjectField("@context", context.get()) }
+        */
+
+        val type = JsonldResourceUtils.dynamicTypeLookup(value.javaClass)
+        val id = JsonldResourceUtils.getFullIdFromObject(value)
+        type.ifPresent { gen.writeStringField("@type", type.get()) }
+        id.ifPresent { gen.writeStringField("@id", id.get()) }
+
+
+
+        value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
+                .filter {
+                    !it.isAnnotationPresent(JsonView::class.java) ||
+                            it.getAnnotation(JsonView::class.java).value.any {
+                                it.java.isAssignableFrom(provider.activeView)
+                            }
+                }
+                .forEach {
+                    it.isAccessible = true
+                    if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
+                        serializeUnwrapped(value, gen, provider)
+                    } else {
+                        provider.defaultSerializeField(it.name, it.get(value), gen)
+                    }
+                    //body.set<JsonNode>(it.name, TextNode.valueOf(it.get(value).toString()))
+                }
     }
+
+
 }
