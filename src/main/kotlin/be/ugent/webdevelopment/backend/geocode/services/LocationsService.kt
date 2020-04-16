@@ -102,7 +102,7 @@ class LocationsService {
         }
     }
 
-    fun create(resource: LocationsWrapper): UUID {
+    fun create(resource: LocationsWrapper): Location {
         val container = ExceptionContainer()
 
         resource.longitude.ifPresentOrElse({ checkLon(resource.longitude.get(), container) }, { container.addException(PropertyException("longitude", "Longitude is an expected value.")) })
@@ -131,7 +131,7 @@ class LocationsService {
                 address = resource.address.get(),
                 active = resource.active.orElseGet { false }
         )
-        return UUID.fromString(locationRepository.saveAndFlush(loc).secretId)
+        return locationRepository.saveAndFlush(loc)
     }
 
     fun update(secretId: UUID, resource: LocationWrapper) {

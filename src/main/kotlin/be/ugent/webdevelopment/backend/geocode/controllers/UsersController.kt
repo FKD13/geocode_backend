@@ -13,15 +13,16 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/users")
-@JsonView(View.PublicDetail::class)
 class UsersController(val service: UsersService) {
 
     @GetMapping
+    @JsonView(View.List::class)
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<UsersWrapper> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{id}"])
+    @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable id: Int,
                  response: HttpServletResponse, request: HttpServletRequest): UsersWrapper {
         return service.findById(id)

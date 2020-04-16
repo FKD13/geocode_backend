@@ -21,7 +21,7 @@ class VisitsService {
     @Autowired
     lateinit var locationRepository: LocationRepository
 
-    fun visit(user: User, visitSecret: UUID) {
+    fun visit(user: User, visitSecret: UUID): Location {
         val location = locationRepository.findByVisitSecretAndActive(visitSecret.toString(), active = true)
         location.ifPresentOrElse({
             checkInRepository.saveAndFlush(
@@ -30,6 +30,7 @@ class VisitsService {
         }, {
             throw GenericException("VisitSecret is not linked to any location or the location is not active.")
         })
+        return location.get()
     }
 
     fun getByVisitSecret(visitSecret: UUID): Location {

@@ -2,10 +2,7 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
-import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
-import be.ugent.webdevelopment.backend.geocode.database.models.Comment
-import be.ugent.webdevelopment.backend.geocode.database.models.Location
-import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
+import be.ugent.webdevelopment.backend.geocode.database.models.*
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
@@ -18,7 +15,7 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/locations")
+@RequestMapping("/locations", produces = ["application/ld+json"])
 class LocationsController(
         val service: LocationsService,
         val jwtService: JWTAuthenticator,
@@ -28,23 +25,24 @@ class LocationsController(
         val qrCodeService: QRCodeService
 ) {
 
-    
+
     @GetMapping
-    @JsonView(View.PrivateDetail::class)
+    @JsonView(View.List::class)
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{secretId}"])
-    @JsonView(View.PrivateDetail::class)
+    @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable secretId: UUID,
                  response: HttpServletResponse, request: HttpServletRequest): Location {
         return service.findBySecretId(secretId)
     }
 
     @PostMapping
+    @JsonView(View.Id::class)
     fun create(@RequestBody resource: LocationsWrapper,
-               response: HttpServletResponse, request: HttpServletRequest): UUID {
+               response: HttpServletResponse, request: HttpServletRequest): Location {
         resource.creatorId = Optional.of(jwtService.tryAuthenticate(request).id)
         return service.create(resource)
     }
@@ -67,9 +65,10 @@ class LocationsController(
     // Visits
 
     @PostMapping(value = ["/visits/{visitSecret}"])
+    @JsonView(View.Id::class)
     fun visitLocation(@PathVariable visitSecret: UUID,
-                      response: HttpServletResponse, request: HttpServletRequest) {
-        visitsService.visit(jwtService.tryAuthenticate(request), visitSecret)
+                      response: HttpServletResponse, request: HttpServletRequest): Location {
+        return visitsService.visit(jwtService.tryAuthenticate(request), visitSecret)
     }
 
     @GetMapping(value = ["/visits/{visitSecret}"])
@@ -79,7 +78,7 @@ class LocationsController(
     }
 
     @GetMapping(value = ["/{secretId}/visits"])
-    @JsonView(View.PublicDetail::class)
+    @JsonView(View.List::class)
     fun getVisitsBySecretId(@PathVariable secretId: UUID): List<CheckIn> {
         return visitsService.getVisitsBySecretId(secretId)
     }
@@ -88,13 +87,13 @@ class LocationsController(
     // Ratings
 
     @GetMapping(value = ["/{secretId}/ratings"])
-    @JsonView(View.PublicDetail::class)
+    @JsonView(View.List::class)
     fun getRatingsByLocation(@PathVariable secretId: UUID): List<LocationRating> {
         return ratingsService.getRatingsByLocation(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/ratings"])
-    @JsonView(View.PublicDetail::class)
+    @JsonView(View.PrivateDetail::class)
     fun addRating(@PathVariable secretId: UUID, @RequestBody ratingsWrapper: RatingsWrapper,
                   request: HttpServletRequest, response: HttpServletResponse): LocationRating {
         val user = jwtService.tryAuthenticate(request)
@@ -106,25 +105,29 @@ class LocationsController(
 
     @GetMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
-    fun getReportsByLocation(@PathVariable secretId: UUID) {
+    fun getReportsByLocation(@PathVariable secretId: UUID): List<Report> {
         //TODO
+        return emptyList()
     }
 
     @PostMapping(value = ["/{secretId}/reports"])
-    fun addReports(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
+    @JsonView(View.AdminDetail::class)
+    fun addReports(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse): Report {
         //TODO
+        return Report()
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Comments
 
     @GetMapping(value = ["/{secretId}/comments"])
-    @JsonView(View.PublicDetail::class)
+    @JsonView(View.List::class)
     fun getCommentsByLocation(@PathVariable secretId: UUID): List<Comment> {
         return commentsService.getCommentsBySecretId(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/comments"])
+    @JsonView(View.PrivateDetail::class)
     fun addComments(@PathVariable secretId: UUID, @RequestBody comment: CommentWrapper,
                     request: HttpServletRequest, response: HttpServletResponse): Comment {
         return commentsService.createComment(jwtService.tryAuthenticate(request), secretId, comment)
@@ -132,7 +135,7 @@ class LocationsController(
 
     //------------------------------------------------------------------------------------------------------------------
 
-    @GetMapping("/{secretId}/qrcode")
+    @GetMapping("/{secretId}/qrcode", produces = ["application/jpeg"])
     fun getQrcode(
             @RequestParam("frontend") frontendUrl: String,
             @RequestParam("size") size: Int,

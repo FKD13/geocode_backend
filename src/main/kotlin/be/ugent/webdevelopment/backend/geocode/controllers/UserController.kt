@@ -25,14 +25,13 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
                      val locationsService: LocationsService, val visitsService: VisitsService) {
 
     @GetMapping
-    @JsonView(View.PrivateDetail::class)
     fun findByLoggedIn(
             response: HttpServletResponse, request: HttpServletRequest): User {
         return jwtService.tryAuthenticate(request)
     }
 
     @GetMapping(value = ["/locations"])
-    @JsonView(View.PublicDetail::class) //TODO: change to View.List
+    @JsonView(View.List::class)
     fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper> {
         return locationsService.findAllByUser(jwtService.tryAuthenticate(request))
     }
