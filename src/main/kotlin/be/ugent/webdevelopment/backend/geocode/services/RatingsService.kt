@@ -7,6 +7,7 @@ import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.CheckInRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRatingRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
+import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.http.HttpStatus
@@ -26,20 +27,28 @@ class RatingsService(
     }
 
     private fun checkRatingsWrapper(ratingsWrapper: RatingsWrapper) {
+        val ec = ExceptionContainer(code = HttpStatus.UNPROCESSABLE_ENTITY)
+
         if (ratingsWrapper.rating.isPresent) {
-            if (ratingsWrapper.rating.get() !in 0..4) {
-                throw PropertyException("rating", "Rating should be between 0 and 4.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            if (ratingsWrapper.rating.get() !in 1..5) {
+                throw PropertyException(
+                        field = "rating",
+                        message = "A ${ratingsWrapper.rating.get()} star rating is incorrect, should be between 1 and 5.")
             }
         } else {
-            throw PropertyException("rating", "Rating should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            ec.addException(PropertyException("rating", "Rating should be present."))
         }
         if (ratingsWrapper.message.isPresent) {
             if (ratingsWrapper.message.get().length < 5) {
-                throw PropertyException("message", "Message should be at least 5 characters.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+                ec.addException(PropertyException("message", "Message should be at least 5 characters."))
+            } else if (ratingsWrapper.message.get().length > 1024) {
+                ec.addException(PropertyException("message", "Message should be at most 1024 characters."))
             }
         } else {
-            throw PropertyException("message", "Message should be present.", code = HttpStatus.UNPROCESSABLE_ENTITY)
+            ec.addException(PropertyException("message", "Message should be present."))
         }
+
+        ec.throwIfNotEmpty()
     }
 
     fun addRating(creator: User, secretId: UUID, rating: RatingsWrapper): LocationRating {
@@ -49,7 +58,7 @@ class RatingsService(
         checkRatingsWrapper(rating)
 
         val optRating = ratingRepository.findByCreatorAndLocation(creator = creator, location = location)
-        optRating.ifPresent { throw GenericException("You have already rated this location", code = HttpStatus.UNPROCESSABLE_ENTITY) }
+        optRating.ifPresent { throw GenericException("You have already rated this location, update your previous rating instead.", code = HttpStatus.UNPROCESSABLE_ENTITY) }
 
         return ratingRepository.saveAndFlush(LocationRating(
                 message = rating.message.get(),
@@ -71,13 +80,14 @@ class RatingsService(
 
     fun updateRatingById(ratingId: Int, ratingsWrapper: RatingsWrapper, user: User) {
 
-        checkRatingsWrapper(ratingsWrapper)
-
         val rating = ratingRepository.findById(ratingId)
         rating.orElseThrow { GenericException("Rating not found") }
 
         if (rating.get().creator == user) {
-            ratingRepository.saveAndFlush(rating.get().also { it.rating = ratingsWrapper.rating.get() })
+            ratingsWrapper.rating.ifPresent { rating.get().rating = ratingsWrapper.rating.get() }
+            ratingsWrapper.message.ifPresent { rating.get().message = ratingsWrapper.message.get() }
+
+            ratingRepository.saveAndFlush(rating.get())
         } else {
             throw GenericException(
                     code = HttpStatus.FORBIDDEN,
