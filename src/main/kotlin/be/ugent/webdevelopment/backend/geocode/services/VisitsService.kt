@@ -48,7 +48,7 @@ class VisitsService {
         if (location.isEmpty) {
             throw GenericException("Secret id is not linked to any location.")
         }
-        return checkInRepository.findAllByLocationOrderByTime(location = location.get())
+        return checkInRepository.findAllByLocationOrderByCreatedAt(location = location.get())
     }
 
     fun getVisitsByUser(user: User): List<CheckIn> {
