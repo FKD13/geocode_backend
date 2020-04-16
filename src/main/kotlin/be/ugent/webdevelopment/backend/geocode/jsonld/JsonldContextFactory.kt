@@ -41,8 +41,8 @@ object JsonldContextFactory {
                 if ((f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") ||
                         (provider.activeView != null && (
                                 f.isAnnotationPresent(JsonView::class.java) &&
-                                        !f.getAnnotation(JsonView::class.java).value.any {
-                                            it.java.isAssignableFrom(provider.activeView)
+                                        f.getAnnotation(JsonView::class.java).value.all {
+                                            !it.java.isAssignableFrom(provider.activeView)
                                         }))) {
                     continue
                 }

@@ -1,6 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
@@ -25,15 +25,14 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
                      val locationsService: LocationsService, val visitsService: VisitsService) {
 
     @GetMapping
-    @JsonView(View.PrivateDetail::class)
     fun findByLoggedIn(
             response: HttpServletResponse, request: HttpServletRequest): User {
         return jwtService.tryAuthenticate(request)
     }
 
     @GetMapping(value = ["/locations"])
-    @JsonView(View.PublicDetail::class) //TODO: change to View.List
-    fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper> {
+    @JsonView(View.List::class)
+    fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return locationsService.findAllByUser(jwtService.tryAuthenticate(request))
     }
 

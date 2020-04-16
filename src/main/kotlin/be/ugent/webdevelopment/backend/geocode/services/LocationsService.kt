@@ -2,7 +2,6 @@ package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRatingRepository
@@ -37,21 +36,21 @@ class LocationsService {
         return locationRepository.findAllByListedAndActive(listed = true, active = true).map { ExtendedLocationWrapper(it, getRating(it)) }
     }
 
-    fun findBySecretId(secretId: UUID): Location {
+    fun findBySecretId(secretId: UUID): ExtendedLocationWrapper {
         val loc: Optional<Location> = locationRepository.findBySecretId(secretId.toString())
         loc.ifPresentOrElse({}, { throw GenericException("Location that corresponds to this secret id was not found.") })
-        return loc.get()
+        return ExtendedLocationWrapper(loc.get(), getRating(loc.get()))
     }
 
-    private fun getRating(location: Location): Double {
+    fun getRating(location: Location): Double {
         val ratings = locationRatingRepository.findAllByLocation(location).map { locationRating -> locationRating.rating }
         if (ratings.isEmpty()) return 0.0
         return ratings.sum().div(ratings.size.toDouble())
     }
 
 
-    fun findAllByUser(user: User): List<LocationWrapper> {
-        return locationRepository.findByCreator(user).map { LocationWrapper(it) }
+    fun findAllByUser(user: User): List<ExtendedLocationWrapper> {
+        return locationRepository.findByCreator(user).map { ExtendedLocationWrapper(it, getRating(it)) }
     }
 
     fun checkLat(lat: Double, container: ExceptionContainer) {
@@ -102,7 +101,7 @@ class LocationsService {
         }
     }
 
-    fun create(resource: LocationsWrapper): UUID {
+    fun create(resource: LocationWrapper): Location {
         val container = ExceptionContainer()
 
         resource.longitude.ifPresentOrElse({ checkLon(resource.longitude.get(), container) }, { container.addException(PropertyException("longitude", "Longitude is an expected value.")) })
@@ -131,7 +130,7 @@ class LocationsService {
                 address = resource.address.get(),
                 active = resource.active.orElseGet { false }
         )
-        return UUID.fromString(locationRepository.saveAndFlush(loc).secretId)
+        return locationRepository.saveAndFlush(loc)
     }
 
     fun update(secretId: UUID, resource: LocationWrapper) {

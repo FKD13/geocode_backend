@@ -56,14 +56,13 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
     }
 
     private fun serializeBody(value: JsonLDSerializable, gen: JsonGenerator, provider: SerializerProvider) {
-
         value.javaClass.declaredFields.filter { !it.isAnnotationPresent(JsonIgnore::class.java) }
                 .filter {
-                    provider.activeView != null ||
-                            (!it.isAnnotationPresent(JsonView::class.java) ||
-                                    it.getAnnotation(JsonView::class.java).value.any {
-                                        it.java.isAssignableFrom(provider.activeView)
-                                    })
+                    provider.activeView == null ||
+                            (!it.isAnnotationPresent(JsonView::class.java)) || (
+                            it.getAnnotation(JsonView::class.java).value.any { view ->
+                                view.java.isAssignableFrom(provider.activeView)
+                            })
                 }
                 .forEach {
                     it.isAccessible = true

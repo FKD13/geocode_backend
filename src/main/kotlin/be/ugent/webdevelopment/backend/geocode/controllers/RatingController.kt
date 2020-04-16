@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse
 class RatingController(val ratingsService: RatingsService, val jwtAuthenticator: JWTAuthenticator) {
 
     @GetMapping("/{ratingId}")
-    @JsonView(View.PublicDetail::class)
     fun getRatingById(@PathVariable ratingId: Int): LocationRating {
         return ratingsService.getRatingById(ratingId)
     }

@@ -23,22 +23,22 @@ class User constructor(
 
         @field:JsonldId
         @Id @GeneratedValue
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @field:JsonldProperty("https://schema.org/email")
         @Column(nullable = false, unique = true, length = 512)
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PrivateDetail::class)
         var email: String = "",
 
         @field:JsonldProperty("https://schema.org/alternateName")
         @Column(nullable = false, unique = true)
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var username: String = "",
 
         @field:JsonldProperty("https://schema.org/image")
         @Column(nullable = false, name = "avatar_url")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var avatarUrl: String = "",
 
         @Column(nullable = false)
@@ -95,17 +95,17 @@ class Location constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/longitude")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var longitude: Double = 0.0,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/latitude")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var latitude: Double = 0.0,
 
         @Column(nullable = false, name = "secret_id", unique = true)
         @field:JsonldId
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.Id::class)
         var secretId: String = "",
 
         @Column(nullable = false)
@@ -113,12 +113,12 @@ class Location constructor(
         var createdAt: Date = Date(),
 
         @Column(nullable = false)
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var listed: Boolean = false,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/name")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var name: String = "",
 
         @Column(nullable = false, length = 2048)
@@ -127,12 +127,12 @@ class Location constructor(
         var description: String = "",
 
         @Column(nullable = false)
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.AdminDetail::class)
         var visitSecret: String = "",
 
         @ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)
         @field:JsonldProperty("https://schema.org/Person")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var creator: User = User(),
 
         @Column(nullable = false, length = 128)
@@ -146,7 +146,7 @@ class Location constructor(
         var address: String = "",
 
         @Column(nullable = false)
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var active: Boolean = false,
 
         @JsonIgnore
@@ -175,16 +175,16 @@ class Location constructor(
 @Table(name = "tours")
 @JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
 @JsonldId("tours") //todo check of dit klopt met de endpoints
-class Tour constructor(
+class Tour constructor( //todo check al de JsonViews als we dit gaan implementeren
         @Id
         @GeneratedValue
         @field:JsonldId
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/CreativeWork#creator")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var creator: User = User(),
 
         @ManyToMany(cascade = [CascadeType.PERSIST])
@@ -194,7 +194,7 @@ class Tour constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Thing#name")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var name: String = "",
 
         @Column(length = 2048, nullable = false)
@@ -220,27 +220,27 @@ class Comment constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Comment#creator")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var creator: User = User(),
 
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Comment#about")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var location: Location = Location(),
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Comment#dateCreated")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var createdAt: Date = Date(),
 
         @Column(nullable = false, length = 1024)
         @field:JsonldProperty("https://schema.org/Comment#text")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         @field:JsonProperty("message")
         var comment: String = ""
 ) : JsonLDSerializable()
@@ -253,27 +253,27 @@ class LocationRating constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Rating#author")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var creator: User = User(),
 
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Rating#about")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var location: Location = Location(),
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Rating#ratingValue")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var rating: Int = 0,
 
         @Column(nullable = false, length = 1024)
         @field:JsonldProperty("https://schema.org/Rating#ratingExplanation")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var message: String = ""
 ) : JsonLDSerializable()
 
@@ -285,22 +285,22 @@ class CheckIn constructor(
         @Id
         @GeneratedValue
         @JsonldId
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/DiscoverAction#agent")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var creator: User = User(),
 
         @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/DiscoverAction#location")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var location: Location = Location(),
 
         @Column(nullable = false)
-        @field:JsonldProperty("https://schema.org/DiscoverAction#location#endTime")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonldProperty("https://schema.org/DiscoverAction#endTime")
+        @field:JsonView(View.PrivateDetail::class)
         var createdAt: Date = Date()
 ) : JsonLDSerializable()
 
@@ -352,22 +352,22 @@ class UserTour constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Action#agent")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var user: User = User(),
 
         @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Action#object")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.List::class)
         var tour: Tour = Tour(),
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Action#actionStatus")
-        @field:JsonView(View.PublicDetail::class)
+        @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var completed: Boolean = false
 ) : JsonLDSerializable()
 
