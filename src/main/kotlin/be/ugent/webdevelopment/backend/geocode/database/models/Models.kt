@@ -125,6 +125,10 @@ class Location constructor(
         @field:JsonView(View.PublicDetail::class)
         var description: String = "",
 
+        @Column(nullable = false)
+        @JsonView(View.PublicDetail::class)
+        var visitSecret: String = "",
+
         @ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)
         @field:JsonldProperty("https://schema.org/Person")
         @field:JsonView(View.PublicDetail::class)

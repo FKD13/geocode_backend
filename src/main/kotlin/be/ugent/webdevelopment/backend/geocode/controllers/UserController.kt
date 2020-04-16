@@ -4,9 +4,11 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrap
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.User
+import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import be.ugent.webdevelopment.backend.geocode.services.UsersService
+import be.ugent.webdevelopment.backend.geocode.services.VisitsService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -19,7 +21,8 @@ import javax.servlet.http.HttpServletResponse
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/user")
 @JsonView(View.PrivateDetail::class)
-class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator, val locationsService: LocationsService) {
+class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator,
+                     val locationsService: LocationsService, val visitsService: VisitsService) {
 
     @GetMapping
     @JsonView(View.PrivateDetail::class)
@@ -49,13 +52,13 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
     // Visits
 
     @GetMapping("/visits")
-    fun getVisitsForUser(response: HttpServletResponse, request: HttpServletRequest) {
-        //TODO
+    fun getVisitsForUser(response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
+        return visitsService.getVisitsByUser(jwtService.tryAuthenticate(request))
     }
 
     @GetMapping("/visits/{secretId}")
     fun getVisitsForUserByLocationSecret(@PathVariable secretId: UUID,
-                                         response: HttpServletResponse, request: HttpServletRequest) {
-        //TODO
+                                         response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
+        return visitsService.getVisitsByUserForLocation(jwtService.tryAuthenticate(request), secretId)
     }
 }

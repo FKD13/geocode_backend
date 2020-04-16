@@ -2,14 +2,12 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.Comment
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
-import be.ugent.webdevelopment.backend.geocode.services.CommentsService
-import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
-import be.ugent.webdevelopment.backend.geocode.services.LocationsService
-import be.ugent.webdevelopment.backend.geocode.services.RatingsService
+import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -25,7 +23,9 @@ class LocationsController(
         val service: LocationsService,
         val jwtService: JWTAuthenticator,
         val ratingsService: RatingsService,
-        val commentsService: CommentsService
+        val commentsService: CommentsService,
+        val visitsService: VisitsService,
+        val qrCodeService: QRCodeService
 ) {
 
     @GetMapping
@@ -66,20 +66,21 @@ class LocationsController(
     // Visits
 
     @PostMapping(value = ["/visits/{visitSecret}"])
-    fun visitLocation(@PathVariable visitSecret: UUID) {
-        //TODO
+    fun visitLocation(@PathVariable visitSecret: UUID,
+                      response: HttpServletResponse, request: HttpServletRequest) {
+        visitsService.visit(jwtService.tryAuthenticate(request), visitSecret)
     }
 
     @GetMapping(value = ["/visits/{visitSecret}"])
     @JsonView(View.PublicDetail::class)
-    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID) {
-        //TODO
+    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID): Location {
+        return visitsService.getByVisitSecret(visitSecret)
     }
 
     @GetMapping(value = ["/{secretId}/visits"])
     @JsonView(View.PublicDetail::class)
-    fun getVisitsBySecretId(@PathVariable secretId: UUID) {
-        //TODO
+    fun getVisitsBySecretId(@PathVariable secretId: UUID): List<CheckIn> {
+        return visitsService.getVisitsBySecretId(secretId)
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -134,8 +135,13 @@ class LocationsController(
     fun getQrcode(
             @RequestParam("frontend") frontendUrl: String,
             @RequestParam("size") size: Int,
+            @PathVariable("secretId") secretId: UUID,
             request: HttpServletRequest,
             response: HttpServletResponse): BufferedImage {
-        return BufferedImage(0, 0, 0)
+        val location = service.findBySecretId(secretId)
+        if (jwtService.tryAuthenticate(request).id != location.creator.id) {
+            throw GenericException("This user did not create this location and can therefore not get a QR code for it.")
+        }
+        return qrCodeService.getQRCode(location.visitSecret, frontendUrl, size)
     }
 }

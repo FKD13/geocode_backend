@@ -34,7 +34,7 @@ class LocationsService {
     private val countryUtil = CountryUtil()
 
     fun findAll(): List<ExtendedLocationWrapper> {
-        return locationRepository.findAllByListedEquals(true).map { ExtendedLocationWrapper(it, getRating(it)) }
+        return locationRepository.findAllByListedAndActive(listed = true, active = true).map { ExtendedLocationWrapper(it, getRating(it)) }
     }
 
     fun findBySecretId(secretId: UUID): Location {
@@ -122,6 +122,7 @@ class LocationsService {
                 longitude = resource.longitude.get(),
                 latitude = resource.latitude.get(),
                 secretId = UUID.randomUUID().toString(),
+                visitSecret = UUID.randomUUID().toString(),
                 listed = resource.listed.get(),
                 name = resource.name.get(),
                 description = resource.description.get(),
@@ -161,7 +162,7 @@ class LocationsService {
     fun deleteById(user: User, secretId: UUID) {
         locationRepository.findBySecretId(secretId.toString()).ifPresentOrElse({
             if (it.creator.id != user.id) {
-                throw GenericException("The currently logged in user did not create this location and can therefor not delete it.")
+                throw GenericException("The currently logged in user did not create this location and can therefore not delete it.")
             } else {
                 locationRepository.delete(it)
                 locationRepository.flush()
