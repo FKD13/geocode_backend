@@ -34,7 +34,7 @@ class LocationsService {
     private val countryUtil = CountryUtil()
 
     fun findAll(): List<ExtendedLocationWrapper> {
-        return locationRepository.findAllByListedEquals(true).map { ExtendedLocationWrapper(it, getRating(it)) }
+        return locationRepository.findAllByListedAndActive(listed = true, active = true).map { ExtendedLocationWrapper(it, getRating(it)) }
     }
 
     fun findBySecretId(secretId: UUID): Location {

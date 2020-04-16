@@ -25,11 +25,11 @@ class VisitsService {
     fun visit(user: User, visitSecret: UUID) {
         val location = locationRepository.findByVisitSecret(visitSecret.toString())
         location.ifPresentOrElse({
-            if (it.active){
+            if (it.active) {
                 checkInRepository.saveAndFlush(
                         CheckIn(creator = user, location = location.get(), createdAt = Date.from(Instant.now()))
                 )
-            }else{
+            } else {
                 throw GenericException("The location you tried to visit is not active yet.", HttpStatus.FORBIDDEN)
             }
         }, {

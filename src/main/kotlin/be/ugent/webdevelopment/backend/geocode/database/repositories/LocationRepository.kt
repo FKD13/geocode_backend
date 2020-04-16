@@ -9,6 +9,6 @@ interface LocationRepository : JpaRepository<Location, Int> {
     fun findByCreator(creator: User): List<Location>
     fun findBySecretId(secretId: String): Optional<Location>
     fun deleteBySecretId(secretId: String)
-    fun findAllByListedEquals(listed: Boolean) : List<Location>
+    fun findAllByListedAndActive(listed: Boolean, active: Boolean) : List<Location>
     fun findByVisitSecret(visitSecret: String) : Optional<Location>
 }
