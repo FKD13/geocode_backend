@@ -1,14 +1,13 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.Comment
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
+import be.ugent.webdevelopment.backend.geocode.services.CommentsService
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import be.ugent.webdevelopment.backend.geocode.services.RatingsService
@@ -28,6 +27,7 @@ class LocationsController(
         val service: LocationsService,
         val jwtService: JWTAuthenticator,
         val ratingsService: RatingsService,
+        val commentsService: CommentsService,
         val visitsService: VisitsService
 ) {
 
@@ -118,17 +118,18 @@ class LocationsController(
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // Reports
+    // Comments
 
     @GetMapping(value = ["/{secretId}/comments"])
     @JsonView(View.PublicDetail::class)
-    fun getCommentsByLocation(@PathVariable secretId: UUID) {
-        //TODO
+    fun getCommentsByLocation(@PathVariable secretId: UUID): List<Comment> {
+        return commentsService.getCommentsBySecretId(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/comments"])
-    fun addComments(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
-        //TODO
+    fun addComments(@PathVariable secretId: UUID, @RequestBody comment: CommentWrapper,
+                    request: HttpServletRequest, response: HttpServletResponse) {
+        commentsService.createComment(jwtService.tryAuthenticate(request), secretId, comment)
     }
 
     //------------------------------------------------------------------------------------------------------------------
