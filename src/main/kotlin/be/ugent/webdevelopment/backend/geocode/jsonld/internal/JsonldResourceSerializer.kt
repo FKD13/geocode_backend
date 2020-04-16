@@ -3,6 +3,7 @@ package be.ugent.webdevelopment.backend.geocode.jsonld.internal
 import be.ugent.webdevelopment.backend.geocode.database.models.JsonLDSerializable
 import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.core.JsonGenerator
@@ -69,7 +70,11 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
                     if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
                         serializeUnwrapped(value, gen, provider)
                     } else {
-                        provider.defaultSerializeField(it.name, it.get(value), gen)
+                        if (it.isAnnotationPresent(JsonProperty::class.java)) {
+                            provider.defaultSerializeField(it.getAnnotation(JsonProperty::class.java).value, it.get(value), gen)
+                        } else {
+                            provider.defaultSerializeField(it.name, it.get(value), gen)
+                        }
                     }
                     //body.set<JsonNode>(it.name, TextNode.valueOf(it.get(value).toString()))
                 }
