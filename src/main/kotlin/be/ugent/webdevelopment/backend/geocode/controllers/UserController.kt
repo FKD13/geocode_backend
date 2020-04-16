@@ -53,7 +53,6 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
 
     @GetMapping("/visits")
     fun getVisitsForUser(response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
-        System.out.println(visitsService.getVisitsByUser(jwtService.tryAuthenticate(request)))
         return visitsService.getVisitsByUser(jwtService.tryAuthenticate(request))
     }
 
