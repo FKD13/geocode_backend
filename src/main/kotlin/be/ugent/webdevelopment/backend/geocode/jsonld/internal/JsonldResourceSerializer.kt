@@ -68,7 +68,7 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
                 .forEach {
                     it.isAccessible = true
                     if (it.isAnnotationPresent(JsonUnwrapped::class.java)) {
-                        serializeUnwrapped(value, gen, provider)
+                        serializeUnwrapped(it.get(value) as JsonLDSerializable, gen, provider)
                     } else {
                         if (it.isAnnotationPresent(JsonProperty::class.java)) {
                             provider.defaultSerializeField(it.getAnnotation(JsonProperty::class.java).value, it.get(value), gen)
