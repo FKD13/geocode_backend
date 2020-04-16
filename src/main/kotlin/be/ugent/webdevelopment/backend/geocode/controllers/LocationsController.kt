@@ -41,7 +41,7 @@ class LocationsController(
 
     @PostMapping
     @JsonView(View.Id::class)
-    fun create(@RequestBody resource: LocationsWrapper,
+    fun create(@RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest): Location {
         resource.creatorId = Optional.of(jwtService.tryAuthenticate(request).id)
         return service.create(resource)
