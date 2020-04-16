@@ -237,10 +237,10 @@ class Comment constructor(
         @JsonView(View.PublicDetail::class)
         var createdAt: Date = Date(),
 
-        @Column(nullable = false, length = 1024)
+        @Column(nullable = false, length = 1024, name = "message")
         @field:JsonldProperty("https://schema.org/Comment#text")
         @JsonView(View.PublicDetail::class)
-        var comment: String = ""
+        var message: String = ""
 ) : JsonLDSerializable()
 
 @Entity
