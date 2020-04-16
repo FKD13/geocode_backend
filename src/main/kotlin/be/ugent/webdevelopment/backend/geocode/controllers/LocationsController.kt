@@ -1,12 +1,12 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationsWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.Comment
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
+import be.ugent.webdevelopment.backend.geocode.services.CommentsService
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import be.ugent.webdevelopment.backend.geocode.services.RatingsService
@@ -24,20 +24,21 @@ import javax.servlet.http.HttpServletResponse
 class LocationsController(
         val service: LocationsService,
         val jwtService: JWTAuthenticator,
-        val ratingsService: RatingsService
+        val ratingsService: RatingsService,
+        val commentsService: CommentsService
 ) {
 
     @GetMapping
     @JsonView(View.PublicDetail::class)
-    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<Location> {
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return service.findAll()
     }
 
-    @GetMapping(value = ["/{secret_id}"])
+    @GetMapping(value = ["/{secretId}"])
     @JsonView(View.PublicDetail::class)
-    fun findById(@PathVariable secret_id: UUID,
+    fun findById(@PathVariable secretId: UUID,
                  response: HttpServletResponse, request: HttpServletRequest): Location {
-        return service.findBySecretId(secret_id)
+        return service.findBySecretId(secretId)
     }
 
     @PostMapping
@@ -47,18 +48,18 @@ class LocationsController(
         return service.create(resource)
     }
 
-    @PatchMapping(value = ["/{secret_id}"])
-    fun update(@PathVariable secret_id: UUID, @RequestBody resource: LocationWrapper,
+    @PatchMapping(value = ["/{secretId}"])
+    fun update(@PathVariable secretId: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secret_id).creator.id)
+        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secretId).creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
-        service.update(secret_id, resource)
+        service.update(secretId, resource)
     }
 
-    @DeleteMapping(value = ["/{secret_id}"])
-    fun delete(@PathVariable secret_id: UUID,
+    @DeleteMapping(value = ["/{secretId}"])
+    fun delete(@PathVariable secretId: UUID,
                response: HttpServletResponse, request: HttpServletRequest) {
-        service.deleteById(jwtService.tryAuthenticate(request), secret_id)
+        service.deleteById(jwtService.tryAuthenticate(request), secretId)
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -113,17 +114,18 @@ class LocationsController(
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // Reports
+    // Comments
 
     @GetMapping(value = ["/{secretId}/comments"])
     @JsonView(View.PublicDetail::class)
-    fun getCommentsByLocation(@PathVariable secretId: UUID) {
-        //TODO
+    fun getCommentsByLocation(@PathVariable secretId: UUID): List<Comment> {
+        return commentsService.getCommentsBySecretId(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/comments"])
-    fun addComments(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
-        //TODO
+    fun addComments(@PathVariable secretId: UUID, @RequestBody comment: CommentWrapper,
+                    request: HttpServletRequest, response: HttpServletResponse) {
+        commentsService.createComment(jwtService.tryAuthenticate(request), secretId, comment)
     }
 
     //------------------------------------------------------------------------------------------------------------------

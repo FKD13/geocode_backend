@@ -11,13 +11,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.util.*
 import javax.persistence.*
 
-open class Model
+@JsonSerialize(using = JsonldResourceSerializer::class)
+abstract class JsonLDSerializable
 
 @Entity
 @Table(name = "users")
 @JsonldType("https://schema.org/Person")
 @JsonldId("users")
-@JsonSerialize(using = JsonldResourceSerializer::class)
 class User constructor(
 
         @field:JsonldId
@@ -46,7 +46,7 @@ class User constructor(
 
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        var createdAt: Date = Date(),
 
         @JsonIgnore
         @Column(nullable = false)
@@ -79,13 +79,12 @@ class User constructor(
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
         var user_tours: Set<UserTour> = Collections.emptySet()
-) : Model()
+) : JsonLDSerializable()
 
 @Entity
 @Table(name = "locations")
 @JsonldType("https://schema.org/Place")
 @JsonldId("locations")
-@JsonSerialize(using = JsonldResourceSerializer::class)
 class Location constructor(
 
         @Id
@@ -109,8 +108,8 @@ class Location constructor(
         var secretId: String = "",
 
         @Column(nullable = false)
-        @field:JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        @field:JsonView(View.PublicDetail::class)
+        var createdAt: Date = Date(),
 
         @Column(nullable = false)
         @field:JsonView(View.PublicDetail::class)
@@ -131,6 +130,20 @@ class Location constructor(
         @field:JsonView(View.PublicDetail::class)
         var creator: User = User(),
 
+        @Column(nullable = false, length = 128)
+        @field:JsonldProperty("https://schema.org/GeoCoordinates#addressCountry")
+        @field:JsonView(View.PublicDetail::class)
+        var country: String = "",
+
+        @Column(nullable = false, length = 512)
+        @field:JsonldProperty("https://schema.org/GeoCoordinates#address")
+        @field:JsonView(View.PublicDetail::class)
+        var address: String = "",
+
+        @Column(nullable = false)
+        @field:JsonView(View.PublicDetail::class)
+        var active: Boolean = false,
+
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "location")
         var comments: Set<Comment> = Collections.emptySet(),
@@ -150,15 +163,14 @@ class Location constructor(
         @JsonIgnore
         @ManyToMany(cascade = [CascadeType.PERSIST])
         var tours: Set<Tour> = Collections.emptySet()
-) : Model()
+) : JsonLDSerializable()
 
 
 @Entity
 @Table(name = "tours")
 @JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
 @JsonldId("tours") //todo check of dit klopt met de endpoints
-@JsonSerialize(using = JsonldResourceSerializer::class)
-class Tour(
+class Tour constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -187,20 +199,19 @@ class Tour(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/CreativeWork#dateCreated")
-        @JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        @JsonView(View.PublicDetail::class)
+        var createdAt: Date = Date(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
         var user_tours: Set<UserTour> = Collections.emptySet()
-) : Model()
+) : JsonLDSerializable()
 
 @Entity
 @Table(name = "comments")
 @JsonldType("https://schema.org/Comment")
 @JsonldId("comments") //todo check of dit klopt met de endpoints
-@JsonSerialize(using = JsonldResourceSerializer::class)
-class Comment(
+class Comment constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -219,21 +230,20 @@ class Comment(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Comment#dateCreated")
-        @JsonView(View.PrivateDetail::class)
-        var time: Date = Date(),
+        @JsonView(View.PublicDetail::class)
+        var createdAt: Date = Date(),
 
         @Column(nullable = false, length = 1024)
         @field:JsonldProperty("https://schema.org/Comment#text")
         @JsonView(View.PublicDetail::class)
         var comment: String = ""
-) : Model()
+) : JsonLDSerializable()
 
 @Entity
 @Table(name = "location_ratings")
 @JsonldType("https://schema.org/AggregateRating")
 @JsonldId("ratings") //todo check of dit klopt met de endpoints
-@JsonSerialize(using = JsonldResourceSerializer::class)
-class LocationRating(
+class LocationRating constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -259,14 +269,13 @@ class LocationRating(
         @field:JsonldProperty("https://schema.org/Rating#ratingExplanation")
         @JsonView(View.PublicDetail::class)
         var message: String = ""
-) : Model()
+) : JsonLDSerializable()
 
 @Entity
 @Table(name = "check_ins")
 @JsonldType("https://schema.org/DiscoverAction")
 @JsonldId("checkIn") //todo check of dit klopt met de endpoints
-@JsonSerialize(using = JsonldResourceSerializer::class)
-class CheckIn(
+class CheckIn constructor(
         @Id
         @GeneratedValue
         @JsonldId
@@ -285,16 +294,15 @@ class CheckIn(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/DiscoverAction#location#endTime")
-        @JsonView(View.PrivateDetail::class)
-        var time: Date = Date()
-) : Model()
+        @JsonView(View.PublicDetail::class)
+        var createdAt: Date = Date()
+) : JsonLDSerializable()
 
 @Entity
 @Table(name = "reports")
 @JsonldType("https://schema.org/Review")
 @JsonldId("reports") //todo check of dit klopt met de endpoints
-@JsonSerialize(using = JsonldResourceSerializer::class)
-class Report(
+class Report constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -314,7 +322,7 @@ class Report(
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Review#dateCreated")
         @JsonView(View.AdminDetail::class)
-        var time: Date = Date(),
+        var createdAt: Date = Date(),
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Review#reviewBody")
@@ -329,13 +337,12 @@ class Report(
         @field:JsonldProperty("https://schema.org/Review#image")
         @JsonView(View.AdminDetail::class)
         var imageUrl: String = ""
-) : Model()
+) : JsonLDSerializable()
 
 @Entity
 @Table(name = "user_tours")
 @JsonldType("https://schema.org/Action")
-@JsonSerialize(using = JsonldResourceSerializer::class)
-class UserTour(
+class UserTour constructor(
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -356,5 +363,5 @@ class UserTour(
         @field:JsonldProperty("https://schema.org/Action#actionStatus")
         @JsonView(View.PublicDetail::class)
         var completed: Boolean = false
-) : Model()
+) : JsonLDSerializable()
 
