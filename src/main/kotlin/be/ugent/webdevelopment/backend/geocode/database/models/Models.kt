@@ -241,7 +241,7 @@ class Comment constructor(
         @Column(nullable = false, length = 1024)
         @field:JsonldProperty("https://schema.org/Comment#text")
         @JsonView(View.PublicDetail::class)
-        @JsonProperty("message")
+        @field:JsonProperty("message")
         var comment: String = ""
 ) : JsonLDSerializable()
 
