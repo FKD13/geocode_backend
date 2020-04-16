@@ -3,8 +3,8 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
-import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
+import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.LocationsService
 import be.ugent.webdevelopment.backend.geocode.services.UsersService
