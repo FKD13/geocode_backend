@@ -50,7 +50,7 @@ class CommentsService {
     fun updateComment(user: User, id: Int, comment: CommentWrapper) {
         commentRepository.findById(id).ifPresentOrElse({
             if (it.creator.id != user.id) {
-                throw GenericException("The currently logged in user did not create this comment and can therefor not edit it.")
+                throw GenericException("The currently logged in user did not create this comment and can therefore not edit it.")
             } else {
                 it.comment = comment.comment.orElseGet { "" }
             }
@@ -62,7 +62,7 @@ class CommentsService {
     fun deleteCommentById(user: User, id: Int) {
         commentRepository.findById(id).ifPresentOrElse({
             if (it.creator.id != user.id) {
-                throw GenericException("The currently logged in user did not create this comment and can therefor not delete it.")
+                throw GenericException("The currently logged in user did not create this comment and can therefore not delete it.")
             } else {
                 commentRepository.delete(it)
             }
