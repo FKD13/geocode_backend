@@ -149,6 +149,7 @@ class CountryUtil {
             "Qatar",
             "Reunion",
             "Romania",
+            "Russia",
             "Russian Federation",
             "Rwanda",
             "Saint Kitts and Nevis",
