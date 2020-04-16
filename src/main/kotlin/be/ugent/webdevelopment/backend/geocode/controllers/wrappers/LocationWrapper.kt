@@ -18,7 +18,7 @@ class LocationWrapper(
             latitude = Optional.of(loc.latitude),
             longitude = Optional.of(loc.longitude),
             secretId = Optional.of(loc.secretId),
-            time = Optional.of(loc.time),
+            time = Optional.of(loc.createdAt),
             listed = Optional.of(loc.listed),
             name = Optional.of(loc.name),
             description = Optional.of(loc.description),

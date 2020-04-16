@@ -9,5 +9,5 @@ interface View {
     interface List : Id
     interface PublicDetail : List
     interface PrivateDetail : PublicDetail
-    interface AdminDetail: PublicDetail //todo miss private ipv public
+    interface AdminDetail : PublicDetail //todo miss private ipv public
 }

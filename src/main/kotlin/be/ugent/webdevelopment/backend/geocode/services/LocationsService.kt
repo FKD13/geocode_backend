@@ -37,8 +37,8 @@ class LocationsService {
         return locationRepository.findAllByListedEquals(true).map { ExtendedLocationWrapper(it, getRating(it)) }
     }
 
-    fun findBySecretId(secret_id: UUID): Location {
-        val loc: Optional<Location> = locationRepository.findBySecretId(secret_id.toString())
+    fun findBySecretId(secretId: UUID): Location {
+        val loc: Optional<Location> = locationRepository.findBySecretId(secretId.toString())
         loc.ifPresentOrElse({}, { throw GenericException("Location that corresponds to this secret id was not found.") })
         return loc.get()
     }
@@ -144,7 +144,7 @@ class LocationsService {
 
         container.throwIfNotEmpty()
 
-        locationRepository.findBySecretId(secret_id = secretId.toString()).ifPresentOrElse({
+        locationRepository.findBySecretId(secretId = secretId.toString()).ifPresentOrElse({
             val location: Location = it
             resource.longitude.ifPresent { location.longitude = resource.longitude.get() }
             resource.latitude.ifPresent { location.latitude = resource.latitude.get() }
