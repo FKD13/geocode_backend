@@ -28,6 +28,7 @@ class LocationsController(
         val qrCodeService: QRCodeService
 ) {
 
+    
     @GetMapping
     @JsonView(View.PrivateDetail::class)
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
