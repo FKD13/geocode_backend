@@ -26,7 +26,7 @@ class VisitsService {
         val location = locationRepository.findByVisitSecret(visitSecret.toString())
         location.ifPresentOrElse({
             checkInRepository.saveAndFlush(
-                    CheckIn(creator = user, location = location.get(), time = Date.from(Instant.now()))
+                    CheckIn(creator = user, location = location.get(), createdAt = Date.from(Instant.now()))
             )
         }, {
             throw GenericException("VisitSecret is not linked to any location.")
