@@ -3,6 +3,7 @@ package be.ugent.webdevelopment.backend.geocode.jsonld
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
 import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils.getFullIdFromObject
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.JsonNode
@@ -68,7 +69,11 @@ object JsonldContextFactory {
                         node.set<JsonNode>("@type", TextNode.valueOf(id))
                         contexts[f.name] = node
                     } else {
-                        contexts[f.name] = TextNode.valueOf(id)
+                        if (f.isAnnotationPresent(JsonProperty::class.java)) {
+                            contexts[f.getAnnotation(JsonProperty::class.java).value] = TextNode.valueOf(id)
+                        } else {
+                            contexts[f.name] = TextNode.valueOf(id)
+                        }
                     }
                 }
             }

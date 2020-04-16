@@ -6,6 +6,7 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldType
 import be.ugent.webdevelopment.backend.geocode.jsonld.internal.JsonldResourceSerializer
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import java.util.*
@@ -237,10 +238,11 @@ class Comment constructor(
         @JsonView(View.PublicDetail::class)
         var createdAt: Date = Date(),
 
-        @Column(nullable = false, length = 1024, name = "message")
+        @Column(nullable = false, length = 1024)
         @field:JsonldProperty("https://schema.org/Comment#text")
         @JsonView(View.PublicDetail::class)
-        var message: String = ""
+        @JsonProperty("message")
+        var comment: String = ""
 ) : JsonLDSerializable()
 
 @Entity
