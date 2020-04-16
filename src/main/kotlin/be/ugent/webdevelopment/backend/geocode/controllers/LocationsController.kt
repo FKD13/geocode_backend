@@ -35,7 +35,7 @@ class LocationsController(
     @GetMapping(value = ["/{secretId}"])
     @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable secretId: UUID,
-                 response: HttpServletResponse, request: HttpServletRequest): Location {
+                 response: HttpServletResponse, request: HttpServletRequest): ExtendedLocationWrapper {
         return service.findBySecretId(secretId)
     }
 
@@ -50,7 +50,7 @@ class LocationsController(
     @PatchMapping(value = ["/{secretId}"])
     fun update(@PathVariable secretId: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secretId).creator.id)
+        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secretId).loc.creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secretId, resource)
     }
@@ -67,13 +67,13 @@ class LocationsController(
     @PostMapping(value = ["/visits/{visitSecret}"])
     @JsonView(View.Id::class)
     fun visitLocation(@PathVariable visitSecret: UUID,
-                      response: HttpServletResponse, request: HttpServletRequest): Location {
+                      response: HttpServletResponse, request: HttpServletRequest): ExtendedLocationWrapper {
         return visitsService.visit(jwtService.tryAuthenticate(request), visitSecret)
     }
 
     @GetMapping(value = ["/visits/{visitSecret}"])
     @JsonView(View.PublicDetail::class)
-    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID): Location {
+    fun getLocationByVisitSecret(@PathVariable visitSecret: UUID): ExtendedLocationWrapper {
         return visitsService.getByVisitSecret(visitSecret)
     }
 
@@ -143,9 +143,9 @@ class LocationsController(
             request: HttpServletRequest,
             response: HttpServletResponse): BufferedImage {
         val location = service.findBySecretId(secretId)
-        if (jwtService.tryAuthenticate(request).id != location.creator.id) {
+        if (jwtService.tryAuthenticate(request).id != location.loc.creator.id) {
             throw GenericException("This user did not create this location and can therefore not get a QR code for it.")
         }
-        return qrCodeService.getQRCode(location.visitSecret, frontendUrl, size)
+        return qrCodeService.getQRCode(location.loc.visitSecret, frontendUrl, size)
     }
 }

@@ -1,7 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UsersWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
@@ -27,14 +26,14 @@ class UsersService {
         throw GenericException("User with email = $email was not found in the database")
     }
 
-    fun findAll(): List<UsersWrapper> {
-        return userRepository.findAll().map { user -> UsersWrapper(user) }
+    fun findAll(): List<User> {
+        return userRepository.findAll()
     }
 
-    fun findById(id: Int): UsersWrapper {
+    fun findById(id: Int): User {
         val user: Optional<User> = userRepository.findById(id)
         if (user.isEmpty) throw GenericException("User with id = $id was not found in the database")
-        return UsersWrapper(user.get())
+        return user.get()
     }
 
 
