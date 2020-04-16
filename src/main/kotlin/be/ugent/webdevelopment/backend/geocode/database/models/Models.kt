@@ -113,7 +113,7 @@ class Location constructor(
         var createdAt: Date = Date(),
 
         @Column(nullable = false)
-        @field:JsonView(View.PrettyPrivate::class)
+        @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var listed: Boolean = false,
 
         @Column(nullable = false)
@@ -146,7 +146,7 @@ class Location constructor(
         var address: String = "",
 
         @Column(nullable = false)
-        @field:JsonView(View.PrettyPrivate::class)
+        @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var active: Boolean = false,
 
         @JsonIgnore
@@ -367,7 +367,7 @@ class UserTour constructor(
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Action#actionStatus")
-        @field:JsonView(View.PrettyPrivate::class)
+        @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var completed: Boolean = false
 ) : JsonLDSerializable()
 

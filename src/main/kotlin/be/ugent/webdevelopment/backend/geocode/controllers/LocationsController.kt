@@ -29,13 +29,13 @@ class LocationsController(
 ) {
 
     @GetMapping
-    @JsonView(View.PublicDetail::class)
+    @JsonView(View.PrivateDetail::class)
     fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{secretId}"])
-    @JsonView(View.PublicDetail::class)
+    @JsonView(View.PrivateDetail::class)
     fun findById(@PathVariable secretId: UUID,
                  response: HttpServletResponse, request: HttpServletRequest): Location {
         return service.findBySecretId(secretId)
