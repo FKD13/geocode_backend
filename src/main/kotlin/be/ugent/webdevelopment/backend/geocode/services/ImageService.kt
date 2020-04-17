@@ -5,10 +5,12 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageReposi
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
+import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 
 @Service
@@ -37,10 +39,19 @@ class ImageService {
         }
     }
 
-    fun checkImageId(property: String, imageId: Int, container: ExceptionContainer) {
-        if (imageRepository.findById(imageId).isEmpty) {
-            container.addException(PropertyException("avatarId", "The given avatarId was not found in the database."))
+    fun checkImageId(property: String, imageId: Int?, container: ExceptionContainer) {
+        if (imageId != null){
+            if (imageRepository.findById(imageId).isEmpty) {
+                container.addException(PropertyException("avatarId", "The given avatarId was not found in the database."))
+            }
         }
+    }
+
+    fun getUrlForImage(prefix: String, imageId: Int?): String{
+        if  (imageId == null){
+            return ""
+        }
+        return JsonldResourceUtils.appendIfNeeded(System.getenv("GEOCODE_BACKEND_URL"), "/") + JsonldResourceUtils.appendIfNeeded(prefix, "/") + imageId.toString()
     }
 
 }

@@ -1,17 +1,19 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedUserWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.User
-import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
-import be.ugent.webdevelopment.backend.geocode.services.LocationsService
-import be.ugent.webdevelopment.backend.geocode.services.UsersService
-import be.ugent.webdevelopment.backend.geocode.services.VisitsService
+import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
+import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -21,13 +23,18 @@ import javax.servlet.http.HttpServletResponse
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/user")
 @JsonView(View.PrivateDetail::class)
-class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator,
-                     val locationsService: LocationsService, val visitsService: VisitsService) {
+class UserController(
+        val usersService: UsersService,
+        val jwtService: JWTAuthenticator,
+        val locationsService: LocationsService,
+        val visitsService: VisitsService,
+        val imageService: ImageService) {
 
     @GetMapping
     fun findByLoggedIn(
-            response: HttpServletResponse, request: HttpServletRequest): User {
-        return jwtService.tryAuthenticate(request)
+            response: HttpServletResponse, request: HttpServletRequest): ExtendedUserWrapper {
+        val user = jwtService.tryAuthenticate(request)
+        return ExtendedUserWrapper(user, imageService.getUrlForImage("user/avatar", user.avatarId))
     }
 
     @GetMapping(value = ["/locations"])
@@ -45,6 +52,26 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
     @DeleteMapping
     fun delete(response: HttpServletResponse, request: HttpServletRequest) {
         usersService.deleteUser(jwtService.tryAuthenticate(request))
+    }
+
+    @PostMapping("/avatar")
+    fun avatarUpload(@RequestBody image: MultipartFile, request: HttpServletRequest, response: HttpServletResponse): Int {
+        return imageService.saveImageFile(image)
+    }
+
+    @GetMapping("/avatar/{id}")
+    fun getImagesForTesting(@PathVariable id: Int, request: HttpServletRequest, response: HttpServletResponse) {
+        val image = imageService.getImages(id)
+        val byteArray = ByteArray(image.image.size)
+        var i = 0
+
+        for (wrappedByte in image.image) {
+            byteArray[i++] = wrappedByte //auto unboxing
+        }
+
+        response.contentType = image.contentType
+        val inputStream: InputStream = ByteArrayInputStream(byteArray)
+        IOUtils.copy(inputStream, response.outputStream)
     }
 
     //------------------------------------------------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedReportsWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
-import be.ugent.webdevelopment.backend.geocode.database.models.Report
 import be.ugent.webdevelopment.backend.geocode.services.ImageService
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.ReportService
@@ -28,7 +28,8 @@ class ReportsController(
 ) {
 
     @GetMapping("/{reportId}")
-    fun getReportById(@PathVariable reportId: Int, request: HttpServletRequest, response: HttpServletResponse): Report {
+    fun getReportById(@PathVariable reportId: Int, request: HttpServletRequest, response: HttpServletResponse):
+            ExtendedReportsWrapper {
         reportService.checkAdmin(request)
         return reportService.getById(reportId)
     }
@@ -41,7 +42,7 @@ class ReportsController(
     }
 
     @GetMapping
-    fun getReports(request: HttpServletRequest, response: HttpServletResponse): List<Report> {
+    fun getReports(request: HttpServletRequest, response: HttpServletResponse): List<ExtendedReportsWrapper> {
         reportService.checkAdmin(request)
         return reportService.getAll()
     }

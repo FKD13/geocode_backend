@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedUserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.UsersService
@@ -17,14 +18,14 @@ class UsersController(val service: UsersService) {
 
     @GetMapping
     @JsonView(View.List::class)
-    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<User> {
+    fun findAll(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedUserWrapper> {
         return service.findAll()
     }
 
     @GetMapping(value = ["/{id}"])
     @JsonView(View.PublicDetail::class)
     fun findById(@PathVariable id: Int,
-                 response: HttpServletResponse, request: HttpServletRequest): User {
+                 response: HttpServletResponse, request: HttpServletRequest): ExtendedUserWrapper {
         return service.findById(id)
     }
 

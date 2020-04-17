@@ -107,7 +107,7 @@ class LocationsController(
     @GetMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
     fun getReportsByLocation(@PathVariable secretId: UUID,
-                             request: HttpServletRequest, response: HttpServletResponse): List<Report> {
+                             request: HttpServletRequest, response: HttpServletResponse): List<ExtendedReportsWrapper> {
         reportService.checkAdmin(request)
         return reportService.getByLocation(secretId)
     }
@@ -115,7 +115,7 @@ class LocationsController(
     @PostMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
     fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper: ReportsWrapper,
-                   request: HttpServletRequest, response: HttpServletResponse): Report {
+                   request: HttpServletRequest, response: HttpServletResponse): ExtendedReportsWrapper {
         reportService.checkAdmin(request)
         return reportService.create(jwtService.tryAuthenticate(request), secretId, reportsWrapper)
     }
