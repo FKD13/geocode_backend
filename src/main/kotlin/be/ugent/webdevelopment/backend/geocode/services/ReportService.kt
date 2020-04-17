@@ -21,13 +21,13 @@ class ReportService {
     lateinit var reportRepository: ReportRepository
 
     @Autowired
-    lateinit var jwtAuthenticator: JWTAuthenticator
-
-    @Autowired
     lateinit var locationRepository: LocationRepository
 
     @Autowired
     lateinit var imageService: ImageService
+
+    @Autowired
+    lateinit var jwtAuthenticator: JWTAuthenticator
 
     fun getById(reportId: Int): Report {
         val report = reportRepository.findById(reportId)
@@ -51,7 +51,15 @@ class ReportService {
     fun updateReport(reportId: Int, reportsWrapper: ReportsWrapper) {
         val report = reportRepository.findById(reportId)
         if (report.isPresent) {
-            reportsWrapper.imageId.ifPresent {//todo test of dat dit id effectief gelinkt is aan een image
+            val container = ExceptionContainer()
+            reportsWrapper.imageId.ifPresent { imageService.checkImageId("imageId", it, container) }
+            reportsWrapper.reason.ifPresent {
+                if (it.length < 5) {
+                    container.addException(PropertyException("reason", "Reason should be at least 5 characters."))
+                }
+            }
+            container.throwIfNotEmpty()
+            reportsWrapper.imageId.ifPresent {
                 report.get().imageId = it
             }
             reportsWrapper.reason.ifPresent {
