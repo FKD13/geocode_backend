@@ -371,3 +371,17 @@ class UserTour constructor(
         var completed: Boolean = false
 ) : JsonLDSerializable()
 
+@Entity
+@Table(name = "images")
+class Image constructor(
+        @Id
+        @GeneratedValue
+        var id: Int = 0,
+
+        @Lob
+        @Column(nullable = false)
+        var image: Array<Byte> = arrayOf(0),
+
+        @Column(nullable = false)
+        var contentType: String = ""
+)
