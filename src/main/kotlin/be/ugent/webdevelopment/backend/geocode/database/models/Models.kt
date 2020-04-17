@@ -146,7 +146,7 @@ class Location constructor(
         var address: String = "",
 
         @Column(nullable = false)
-        @field:JsonView(View.PublicDetail::class, View.AdminDetail::class)
+        @field:JsonView(View.List::class, View.AdminDetail::class)
         var active: Boolean = false,
 
         @JsonIgnore
