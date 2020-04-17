@@ -37,9 +37,9 @@ class User constructor(
         var username: String = "",
 
         @field:JsonldProperty("https://schema.org/image")
-        @Column(nullable = false, name = "avatar_url")
+        @Column(nullable = false, name = "avatar_id")
         @field:JsonView(View.List::class)
-        var avatarUrl: String = "",
+        var avatarId: Int = 0,
 
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
@@ -339,10 +339,10 @@ class Report constructor(
         @field:JsonView(View.AdminDetail::class)
         var resolved: Boolean = false,
 
-        @Column(nullable = false, name = "image_url", length = 1024)
+        @Column(nullable = false, name = "image_id")
         @field:JsonldProperty("https://schema.org/Review#image")
         @field:JsonView(View.AdminDetail::class)
-        var imageUrl: String = ""
+        var imageId: Int = 0
 ) : JsonLDSerializable()
 
 @Entity

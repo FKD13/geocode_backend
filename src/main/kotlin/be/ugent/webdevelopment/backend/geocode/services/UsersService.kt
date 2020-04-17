@@ -21,6 +21,9 @@ class UsersService {
     @Autowired
     private lateinit var authService: AuthService
 
+    @Autowired
+    private lateinit var imageService: ImageService
+
     fun findByEmail(email: String): User {
         if (userRepository.findByEmail(email).isPresent) return userRepository.findByEmail(email).get()
         throw GenericException("User with email = $email was not found in the database")
@@ -67,17 +70,18 @@ class UsersService {
                 container.addException(PropertyException("email", "The email is not valid"))
             checkEmailUnique(user.email, resource.email.get(), container)
         }
-        resource.avatarUrl.ifPresent { checkUrl(resource.avatarUrl.get(), container) }
+        resource.avatarId.ifPresent { imageService.checkImageId("avatarId", resource.avatarId.get(), container) }
         resource.username.ifPresent { checkUsername(resource.username.get(), user.username, container) }
 
         container.throwIfNotEmpty()
 
         resource.email.ifPresent { user.email = resource.email.get() }
-        resource.avatarUrl.ifPresent { user.avatarUrl = resource.avatarUrl.get() }
+        resource.avatarId.ifPresent { user.avatarId = resource.avatarId.get() }
         resource.username.ifPresent { user.username = resource.username.get() }
         userRepository.saveAndFlush(user)
 
     }
+
 
     private fun checkEmailUnique(emailUser: String, emailResource: String, container: ExceptionContainer) {
         userRepository.findByEmail(emailResource).ifPresent {

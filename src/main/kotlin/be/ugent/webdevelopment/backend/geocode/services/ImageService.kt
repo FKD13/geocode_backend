@@ -2,7 +2,9 @@ package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.database.models.Image
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
+import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
+import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,6 +34,12 @@ class ImageService {
             return image.get()
         } else {
             throw GenericException("The Image associated with the id = $id was not found.")
+        }
+    }
+
+    fun checkImageId(property: String, imageId: Int, container: ExceptionContainer) {
+        if (imageRepository.findById(imageId).isEmpty) {
+            container.addException(PropertyException("avatarId", "The given avatarId was not found in the database."))
         }
     }
 
