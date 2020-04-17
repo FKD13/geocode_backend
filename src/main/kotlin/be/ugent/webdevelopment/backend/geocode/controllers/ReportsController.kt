@@ -5,7 +5,6 @@ import be.ugent.webdevelopment.backend.geocode.services.ImageService
 import com.fasterxml.jackson.annotation.JsonView
 import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayInputStream
@@ -44,16 +43,16 @@ class ReportsController(
 
 
     @GetMapping("/image/{id}")
-    fun  getImagesForTesting(@PathVariable id : Int, request: HttpServletRequest, response: HttpServletResponse) {
+    fun getImagesForTesting(@PathVariable id: Int, request: HttpServletRequest, response: HttpServletResponse) {
         val image = imageService.getImages(id)
-        val byteArray = ByteArray(image.size)
+        val byteArray = ByteArray(image.image.size)
         var i = 0
 
-        for (wrappedByte in image) {
+        for (wrappedByte in image.image) {
             byteArray[i++] = wrappedByte //auto unboxing
         }
 
-        response.contentType = "image/jpeg"
+        response.contentType = image.contentType
         val inputStream: InputStream = ByteArrayInputStream(byteArray)
         IOUtils.copy(inputStream, response.outputStream)
     }

@@ -17,20 +17,20 @@ class ImageService {
 
     @Transactional
     fun saveImageFile(file: MultipartFile): Int {
-        val byteObjects = Array<Byte>(file.size.toInt()) {0}
+        val byteObjects = Array<Byte>(file.size.toInt()) { 0 }
         var i = 0
         for (b in file.bytes) {
             byteObjects[i++] = b
         }
-        return imageRepository.save(Image(image = byteObjects)).id
+        return imageRepository.save(Image(image = byteObjects, contentType = file.contentType!!)).id
     }
 
     @Transactional
-    fun getImages(id : Int): Array<Byte> {
+    fun getImages(id: Int): Image {
         val image = imageRepository.findById(id)
-        if(image.isPresent){
-            return image.get().image
-        }else{
+        if (image.isPresent) {
+            return image.get()
+        } else {
             throw GenericException("The Image associated with the id = $id was not found.")
         }
     }
