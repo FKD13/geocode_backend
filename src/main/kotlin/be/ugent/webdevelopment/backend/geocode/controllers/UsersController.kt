@@ -2,7 +2,6 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedUserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
-import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.UsersService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus

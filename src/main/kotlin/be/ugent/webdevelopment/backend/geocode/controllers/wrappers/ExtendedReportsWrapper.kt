@@ -6,7 +6,7 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.annotation.JsonView
 
-class ExtendedReportsWrapper (
+class ExtendedReportsWrapper(
 
         @JsonUnwrapped
         var report: Report,
@@ -14,4 +14,4 @@ class ExtendedReportsWrapper (
         @field:JsonldProperty("https://schema.org/Review#image")
         @field:JsonView(View.AdminDetail::class)
         var imageUrl: String
-): Wrapper()
+) : Wrapper()

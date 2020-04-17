@@ -6,7 +6,7 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.annotation.JsonView
 
-class ExtendedUserWrapper (
+class ExtendedUserWrapper(
 
         @field:JsonUnwrapped
         var user: User,
@@ -15,4 +15,4 @@ class ExtendedUserWrapper (
         @field:JsonldProperty("https://schema.org/image")
         var avatarUrl: String
 
-): Wrapper()
+) : Wrapper()

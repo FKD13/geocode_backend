@@ -110,7 +110,8 @@ class ReportService {
         val location = locationRepository.findBySecretId(secretId = secretId.toString())
         if (location.isPresent) {
             return reportRepository.findAllByLocation(location = location.get()).map {
-                ExtendedReportsWrapper(it, imageService.getUrlForImage("report/image", it.imageId)) }
+                ExtendedReportsWrapper(it, imageService.getUrlForImage("report/image", it.imageId))
+            }
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
         }

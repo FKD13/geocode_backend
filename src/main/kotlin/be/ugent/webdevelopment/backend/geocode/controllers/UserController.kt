@@ -5,7 +5,6 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedUser
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
-import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
 import org.apache.tomcat.util.http.fileupload.IOUtils
