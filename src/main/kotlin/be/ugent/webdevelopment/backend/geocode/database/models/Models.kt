@@ -37,9 +37,9 @@ class User constructor(
         var username: String = "",
 
         @field:JsonldProperty("https://schema.org/image")
-        @OneToOne(optional = true)
+        @OneToOne(optional = true, cascade = [CascadeType.ALL])
         @field:JsonView(View.List::class)
-        var avatar: Image = Image(),
+        var avatar: Image? = null,
 
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
@@ -339,10 +339,10 @@ class Report constructor(
         @field:JsonView(View.AdminDetail::class)
         var resolved: Boolean = false,
 
-        @OneToOne(optional = true)
+        @OneToOne(optional = true, cascade = [CascadeType.ALL])
         @field:JsonldProperty("https://schema.org/Review#image")
         @field:JsonView(View.AdminDetail::class)
-        var image: Image = Image()
+        var image: Image? = null
 
 ) : JsonLDSerializable()
 

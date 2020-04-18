@@ -52,7 +52,10 @@ object JsonldResourceUtils {
         }
     }
 
-    fun getFullIdFromObject(obj: Any): Optional<String> {
+    fun getFullIdFromObject(obj: Any?): Optional<String> {
+        if (obj == null) {
+            return Optional.empty()
+        }
         val id = getIdValueFromObject(obj)
         val idValue = getIdValueFromClassAnnotation(obj)
 
