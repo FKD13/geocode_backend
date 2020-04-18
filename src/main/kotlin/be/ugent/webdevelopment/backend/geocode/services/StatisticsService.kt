@@ -32,14 +32,14 @@ class StatisticsService(
     fun getStatistics(): GeneralStatistics {
         val countriesCount = HashSet<String>()
 
-        val checkIns = checkInRepository.findAll()
+        val locations = locationRepository.findAllByListedAndActive(listed = true, active = true)
 
-        checkIns.forEach {
-            countriesCount.add(it.location.country.toLowerCase())
+        locations.forEach {
+            countriesCount.add(it.country.toLowerCase())
         }
 
         return GeneralStatistics(
-                locationsCount = locationRepository.findAllByListedAndActive(listed = true, active = true).size,
+                locationsCount = locations.size,
                 usersCount = userRepository.findAll().size,
                 visitsCount = checkInRepository.findAll().size,
                 countriesCount = countriesCount.size
