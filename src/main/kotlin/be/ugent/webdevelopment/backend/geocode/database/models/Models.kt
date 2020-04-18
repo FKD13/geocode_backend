@@ -37,9 +37,9 @@ class User constructor(
         var username: String = "",
 
         @field:JsonldProperty("https://schema.org/image")
-        @Column(nullable = false, name = "avatar_url")
+        @OneToOne(optional = true)
         @field:JsonView(View.List::class)
-        var avatarUrl: String = "",
+        var avatar: Image = Image(),
 
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
@@ -330,7 +330,7 @@ class Report constructor(
         @field:JsonView(View.AdminDetail::class)
         var createdAt: Date = Date(),
 
-        @Column(nullable = false)
+        @Column(nullable = false, length = 2048)
         @field:JsonldProperty("https://schema.org/Review#reviewBody")
         @field:JsonView(View.AdminDetail::class)
         var reason: String = "",
@@ -339,10 +339,11 @@ class Report constructor(
         @field:JsonView(View.AdminDetail::class)
         var resolved: Boolean = false,
 
-        @Column(nullable = false, name = "image_url", length = 1024)
+        @OneToOne(optional = true)
         @field:JsonldProperty("https://schema.org/Review#image")
         @field:JsonView(View.AdminDetail::class)
-        var imageUrl: String = ""
+        var image: Image = Image()
+
 ) : JsonLDSerializable()
 
 @Entity
@@ -373,15 +374,21 @@ class UserTour constructor(
 
 @Entity
 @Table(name = "images")
+@JsonldType("https://schema.org/image")
+@JsonldId("image")
 class Image constructor(
         @Id
         @GeneratedValue
+        @field:JsonldId
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @Lob
         @Column(nullable = false)
+        @JsonIgnore
         var image: Array<Byte> = arrayOf(0),
 
         @Column(nullable = false)
+        @JsonIgnore
         var contentType: String = ""
-)
+) : JsonLDSerializable()

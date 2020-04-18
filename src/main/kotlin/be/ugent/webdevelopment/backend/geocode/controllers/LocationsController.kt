@@ -1,9 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.CommentWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.*
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
@@ -30,7 +27,8 @@ class LocationsController(
         val ratingsService: RatingsService,
         val commentsService: CommentsService,
         val visitsService: VisitsService,
-        val qrCodeService: QRCodeService
+        val qrCodeService: QRCodeService,
+        val reportService: ReportService
 ) {
 
 
@@ -113,16 +111,18 @@ class LocationsController(
 
     @GetMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
-    fun getReportsByLocation(@PathVariable secretId: UUID): List<Report> {
-        //TODO
-        return emptyList()
+    fun getReportsByLocation(@PathVariable secretId: UUID,
+                             request: HttpServletRequest, response: HttpServletResponse): List<Report> {
+        reportService.checkAdmin(request)
+        return reportService.getByLocation(secretId)
     }
 
     @PostMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
-    fun addReports(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse): Report {
-        //TODO
-        return Report()
+    fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper: ReportsWrapper,
+                   request: HttpServletRequest, response: HttpServletResponse): Report {
+        reportService.checkAdmin(request)
+        return reportService.create(jwtService.tryAuthenticate(request), secretId, reportsWrapper)
     }
 
     //------------------------------------------------------------------------------------------------------------------

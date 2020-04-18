@@ -10,6 +10,7 @@ import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -19,12 +20,13 @@ import javax.servlet.http.HttpServletResponse
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/user")
 @JsonView(View.PrivateDetail::class)
-class UserController(val usersService: UsersService,
-                     val jwtService: JWTAuthenticator,
-                     val locationsService: LocationsService,
-                     val visitsService: VisitsService,
-                     val statisticsService: StatisticsService
-) {
+class UserController(
+        val usersService: UsersService,
+        val jwtService: JWTAuthenticator,
+        val locationsService: LocationsService,
+        val visitsService: VisitsService,
+        val statisticsService: StatisticsService,
+        val imageService: ImageService) {
 
     @GetMapping
     fun findByLoggedIn(
@@ -47,6 +49,11 @@ class UserController(val usersService: UsersService,
     @DeleteMapping
     fun delete(response: HttpServletResponse, request: HttpServletRequest) {
         usersService.deleteUser(jwtService.tryAuthenticate(request))
+    }
+
+    @PostMapping("/avatar")
+    fun avatarUpload(@RequestBody image: MultipartFile, request: HttpServletRequest, response: HttpServletResponse): Int {
+        return imageService.saveImageFile(image)
     }
 
     //------------------------------------------------------------------------------------------------------------------

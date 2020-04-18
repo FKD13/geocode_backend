@@ -36,7 +36,7 @@ class JWTAuthenticator {
             throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
         }
         request.cookies.map {
-            if (it.name.equals(cookieToken)) {
+            if (it.name == cookieToken) {
                 token = Optional.of(it.value)
             }
         }

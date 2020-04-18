@@ -88,7 +88,7 @@ class CountryUtil {
             "Iraq",
             "Israel and the Occupied Territories",
             "Italy",
-            "Ivory Coast (Cote d'Ivoire)",
+            "Ivory Coast",
             "Jamaica",
             "Japan",
             "Jordan",

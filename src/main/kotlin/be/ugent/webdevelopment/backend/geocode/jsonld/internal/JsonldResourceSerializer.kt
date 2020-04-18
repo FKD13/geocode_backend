@@ -37,7 +37,7 @@ class JsonldResourceSerializer : StdSerializer<JsonLDSerializable>(JsonLDSeriali
         gen.writeEndObject()
     }
 
-    fun serializeUnwrapped(value: JsonLDSerializable, gen: JsonGenerator, provider: SerializerProvider) {
+    private fun serializeUnwrapped(value: JsonLDSerializable, gen: JsonGenerator, provider: SerializerProvider) {
         /* Als je hem unwrapt dan moet je geen context meer genereren.
         Dit wordt hierboven gedaan
 

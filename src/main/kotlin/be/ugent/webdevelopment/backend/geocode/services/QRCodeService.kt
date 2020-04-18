@@ -15,7 +15,7 @@ class QRCodeService {
      * @param visitSecret the visit secret of the location
      * @param frontendUrl the url of the frontend to add to the link
      * @param size the size in pixels of the image
-     * @return a Bufferedimage representing the qrcode
+     * @return a BufferedImage representing the qr code
      */
     fun getQRCode(visitSecret: String, frontendUrl: String, size: Int): BufferedImage {
         // A little safe check
