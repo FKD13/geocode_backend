@@ -24,7 +24,7 @@ class ImageService {
         for (b in file.bytes) {
             byteObjects[i++] = b
         }
-        return imageRepository.save(Image(image = byteObjects, contentType = file.contentType!!)).id
+        return imageRepository.saveAndFlush(Image(image = byteObjects, contentType = file.contentType!!)).id
     }
 
     @Transactional
