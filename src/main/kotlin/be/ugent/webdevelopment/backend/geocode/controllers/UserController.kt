@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatistics
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
@@ -24,6 +25,7 @@ class UserController(
         val jwtService: JWTAuthenticator,
         val locationsService: LocationsService,
         val visitsService: VisitsService,
+        val statisticsService: StatisticsService,
         val imageService: ImageService) {
 
     @GetMapping
@@ -66,5 +68,13 @@ class UserController(
     fun getVisitsForUserByLocationSecret(@PathVariable secretId: UUID,
                                          response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
         return visitsService.getVisitsByUserForLocation(jwtService.tryAuthenticate(request), secretId)
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Statistics
+
+    @GetMapping("/statistics")
+    fun getUserStatistics(request: HttpServletRequest, response: HttpServletResponse) : UserStatistics {
+        return statisticsService.getUserStatistics(jwtService.tryAuthenticate(request))
     }
 }
