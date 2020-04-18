@@ -4,11 +4,13 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.GeneralStati
 import be.ugent.webdevelopment.backend.geocode.services.StatisticsService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @ResponseStatus(HttpStatus.OK)
+@RequestMapping("/statistics")
 class StatisticsController(val statisticsService: StatisticsService) {
 
     @GetMapping
