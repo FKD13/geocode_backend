@@ -9,12 +9,17 @@ import be.ugent.webdevelopment.backend.geocode.database.models.*
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
+import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.converter.BufferedImageHttpMessageConverter
+import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.web.bind.annotation.*
 import java.awt.image.BufferedImage
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
 
 @RestController
 @ResponseStatus(HttpStatus.OK)
@@ -138,7 +143,7 @@ class LocationsController(
 
     //------------------------------------------------------------------------------------------------------------------
 
-    @GetMapping("/{secretId}/qrcode", produces = ["application/jpeg"])
+    @GetMapping("/{secretId}/qrcode", produces = [MediaType.IMAGE_JPEG_VALUE])
     fun getQrcode(
             @RequestParam("frontend") frontendUrl: String,
             @RequestParam("size") size: Int,
@@ -151,4 +156,10 @@ class LocationsController(
         }
         return qrCodeService.getQRCode(location.loc.visitSecret, frontendUrl, size)
     }
+
+    @Bean
+    fun createImageHttpMessageConverter(): HttpMessageConverter<BufferedImage> {
+        return BufferedImageHttpMessageConverter()
+    }
 }
+
