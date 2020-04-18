@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 class StatisticsController(val statisticsService: StatisticsService) {
 
     @GetMapping
-    fun getStatistics() : GeneralStatistics{
+    fun getStatistics(): GeneralStatistics {
         return statisticsService.getStatistics()
     }
 }

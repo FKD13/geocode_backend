@@ -19,7 +19,7 @@ class ImageController(
 
     @GetMapping("/{id}")
     fun getImagesForTesting(@PathVariable id: Int, request: HttpServletRequest, response: HttpServletResponse) {
-        val image = imageService.getImages(id)
+        val image = imageService.getImages(id, request = request)
         val byteArray = ByteArray(image.image.size)
         var i = 0
 

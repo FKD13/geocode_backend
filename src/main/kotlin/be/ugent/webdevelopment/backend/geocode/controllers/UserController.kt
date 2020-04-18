@@ -74,7 +74,7 @@ class UserController(
     // Statistics
 
     @GetMapping("/statistics")
-    fun getUserStatistics(request: HttpServletRequest, response: HttpServletResponse) : UserStatistics {
+    fun getUserStatistics(request: HttpServletRequest, response: HttpServletResponse): UserStatistics {
         return statisticsService.getUserStatistics(jwtService.tryAuthenticate(request))
     }
 }
