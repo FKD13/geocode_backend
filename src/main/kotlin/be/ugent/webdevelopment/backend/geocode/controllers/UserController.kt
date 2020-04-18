@@ -1,14 +1,12 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatistics
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.User
-import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
-import be.ugent.webdevelopment.backend.geocode.services.LocationsService
-import be.ugent.webdevelopment.backend.geocode.services.UsersService
-import be.ugent.webdevelopment.backend.geocode.services.VisitsService
+import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -21,8 +19,12 @@ import javax.servlet.http.HttpServletResponse
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/user")
 @JsonView(View.PrivateDetail::class)
-class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator,
-                     val locationsService: LocationsService, val visitsService: VisitsService) {
+class UserController(val usersService: UsersService,
+                     val jwtService: JWTAuthenticator,
+                     val locationsService: LocationsService,
+                     val visitsService: VisitsService,
+                     val statisticsService: StatisticsService
+) {
 
     @GetMapping
     fun findByLoggedIn(
@@ -59,5 +61,13 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
     fun getVisitsForUserByLocationSecret(@PathVariable secretId: UUID,
                                          response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
         return visitsService.getVisitsByUserForLocation(jwtService.tryAuthenticate(request), secretId)
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Statistics
+
+    @GetMapping("/statistics")
+    fun getUserStatistics(request: HttpServletRequest, response: HttpServletResponse) : UserStatistics {
+        return statisticsService.getUserStatistics(jwtService.tryAuthenticate(request))
     }
 }
