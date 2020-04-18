@@ -63,4 +63,8 @@ class VisitsService {
         return checkInRepository.findAllByLocationAndCreator(location.get(), user)
     }
 
+    fun getById(id: Int): CheckIn {
+        return checkInRepository.findById(id).orElseThrow { GenericException("Checkin with id = $id was not found in the database.") }
+    }
+
 }
