@@ -1,9 +1,9 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedReportsWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.Report
 import be.ugent.webdevelopment.backend.geocode.database.models.User
+import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ReportRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
@@ -25,15 +25,18 @@ class ReportService {
     lateinit var locationRepository: LocationRepository
 
     @Autowired
+    lateinit var imageRepository: ImageRepository
+
+    @Autowired
     lateinit var imageService: ImageService
 
     @Autowired
     lateinit var jwtAuthenticator: JWTAuthenticator
 
-    fun getById(reportId: Int): ExtendedReportsWrapper {
+    fun getById(reportId: Int): Report {
         val report = reportRepository.findById(reportId)
         if (report.isPresent) {
-            return ExtendedReportsWrapper(report.get(), imageService.getUrlForImage("report/image", report.get().imageId))
+            return report.get()
         } else {
             throw GenericException("The ID: $reportId, is not linked to any report in the database.")
         }
@@ -45,8 +48,8 @@ class ReportService {
         }
     }
 
-    fun getAll(): List<ExtendedReportsWrapper> {
-        return reportRepository.findAll().map { ExtendedReportsWrapper(it, imageService.getUrlForImage("report/image", it.imageId)) }
+    fun getAll(): List<Report> {
+        return reportRepository.findAll()
     }
 
     fun updateReport(reportId: Int, reportsWrapper: ReportsWrapper) {
@@ -61,7 +64,7 @@ class ReportService {
             }
             container.throwIfNotEmpty()
             reportsWrapper.imageId.ifPresent {
-                report.get().imageId = it
+                report.get().image = imageRepository.findById(reportsWrapper.imageId.get()).get()
             }
             reportsWrapper.reason.ifPresent {
                 report.get().reason = it
@@ -75,7 +78,7 @@ class ReportService {
         }
     }
 
-    fun create(user: User, secretId: UUID, reportsWrapper: ReportsWrapper): ExtendedReportsWrapper {
+    fun create(user: User, secretId: UUID, reportsWrapper: ReportsWrapper): Report {
         val location = locationRepository.findBySecretId(secretId = secretId.toString())
         if (location.isPresent) {
             val container = ExceptionContainer()
@@ -93,25 +96,23 @@ class ReportService {
                 container.addException(PropertyException("resolved", "Resolved is an expected value."))
             })
             container.throwIfNotEmpty()
-            return ExtendedReportsWrapper(reportRepository.saveAndFlush(Report(
+            return reportRepository.saveAndFlush(Report(
                     createdAt = Date.from(Instant.now()),
-                    imageId = reportsWrapper.imageId.get(),
+                    image = imageRepository.findById(reportsWrapper.imageId.get()).get(),
                     creator = user,
                     location = location.get(),
                     reason = reportsWrapper.reason.get(),
                     resolved = reportsWrapper.resolved.orElse(false)
-            )), imageService.getUrlForImage("report/image", reportsWrapper.imageId.get()))
+            ))
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
         }
     }
 
-    fun getByLocation(secretId: UUID): List<ExtendedReportsWrapper> {
+    fun getByLocation(secretId: UUID): List<Report> {
         val location = locationRepository.findBySecretId(secretId = secretId.toString())
         if (location.isPresent) {
-            return reportRepository.findAllByLocation(location = location.get()).map {
-                ExtendedReportsWrapper(it, imageService.getUrlForImage("report/image", it.imageId))
-            }
+            return reportRepository.findAllByLocation(location = location.get())
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
         }

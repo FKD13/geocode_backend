@@ -2,10 +2,7 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
-import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
-import be.ugent.webdevelopment.backend.geocode.database.models.Comment
-import be.ugent.webdevelopment.backend.geocode.database.models.Location
-import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
+import be.ugent.webdevelopment.backend.geocode.database.models.*
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
@@ -110,7 +107,7 @@ class LocationsController(
     @GetMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
     fun getReportsByLocation(@PathVariable secretId: UUID,
-                             request: HttpServletRequest, response: HttpServletResponse): List<ExtendedReportsWrapper> {
+                             request: HttpServletRequest, response: HttpServletResponse): List<Report> {
         reportService.checkAdmin(request)
         return reportService.getByLocation(secretId)
     }
@@ -118,7 +115,7 @@ class LocationsController(
     @PostMapping(value = ["/{secretId}/reports"])
     @JsonView(View.AdminDetail::class)
     fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper: ReportsWrapper,
-                   request: HttpServletRequest, response: HttpServletResponse): ExtendedReportsWrapper {
+                   request: HttpServletRequest, response: HttpServletResponse): Report {
         reportService.checkAdmin(request)
         return reportService.create(jwtService.tryAuthenticate(request), secretId, reportsWrapper)
     }

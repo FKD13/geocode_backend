@@ -1,18 +1,15 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedUserWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
+import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
-import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayInputStream
-import java.io.InputStream
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -31,9 +28,8 @@ class UserController(
 
     @GetMapping
     fun findByLoggedIn(
-            response: HttpServletResponse, request: HttpServletRequest): ExtendedUserWrapper {
-        val user = jwtService.tryAuthenticate(request)
-        return ExtendedUserWrapper(user, imageService.getUrlForImage("user/avatar", user.avatarId))
+            response: HttpServletResponse, request: HttpServletRequest): User {
+        return jwtService.tryAuthenticate(request)
     }
 
     @GetMapping(value = ["/locations"])
@@ -56,21 +52,6 @@ class UserController(
     @PostMapping("/avatar")
     fun avatarUpload(@RequestBody image: MultipartFile, request: HttpServletRequest, response: HttpServletResponse): Int {
         return imageService.saveImageFile(image)
-    }
-
-    @GetMapping("/avatar/{id}")
-    fun getImagesForTesting(@PathVariable id: Int, request: HttpServletRequest, response: HttpServletResponse) {
-        val image = imageService.getImages(id)
-        val byteArray = ByteArray(image.image.size)
-        var i = 0
-
-        for (wrappedByte in image.image) {
-            byteArray[i++] = wrappedByte //auto unboxing
-        }
-
-        response.contentType = image.contentType
-        val inputStream: InputStream = ByteArrayInputStream(byteArray)
-        IOUtils.copy(inputStream, response.outputStream)
     }
 
     //------------------------------------------------------------------------------------------------------------------

@@ -36,9 +36,10 @@ class User constructor(
         @field:JsonView(View.List::class)
         var username: String = "",
 
-        @Column(nullable = false, name = "avatar_id")
-        @JsonIgnore
-        var avatarId: Int = 0,
+        @field:JsonldProperty("https://schema.org/image")
+        @OneToOne(optional = true)
+        @field:JsonView(View.List::class)
+        var avatar: Image = Image(),
 
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
@@ -338,9 +339,11 @@ class Report constructor(
         @field:JsonView(View.AdminDetail::class)
         var resolved: Boolean = false,
 
-        @Column(nullable = true, name = "image_id")
-        @JsonIgnore
-        var imageId: Int? = 0
+        @OneToOne(optional = true)
+        @field:JsonldProperty("https://schema.org/Review#image")
+        @field:JsonView(View.AdminDetail::class)
+        var image: Image = Image()
+
 ) : JsonLDSerializable()
 
 @Entity
@@ -371,15 +374,21 @@ class UserTour constructor(
 
 @Entity
 @Table(name = "images")
+@JsonldType("https://schema.org/image")
+@JsonldId("image")
 class Image constructor(
         @Id
         @GeneratedValue
+        @field:JsonldId
+        @field:JsonView(View.Id::class)
         var id: Int = 0,
 
         @Lob
         @Column(nullable = false)
+        @JsonIgnore
         var image: Array<Byte> = arrayOf(0),
 
         @Column(nullable = false)
+        @JsonIgnore
         var contentType: String = ""
-)
+) : JsonLDSerializable()

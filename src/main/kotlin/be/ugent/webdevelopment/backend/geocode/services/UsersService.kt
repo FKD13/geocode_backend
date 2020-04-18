@@ -1,8 +1,8 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedUserWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
+import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
@@ -20,6 +20,9 @@ class UsersService {
     private lateinit var userRepository: UserRepository
 
     @Autowired
+    private lateinit var imageRepository: ImageRepository
+
+    @Autowired
     private lateinit var authService: AuthService
 
     @Autowired
@@ -30,14 +33,14 @@ class UsersService {
         throw GenericException("User with email = $email was not found in the database")
     }
 
-    fun findAll(): List<ExtendedUserWrapper> {
-        return userRepository.findAll().map { ExtendedUserWrapper(it, imageService.getUrlForImage("user/avatar", it.avatarId)) }
+    fun findAll(): List<User> {
+        return userRepository.findAll()
     }
 
-    fun findById(id: Int): ExtendedUserWrapper {
+    fun findById(id: Int): User {
         val user: Optional<User> = userRepository.findById(id)
         if (user.isEmpty) throw GenericException("User with id = $id was not found in the database")
-        return ExtendedUserWrapper(user.get(), imageService.getUrlForImage("user/avatar", user.get().avatarId))
+        return user.get()
     }
 
 
@@ -77,7 +80,7 @@ class UsersService {
         container.throwIfNotEmpty()
 
         resource.email.ifPresent { user.email = resource.email.get() }
-        resource.avatarId.ifPresent { user.avatarId = resource.avatarId.get() }
+        resource.avatarId.ifPresent { user.avatar = imageRepository.findById(resource.avatarId.get()).get() }
         resource.username.ifPresent { user.username = resource.username.get() }
         userRepository.saveAndFlush(user)
 

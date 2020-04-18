@@ -41,7 +41,7 @@ class ImageService {
     fun checkImageId(property: String, imageId: Int?, container: ExceptionContainer) {
         if (imageId != null) {
             if (imageRepository.findById(imageId).isEmpty) {
-                container.addException(PropertyException("avatarId", "The given avatarId was not found in the database."))
+                container.addException(PropertyException(property, "The given $property was not found in the database."))
             }
         }
     }
