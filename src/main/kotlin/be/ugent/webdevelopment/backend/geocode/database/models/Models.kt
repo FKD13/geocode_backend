@@ -375,7 +375,7 @@ class UserTour constructor(
 @Entity
 @Table(name = "images")
 @JsonldType("https://schema.org/image")
-@JsonldId("image")
+@JsonldId("images")
 class Image constructor(
         @Id
         @GeneratedValue
