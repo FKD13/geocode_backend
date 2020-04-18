@@ -280,7 +280,7 @@ class LocationRating constructor(
 @Entity
 @Table(name = "check_ins")
 @JsonldType("https://schema.org/DiscoverAction")
-@JsonldId("checkIn") //todo check of dit klopt met de endpoints
+@JsonldId("checkin") //todo check of dit klopt met de endpoints
 class CheckIn constructor(
         @Id
         @GeneratedValue
