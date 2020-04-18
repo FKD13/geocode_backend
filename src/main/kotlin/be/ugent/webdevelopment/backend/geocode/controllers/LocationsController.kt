@@ -139,7 +139,7 @@ class LocationsController(
     //------------------------------------------------------------------------------------------------------------------
 
     @GetMapping("/{secretId}/qrcode", produces = ["application/jpeg"])
-    fun getQrcode(
+    fun getQrCode(
             @RequestParam("frontend") frontendUrl: String,
             @RequestParam("size") size: Int,
             @PathVariable("secretId") secretId: UUID,

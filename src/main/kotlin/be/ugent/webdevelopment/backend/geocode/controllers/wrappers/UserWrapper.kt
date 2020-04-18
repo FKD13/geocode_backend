@@ -6,7 +6,5 @@ class UserWrapper(
         var id: Optional<Int>,
         var username: Optional<String>,
         var avatarId: Optional<Int>,
-        var email: Optional<String>,
-        var admin: Optional<Boolean>,
-        var time: Optional<Date>
+        var email: Optional<String>
 ) : Wrapper()

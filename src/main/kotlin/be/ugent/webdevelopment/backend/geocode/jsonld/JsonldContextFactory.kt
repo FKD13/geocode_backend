@@ -61,8 +61,6 @@ object JsonldContextFactory {
                 }
                 propertyId.ifPresent { id: String? ->
                     if (f.type.declaredFields.any { df -> df.isAnnotationPresent(JsonldId::class.java) }) {
-                        val idfield = f.type.declaredFields.filter { df -> df.isAnnotationPresent(JsonldId::class.java) }[0]//dit gaat altijd maar 1 element hebben
-                        idfield.isAccessible = true
                         val node = JsonNodeFactory.withExactBigDecimals(true).objectNode()
                         getFullIdFromObject(f.get(objType)).ifPresent {
                             node.set<JsonNode>("@id", TextNode.valueOf(it))

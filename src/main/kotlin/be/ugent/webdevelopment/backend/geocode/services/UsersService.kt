@@ -9,8 +9,6 @@ import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.net.MalformedURLException
-import java.net.URL
 import java.util.*
 
 @Service
@@ -41,15 +39,6 @@ class UsersService {
         val user: Optional<User> = userRepository.findById(id)
         if (user.isEmpty) throw GenericException("User with id = $id was not found in the database")
         return user.get()
-    }
-
-
-    fun checkUrl(url: String, container: ExceptionContainer) {
-        try {
-            URL(url)
-        } catch (e: MalformedURLException) {
-            container.addException(PropertyException("url", "The url is not valid."))
-        }
     }
 
     fun checkUsername(nameResource: String, nameUser: String, container: ExceptionContainer) {

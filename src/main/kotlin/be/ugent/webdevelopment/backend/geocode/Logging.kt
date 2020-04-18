@@ -11,6 +11,7 @@ import javax.servlet.FilterChain
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import kotlin.math.min
 
 @Configuration
 class DoogiesRequestLogger : OncePerRequestFilter() {
@@ -18,9 +19,9 @@ class DoogiesRequestLogger : OncePerRequestFilter() {
     private val includeResponsePayload = true
     private val maxPayloadLength = 1000000
 
-    private fun getContentAsString(buf: ByteArray?, maxLength: Int, charsetName: String): String {
-        if (buf == null || buf.size == 0) return ""
-        val length = Math.min(buf.size, maxPayloadLength)
+    private fun getContentAsString(buf: ByteArray?, charsetName: String): String {
+        if (buf == null || buf.isEmpty()) return ""
+        val length = min(buf.size, maxPayloadLength)
         return try {
             String(buf, 0, length, Charset.forName(charsetName))
         } catch (ex: UnsupportedEncodingException) {
@@ -70,14 +71,14 @@ class DoogiesRequestLogger : OncePerRequestFilter() {
         val duration = System.currentTimeMillis() - startTime
 
         // I can only log the request's body AFTER the request has been made and ContentCachingRequestWrapper did its work.
-        val requestBody = getContentAsString(wrappedRequest.contentAsByteArray, maxPayloadLength, request.characterEncoding)
-        if (requestBody.length > 0) {
+        val requestBody = getContentAsString(wrappedRequest.contentAsByteArray, request.characterEncoding)
+        if (requestBody.isNotEmpty()) {
             logger.debug("   Request body:\n$requestBody")
         }
         logger.debug("<= " + reqInfo + ": returned status=" + response.status + " in " + duration + "ms")
         if (includeResponsePayload) {
             val buf = wrappedResponse.contentAsByteArray
-            logger.debug("""   Response body: ${getContentAsString(buf, maxPayloadLength, response.characterEncoding)}""")
+            logger.debug("""   Response body: ${getContentAsString(buf, response.characterEncoding)}""")
         }
         wrappedResponse.copyBodyToResponse() // IMPORTANT: copy content of response back into original response
     }

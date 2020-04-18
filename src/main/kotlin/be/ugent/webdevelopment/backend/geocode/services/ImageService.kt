@@ -5,7 +5,6 @@ import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageReposi
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
-import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -44,13 +43,6 @@ class ImageService {
                 container.addException(PropertyException(property, "The given $property was not found in the database."))
             }
         }
-    }
-
-    fun getUrlForImage(prefix: String, imageId: Int?): String {
-        if (imageId == null) {
-            return ""
-        }
-        return JsonldResourceUtils.appendIfNeeded(System.getenv("GEOCODE_BACKEND_URL"), "/") + JsonldResourceUtils.appendIfNeeded(prefix, "/") + imageId.toString()
     }
 
 }

@@ -4,7 +4,6 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapp
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Report
 import be.ugent.webdevelopment.backend.geocode.services.ImageService
-import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
 import be.ugent.webdevelopment.backend.geocode.services.ReportService
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
@@ -20,8 +19,7 @@ import javax.servlet.http.HttpServletResponse
 @JsonView(View.AdminDetail::class)
 class ReportsController(
         var imageService: ImageService,
-        var reportService: ReportService,
-        var jwtAuthenticator: JWTAuthenticator
+        var reportService: ReportService
 ) {
 
     @GetMapping("/{reportId}")

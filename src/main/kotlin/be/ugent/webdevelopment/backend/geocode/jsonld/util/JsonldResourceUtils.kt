@@ -8,7 +8,6 @@ import be.ugent.webdevelopment.backend.geocode.jsonld.internal.AnnotationConstan
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.node.ObjectNode
 import java.util.*
-import java.util.function.Function
 
 /**
  * @author Alexander De Leon (alex.deleon@devialab.com)
@@ -21,7 +20,7 @@ object JsonldResourceUtils {
 
     fun dynamicTypeLookup(objType: Class<*>): Optional<String> {
         val typeFromAnnotation = Optional.ofNullable(objType.getAnnotation(JsonldType::class.java))
-                .map(Function<JsonldType, String> { obj: JsonldType -> obj.value })
+                .map { obj: JsonldType -> obj.value }
         return if (typeFromAnnotation.isPresent) typeFromAnnotation else typeFromJavaClass(objType)
     }
 
@@ -36,16 +35,16 @@ object JsonldResourceUtils {
                 }
     }
 
-    fun getidValueFromClassAnnotation(obj: Any): Optional<String> {
-        val annot = obj.javaClass.getAnnotation(JsonldId::class.java)
-        return if (annot == null) {
+    private fun getIdValueFromClassAnnotation(obj: Any): Optional<String> {
+        val annotation = obj.javaClass.getAnnotation(JsonldId::class.java)
+        return if (annotation == null) {
             Optional.empty()
         } else {
-            Optional.of(annot.value)
+            Optional.of(annotation.value)
         }
     }
 
-    fun appendIfNeeded(string: String, append: String): String {
+    private fun appendIfNeeded(string: String, append: String = "/"): String {
         return if (string.endsWith(append)) {
             string
         } else {
@@ -54,26 +53,30 @@ object JsonldResourceUtils {
     }
 
     fun getFullIdFromObject(obj: Any): Optional<String> {
-        val id = getidValueFromObject(obj)
-        val idValue = getidValueFromClassAnnotation(obj)
+        val id = getIdValueFromObject(obj)
+        val idValue = getIdValueFromClassAnnotation(obj)
 
         return if (id.isPresent && idValue.isPresent) {
-            Optional.of(appendIfNeeded(System.getenv("GEOCODE_BACKEND_URL"), "/") + appendIfNeeded(idValue.get(), "/") + id.get())
+            Optional.of(appendIfNeeded(System.getenv("GEOCODE_BACKEND_URL")) + appendIfNeeded(idValue.get()) + id.get())
         } else {
             Optional.empty()
         }
     }
 
-    fun getidValueFromObject(obj: Any): Optional<Any> {
+    private fun getIdValueFromObject(obj: Any): Optional<Any> {
         val listOfFields = obj.javaClass.declaredFields.filter { field -> field.isAnnotationPresent(JsonldId::class.java) }
-        if (listOfFields.isEmpty()) {
-            return Optional.empty()
-        } else if (listOfFields.size > 1) {
-            return Optional.empty() //this is ambiguous
-        } else {
-            val field = listOfFields[0]
-            field.isAccessible = true
-            return Optional.of(field.get(obj).toString())
+        return when {
+            listOfFields.isEmpty() -> {
+                Optional.empty()
+            }
+            listOfFields.size > 1 -> {
+                Optional.empty() //this is ambiguous
+            }
+            else -> {
+                val field = listOfFields[0]
+                field.isAccessible = true
+                Optional.of(field.get(obj).toString())
+            }
         }
     }
 }

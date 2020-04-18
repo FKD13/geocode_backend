@@ -4,7 +4,6 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.RatingsWrapp
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.LocationRating
 import be.ugent.webdevelopment.backend.geocode.database.models.User
-import be.ugent.webdevelopment.backend.geocode.database.repositories.CheckInRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRatingRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
@@ -17,8 +16,7 @@ import java.util.*
 @Service
 class RatingsService(
         val ratingRepository: LocationRatingRepository,
-        val locationRepository: LocationRepository,
-        val checkInRepository: CheckInRepository) {
+        val locationRepository: LocationRepository) {
 
     private fun getLocation(secretId: UUID): Location {
         val location = locationRepository.findBySecretId(secretId.toString())

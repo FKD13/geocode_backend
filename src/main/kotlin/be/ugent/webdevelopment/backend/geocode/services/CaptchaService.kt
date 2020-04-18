@@ -26,7 +26,7 @@ class CaptchaResponse(
 class CaptchaService {
 
     @Value("\${CAPTCHA_SITE}")
-    private final lateinit var captchaSite: String
+    private final lateinit var captchaSite: String //TODO to create endpoint for this
 
     @Value("\${CAPTCHA_SECRET}")
     private final lateinit var captchaSecret: String
@@ -35,12 +35,12 @@ class CaptchaService {
 
     private val captchaPattern = Pattern.compile("[A-Za-z0-9_-]+")
 
-    fun checkRespone(response: String): Boolean {
+    fun checkResponse(response: String): Boolean {
         return response.isNotEmpty() && captchaPattern.matcher(response).matches()
     }
 
     fun validateCaptcha(response: String) {
-        if (!checkRespone(response)) {
+        if (!checkResponse(response)) {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Not a valid captcha response")
         }
         val verifyUri: URI = URI.create(
