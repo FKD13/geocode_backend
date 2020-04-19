@@ -58,8 +58,8 @@ class ReportService {
             val container = ExceptionContainer()
             reportsWrapper.imageId.ifPresent { imageService.checkImageId("imageId", it, container) }
             reportsWrapper.reason.ifPresent {
-                if (it.length < 5 || it.length > 2048) {
-                    container.addException(PropertyException("reason", "Reason should be at least 5 characters and less than 2048 characters."))
+                if (it.length < 4 || it.length > 2048) {
+                    container.addException(PropertyException("reason", "Reason should be at least 4 characters and less than 2048 characters."))
                 }
             }
             container.throwIfNotEmpty()
