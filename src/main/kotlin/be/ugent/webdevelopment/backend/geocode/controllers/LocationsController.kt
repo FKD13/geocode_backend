@@ -125,7 +125,6 @@ class LocationsController(
     @JsonView(View.AdminDetail::class)
     fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper: ReportsWrapper,
                    request: HttpServletRequest, response: HttpServletResponse): Report {
-        reportService.checkAdmin(request)
         return reportService.create(jwtService.tryAuthenticate(request), secretId, reportsWrapper)
     }
 
