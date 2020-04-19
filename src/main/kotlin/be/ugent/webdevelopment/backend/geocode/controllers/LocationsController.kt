@@ -122,8 +122,8 @@ class LocationsController(
     }
 
     @PostMapping(value = ["/{secretId}/reports"])
-    fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper,
-                   request: HttpServletRequest, response: HttpServletResponse): Report {
+    fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper: ReportsWrapper,
+                   request: HttpServletRequest, response: HttpServletResponse) {
         reportService.create(jwtService.tryAuthenticate(request), secretId, reportsWrapper)
     }
 
