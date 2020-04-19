@@ -122,10 +122,9 @@ class LocationsController(
     }
 
     @PostMapping(value = ["/{secretId}/reports"])
-    @JsonView(View.AdminDetail::class)
-    fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper: ReportsWrapper,
+    fun addReports(@PathVariable secretId: UUID, @RequestBody reportsWrapper,
                    request: HttpServletRequest, response: HttpServletResponse): Report {
-        return reportService.create(jwtService.tryAuthenticate(request), secretId, reportsWrapper)
+        reportService.create(jwtService.tryAuthenticate(request), secretId, reportsWrapper)
     }
 
     //------------------------------------------------------------------------------------------------------------------
