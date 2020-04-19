@@ -170,7 +170,7 @@ class LocationsController(
         val user = jwtService.tryAuthenticate(request)
         val location = service.findBySecretId(secretId)
 
-        if (user.id != location.loc.creator.id || user.admin.not()) {
+        if (user.id != location.loc.creator.id && user.admin.not()) {
             throw GenericException("This user did not create this location and can therefore not get a Pdf for it.")
         }
 
