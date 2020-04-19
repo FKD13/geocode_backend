@@ -160,7 +160,7 @@ class LocationsController(
         return qrCodeService.getQRCode(location.loc.visitSecret, frontendUrl, size)
     }
 
-    @GetMapping("/{secretId}/pdf", produces = [MediaType.APPLICATION_PDF_VALUE])
+    @GetMapping("/{secretId}/qrcode/pdf", produces = [MediaType.APPLICATION_PDF_VALUE])
     fun getPdf(
             @RequestParam("frontend") frontendUrl: String,
             @PathVariable secretId: UUID,
