@@ -26,22 +26,25 @@ repositories {
 }
 
 dependencies {
-    //mariadb
+    // Mariadb
     implementation("org.mariadb.jdbc:mariadb-java-client")
-    //swagger
+    // Swagger
     implementation("org.springdoc:springdoc-openapi-ui:1.2.33")
-    //JWT
+    // JWT
     implementation("com.auth0:java-jwt:3.4.0")
-    //Email
+    // Email
     implementation("com.sun.mail:javax.mail:1.6.2")
-    //Security
+    // Security
     implementation("org.springframework.security:spring-security-core")
+    // Qrcode
     implementation("com.google.zxing:core:3.4.0")
     implementation("com.google.zxing:javase:3.4.0")
-    //implementation("org.zalando:logbook-spring-boot-starter:2.1.0")
+    // Tracing
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // Pdf
+    implementation("com.itextpdf:itextpdf:5.5.13.1")
+    implementation("org.apache.pdfbox:pdfbox:2.0.19")
 
-    //implementation("com.github.DeruytterA:jackson-jsonld:v0.1.1.3-alpha")
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
