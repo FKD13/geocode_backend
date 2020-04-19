@@ -38,10 +38,8 @@ dependencies {
     implementation("org.springframework.security:spring-security-core")
     implementation("com.google.zxing:core:3.4.0")
     implementation("com.google.zxing:javase:3.4.0")
-    //implementation("org.zalando:logbook-spring-boot-starter:2.1.0")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-    //implementation("com.github.DeruytterA:jackson-jsonld:v0.1.1.3-alpha")
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
