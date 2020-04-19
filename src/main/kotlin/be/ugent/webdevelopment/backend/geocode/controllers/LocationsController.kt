@@ -8,6 +8,7 @@ import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.context.annotation.Bean
 import org.springframework.core.io.InputStreamResource
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -157,6 +158,8 @@ class LocationsController(
         if (jwtService.tryAuthenticate(request).id != location.loc.creator.id) {
             throw GenericException("This user did not create this location and can therefore not get a QR code for it.")
         }
+
+        response.addHeader("Content-Disposition", "attachment; filename=qr-code.png")
         return qrCodeService.getQRCode(location.loc.visitSecret, frontendUrl, size)
     }
 
@@ -178,8 +181,12 @@ class LocationsController(
 
         val pdf = pdfService.getPdf(qrcode)
 
+        val header = HttpHeaders()
+        header.add("Content-Disposition", "attachment; filename=qr-code.pdf")
+
         return ResponseEntity
                 . ok()
+                . headers(header)
                 . contentType(MediaType.APPLICATION_PDF)
                 . body(InputStreamResource(pdf))
 
