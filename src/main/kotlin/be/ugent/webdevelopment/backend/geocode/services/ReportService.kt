@@ -92,9 +92,6 @@ class ReportService {
             }, {
                 container.addException(PropertyException("reason", "The reason is an expected value."))
             })
-            reportsWrapper.resolved.ifPresentOrElse({}, {
-                container.addException(PropertyException("resolved", "Resolved is an expected value."))
-            })
             container.throwIfNotEmpty()
             return reportRepository.saveAndFlush(Report(
                     createdAt = Date.from(Instant.now()),
@@ -102,7 +99,7 @@ class ReportService {
                     creator = user,
                     location = location.get(),
                     reason = reportsWrapper.reason.get(),
-                    resolved = reportsWrapper.resolved.orElse(false)
+                    resolved = false
             ))
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
