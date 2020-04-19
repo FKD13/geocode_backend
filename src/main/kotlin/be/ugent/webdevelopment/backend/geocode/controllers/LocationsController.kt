@@ -7,8 +7,10 @@ import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.context.annotation.Bean
+import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.BufferedImageHttpMessageConverter
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.web.bind.annotation.*
@@ -28,7 +30,8 @@ class LocationsController(
         val commentsService: CommentsService,
         val visitsService: VisitsService,
         val qrCodeService: QRCodeService,
-        val reportService: ReportService
+        val reportService: ReportService,
+        val pdfService: PdfService
 ) {
 
 
@@ -155,6 +158,31 @@ class LocationsController(
             throw GenericException("This user did not create this location and can therefore not get a QR code for it.")
         }
         return qrCodeService.getQRCode(location.loc.visitSecret, frontendUrl, size)
+    }
+
+    @GetMapping("/{secretId}/pdf", produces = [MediaType.APPLICATION_PDF_VALUE])
+    fun getPdf(
+            @RequestParam("frontend") frontendUrl: String,
+            @PathVariable secretId: UUID,
+            request: HttpServletRequest,
+            response: HttpServletResponse
+    ): ResponseEntity<InputStreamResource> {
+        val user = jwtService.tryAuthenticate(request)
+        val location = service.findBySecretId(secretId)
+
+        if (user.id != location.loc.creator.id || user.admin.not()) {
+            throw GenericException("This user did not create this location and can therefore not get a Pdf for it.")
+        }
+
+        val qrcode = qrCodeService.getQRCode(location.loc.visitSecret, frontendUrl, 1024)
+
+        val pdf = pdfService.getPdf(qrcode)
+
+        return ResponseEntity
+                . ok()
+                . contentType(MediaType.APPLICATION_PDF)
+                . body(InputStreamResource(pdf))
+
     }
 
     @Bean
