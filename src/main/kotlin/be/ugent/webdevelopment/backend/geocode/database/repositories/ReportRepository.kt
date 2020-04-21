@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface ReportRepository : JpaRepository<Report, Int> {
-    fun findAllByLocation(location: Location): List<Report>
     fun findAllByImage(image: Image): Optional<Report>
+    fun findAllByLocation(location: Location): List<Report>
 }

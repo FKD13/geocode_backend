@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.websocket.server.PathParam
 
 
 @RestController
@@ -183,16 +184,24 @@ class LocationsController(
         header.add("Content-Disposition", "attachment; filename=qr-code.pdf")
 
         return ResponseEntity
-                . ok()
-                . headers(header)
-                . contentType(MediaType.APPLICATION_PDF)
-                . body(InputStreamResource(pdf))
+                .ok()
+                .headers(header)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(InputStreamResource(pdf))
 
     }
 
     @Bean
     fun createImageHttpMessageConverter(): HttpMessageConverter<BufferedImage> {
         return BufferedImageHttpMessageConverter()
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Statistics
+
+    @GetMapping("/{secretId}/statistics")
+    fun getLocationStatistics(@PathVariable secretId: String, request: HttpServletRequest): LocationStatistics {
+        return service.getLocationStatistics(secretId, request)
     }
 }
 
