@@ -69,10 +69,17 @@ class UsersService {
         container.throwIfNotEmpty()
 
         resource.email.ifPresent { user.email = resource.email.get() }
-        resource.avatarId.ifPresent { user.avatar = imageRepository.findById(resource.avatarId.get()).get() }
+        resource.avatarId.ifPresent {
+            imageRepository.findById(resource.avatarId.get()).ifPresentOrElse({
+                user.avatar = it
+            }, {
+                if (user.avatar != null) {
+                    imageRepository.delete(user.avatar!!)
+                }
+            })
+        }
         resource.username.ifPresent { user.username = resource.username.get() }
         userRepository.saveAndFlush(user)
-
     }
 
 
