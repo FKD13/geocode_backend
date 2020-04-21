@@ -93,14 +93,25 @@ class ReportService {
                 container.addException(PropertyException("reason", "The reason is an expected value."))
             })
             container.throwIfNotEmpty()
-            return reportRepository.saveAndFlush(Report(
-                    createdAt = Date.from(Instant.now()),
-                    image = imageRepository.findById(reportsWrapper.imageId.get()).get(),
-                    creator = user,
-                    location = location.get(),
-                    reason = reportsWrapper.reason.get(),
-                    resolved = false
-            ))
+            if (reportsWrapper.imageId.isEmpty) {
+                return reportRepository.saveAndFlush(Report(
+                        createdAt = Date.from(Instant.now()),
+                        image = null,
+                        creator = user,
+                        location = location.get(),
+                        reason = reportsWrapper.reason.get(),
+                        resolved = false
+                ))
+            } else {
+                return reportRepository.saveAndFlush(Report(
+                        createdAt = Date.from(Instant.now()),
+                        image = imageRepository.findById(reportsWrapper.imageId.get()).get(),
+                        creator = user,
+                        location = location.get(),
+                        reason = reportsWrapper.reason.get(),
+                        resolved = false
+                ))
+            }
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
         }
