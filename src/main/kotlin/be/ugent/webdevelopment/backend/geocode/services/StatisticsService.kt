@@ -52,7 +52,7 @@ class StatisticsService(
 
     fun getLocationStatistics(location: Location): LocationStatistics {
         return LocationStatistics(
-                reviewsCount = ratingRepository.findAllByLocation(location).size,
+                ratingsCount = ratingRepository.findAllByLocation(location).size,
                 visitsCount = checkInRepository.findAllByLocation(location).size,
                 lastVisit = checkInRepository.findFirstByLocationOrderByCreatedAtDesc(location)
         )
