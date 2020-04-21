@@ -86,7 +86,7 @@ class ReportService {
                 imageService.checkImageId("imageId", it, container)
             }, {})
             reportsWrapper.reason.ifPresentOrElse({
-                if (it.length < 5 || it.length > 2048) {
+                if (it.length < 4 || it.length > 2048) {
                     container.addException(PropertyException("reason", "Reason should be at least 5 characters and less than 2048 characters."))
                 }
             }, {
