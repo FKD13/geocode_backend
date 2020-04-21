@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationStatistics
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.User
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.regex.Pattern
+import javax.servlet.http.HttpServletRequest
 
 @Service
 class LocationsService {
@@ -27,6 +29,12 @@ class LocationsService {
 
     @Autowired
     private lateinit var locationRatingRepository: LocationRatingRepository
+
+    @Autowired
+    private lateinit var statisticsService: StatisticsService
+
+    @Autowired
+    private lateinit var jwtAuthenticator: JWTAuthenticator
 
     private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3|div)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
     private val attributesPattern = Pattern.compile("<[^<>]*\\s+(?!src|height|width)([^<>=]+)=[^<>]*", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
@@ -170,6 +178,25 @@ class LocationsService {
             throw GenericException("Location with secretId= $secretId was not found in the database.")
         })
 
+    }
+
+    fun getLocationStatistics(secretId: String, request: HttpServletRequest): LocationStatistics {
+        var statistics = LocationStatistics()
+        locationRepository.findBySecretId(secretId).ifPresentOrElse({
+            statistics = if (it.listed && it.active) {
+                statisticsService.getLocationStatistics(it)
+            } else {
+                val user = jwtAuthenticator.tryAuthenticate(request)
+                if (it.creator == user || user.admin) {
+                    statisticsService.getLocationStatistics(it)
+                } else {
+                    throw GenericException("The currently logged in user did not create this location and can therefore not get the statistics.")
+                }
+            }
+        }, {
+            throw GenericException("Location with secretId= $secretId was not found in the database.")
+        })
+        return statistics
     }
 
 }

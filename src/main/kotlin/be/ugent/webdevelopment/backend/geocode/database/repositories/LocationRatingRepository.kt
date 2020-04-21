@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface LocationRatingRepository : JpaRepository<LocationRating, Int> {
-    fun findByCreatorAndLocation(creator: User, location: Location): Optional<LocationRating>
     fun findAllByLocation(location: Location): List<LocationRating>
+    fun findByCreatorAndLocation(creator: User, location: Location): Optional<LocationRating>
 }
