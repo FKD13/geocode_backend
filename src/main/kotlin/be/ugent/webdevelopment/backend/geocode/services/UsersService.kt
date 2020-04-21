@@ -63,7 +63,7 @@ class UsersService {
                 container.addException(PropertyException("email", "The email is not valid"))
             checkEmailUnique(user.email, resource.email.get(), container)
         }
-        resource.avatarId.ifPresent { imageService.checkImageId("avatarId", resource.avatarId.get(), container) }
+
         resource.username.ifPresent { checkUsername(resource.username.get(), user.username, container) }
 
         container.throwIfNotEmpty()
