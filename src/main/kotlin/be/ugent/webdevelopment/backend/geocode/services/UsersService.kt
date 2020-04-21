@@ -74,7 +74,10 @@ class UsersService {
                 user.avatar = it
             }, {
                 if (user.avatar != null) {
-                    imageRepository.delete(user.avatar!!)
+                    val id = user.avatar!!.id
+                    user.avatar = null
+                    imageRepository.deleteById(id)
+                    imageRepository.flush()
                 }
             })
         }
