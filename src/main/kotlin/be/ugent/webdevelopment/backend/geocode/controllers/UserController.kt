@@ -1,12 +1,17 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.LocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatistics
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
-import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
-import be.ugent.webdevelopment.backend.geocode.services.LocationsService
-import be.ugent.webdevelopment.backend.geocode.services.UsersService
+import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
+import be.ugent.webdevelopment.backend.geocode.database.models.User
+import be.ugent.webdevelopment.backend.geocode.services.*
+import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -14,16 +19,24 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/user")
-class UserController(val usersService: UsersService, val jwtService: JWTAuthenticator, val locationsService: LocationsService) : Controller<UserWrapper>{
+@JsonView(View.PrivateDetail::class)
+class UserController(
+        val usersService: UsersService,
+        val jwtService: JWTAuthenticator,
+        val locationsService: LocationsService,
+        val visitsService: VisitsService,
+        val statisticsService: StatisticsService,
+        val imageService: ImageService) {
 
     @GetMapping
     fun findByLoggedIn(
-                 response: HttpServletResponse, request: HttpServletRequest): UserWrapper {
-        return UserWrapper(jwtService.tryAuthenticate(request))
+            response: HttpServletResponse, request: HttpServletRequest): User {
+        return jwtService.tryAuthenticate(request)
     }
 
     @GetMapping(value = ["/locations"])
-    fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<LocationWrapper>{
+    @JsonView(View.List::class)
+    fun getLocations(response: HttpServletResponse, request: HttpServletRequest): List<ExtendedLocationWrapper> {
         return locationsService.findAllByUser(jwtService.tryAuthenticate(request))
     }
 
@@ -34,10 +47,34 @@ class UserController(val usersService: UsersService, val jwtService: JWTAuthenti
     }
 
     @DeleteMapping
-    fun delete(
-            response: HttpServletResponse, request: HttpServletRequest) {
+    fun delete(response: HttpServletResponse, request: HttpServletRequest) {
         usersService.deleteUser(jwtService.tryAuthenticate(request))
     }
 
+    @PostMapping("/avatar")
+    fun avatarUpload(@RequestBody image: MultipartFile, request: HttpServletRequest, response: HttpServletResponse): Int {
+        return imageService.saveImageFile(image)
+    }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // Visits
+
+    @GetMapping("/visits")
+    fun getVisitsForUser(response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
+        return visitsService.getVisitsByUser(jwtService.tryAuthenticate(request))
+    }
+
+    @GetMapping("/visits/{secretId}")
+    fun getVisitsForUserByLocationSecret(@PathVariable secretId: UUID,
+                                         response: HttpServletResponse, request: HttpServletRequest): List<CheckIn> {
+        return visitsService.getVisitsByUserForLocation(jwtService.tryAuthenticate(request), secretId)
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Statistics
+
+    @GetMapping("/statistics")
+    fun getUserStatistics(request: HttpServletRequest, response: HttpServletResponse): UserStatistics {
+        return statisticsService.getUserStatistics(jwtService.tryAuthenticate(request))
+    }
 }

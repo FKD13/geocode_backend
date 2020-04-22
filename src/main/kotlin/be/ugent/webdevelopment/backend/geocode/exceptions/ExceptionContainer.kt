@@ -22,12 +22,32 @@ class ExceptionContainer(code: HttpStatus = HttpStatus.NOT_FOUND,
         inputExceptions.add(exception)
     }
 
-    fun isEmpty(): Boolean{
+    fun isEmpty(): Boolean {
         return inputExceptions.isEmpty() && generalExceptions.isEmpty()
     }
 
-    fun throwIfNotEmpty(){
-        if (!this.isEmpty()){
+    fun ifEmpty(f: () -> Unit) {
+        if (isEmpty()) {
+            f.invoke()
+        }
+    }
+
+    fun ifNotEmpty(f: () -> Unit) {
+        if (isEmpty().not()) {
+            f.invoke()
+        }
+    }
+
+    fun ifEmptyOrElse(f1: () -> Unit, f2: () -> Unit) {
+        if (isEmpty()) {
+            f1.invoke()
+        } else {
+            f2.invoke()
+        }
+    }
+
+    fun throwIfNotEmpty() {
+        if (!isEmpty()) {
             throw this
         }
     }

@@ -11,11 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import java.awt.LinearGradientPaint
-import java.lang.NumberFormatException
-import java.time.LocalDate
-import java.time.LocalDate.now
-import java.time.ZoneId
 import java.util.*
 import javax.servlet.http.Cookie
 import javax.servlet.http.HttpServletRequest
@@ -34,13 +29,17 @@ class JWTAuthenticator {
 
     private val cookieToken: String = "Geocode_Token"
 
-    fun tryAuthenticate(request: HttpServletRequest) : User {
+    fun tryAuthenticate(request: HttpServletRequest): User {
         val user: Optional<User>
         var token: Optional<String> = Optional.empty()
         if (request.cookies == null) {
             throw GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in")
         }
-        request.cookies.map {if(it.name.equals(cookieToken)) {token = Optional.of(it.value)}}
+        request.cookies.map {
+            if (it.name == cookieToken) {
+                token = Optional.of(it.value)
+            }
+        }
         try {
             token.orElseThrow { GenericException(code = HttpStatus.UNAUTHORIZED, message = "Not logged in") }
             val jwtToken: DecodedJWT = JWT.require(Algorithm.HMAC512(secret))
@@ -71,7 +70,7 @@ class JWTAuthenticator {
         response.addCookie(createCookie(null).also { it.maxAge = 0 })
     }
 
-    private fun createCookie(s: String?) : Cookie {
-        return Cookie(cookieToken, s).also {it.isHttpOnly = true}.also {it.secure = true}.also {it.path = "/"}
+    private fun createCookie(s: String?): Cookie {
+        return Cookie(cookieToken, s).also { it.isHttpOnly = true }.also { it.secure = true }.also { it.path = "/" }
     }
 }
