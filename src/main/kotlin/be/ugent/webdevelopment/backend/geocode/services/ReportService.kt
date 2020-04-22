@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapper
+import be.ugent.webdevelopment.backend.geocode.database.models.Image
 import be.ugent.webdevelopment.backend.geocode.database.models.Report
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
@@ -86,16 +87,21 @@ class ReportService {
                 imageService.checkImageId("imageId", it, container)
             }, {})
             reportsWrapper.reason.ifPresentOrElse({
-                if (it.length < 5 || it.length > 2048) {
+                if (it.length < 4 || it.length > 2048) {
                     container.addException(PropertyException("reason", "Reason should be at least 5 characters and less than 2048 characters."))
                 }
             }, {
                 container.addException(PropertyException("reason", "The reason is an expected value."))
             })
             container.throwIfNotEmpty()
+
+            var image: Image? = null
+            reportsWrapper.imageId.ifPresent {
+                image = imageRepository.findById(it).orElseGet { null }
+            }
             return reportRepository.saveAndFlush(Report(
                     createdAt = Date.from(Instant.now()),
-                    image = imageRepository.findById(reportsWrapper.imageId.get()).get(),
+                    image = image,
                     creator = user,
                     location = location.get(),
                     reason = reportsWrapper.reason.get(),
