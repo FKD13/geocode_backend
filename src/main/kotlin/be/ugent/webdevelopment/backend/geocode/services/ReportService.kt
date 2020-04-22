@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapper
+import be.ugent.webdevelopment.backend.geocode.database.models.Image
 import be.ugent.webdevelopment.backend.geocode.database.models.Report
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
@@ -93,25 +94,19 @@ class ReportService {
                 container.addException(PropertyException("reason", "The reason is an expected value."))
             })
             container.throwIfNotEmpty()
-            if (reportsWrapper.imageId.isEmpty) {
-                return reportRepository.saveAndFlush(Report(
-                        createdAt = Date.from(Instant.now()),
-                        image = null,
-                        creator = user,
-                        location = location.get(),
-                        reason = reportsWrapper.reason.get(),
-                        resolved = false
-                ))
-            } else {
-                return reportRepository.saveAndFlush(Report(
-                        createdAt = Date.from(Instant.now()),
-                        image = imageRepository.findById(reportsWrapper.imageId.get()).get(),
-                        creator = user,
-                        location = location.get(),
-                        reason = reportsWrapper.reason.get(),
-                        resolved = false
-                ))
+
+            var image: Image? = null
+            reportsWrapper.imageId.ifPresent {
+                image = imageRepository.findById(it).orElseGet { null }
             }
+            return reportRepository.saveAndFlush(Report(
+                    createdAt = Date.from(Instant.now()),
+                    image = image,
+                    creator = user,
+                    location = location.get(),
+                    reason = reportsWrapper.reason.get(),
+                    resolved = false
+            ))
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
         }
