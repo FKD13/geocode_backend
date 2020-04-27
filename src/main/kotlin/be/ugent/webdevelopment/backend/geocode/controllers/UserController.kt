@@ -5,6 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatisti
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
+import be.ugent.webdevelopment.backend.geocode.database.models.Tour
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
@@ -26,7 +27,8 @@ class UserController(
         val locationsService: LocationsService,
         val visitsService: VisitsService,
         val statisticsService: StatisticsService,
-        val imageService: ImageService) {
+        val imageService: ImageService,
+        val toursService: ToursService) {
 
     @GetMapping
     fun findByLoggedIn(
@@ -77,4 +79,13 @@ class UserController(
     fun getUserStatistics(request: HttpServletRequest, response: HttpServletResponse): UserStatistics {
         return statisticsService.getUserStatistics(jwtService.tryAuthenticate(request))
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Tours
+
+    @GetMapping("/tours")
+    fun getUserTours(request: HttpServletRequest, response: HttpServletResponse): List<Tour> {
+        return toursService.getByUser(jwtService.tryAuthenticate(request))
+    }
+
 }

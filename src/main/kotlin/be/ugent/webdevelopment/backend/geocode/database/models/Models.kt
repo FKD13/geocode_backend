@@ -190,7 +190,7 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @ManyToMany(cascade = [CascadeType.PERSIST])
         @field:JsonldProperty("https://schema.org/CreativeWork#about")
         @field:JsonView(View.PublicDetail::class)
-        var locations: Set<Location> = Collections.emptySet(), //todo hier een list van maken want volgorde maakt uit
+        var locations: List<Location> = Collections.emptyList(),
 
         @Column(nullable = false, name = "secret_id", unique = true)
         @field:JsonldId
