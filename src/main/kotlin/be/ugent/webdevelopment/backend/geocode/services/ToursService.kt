@@ -48,6 +48,12 @@ class ToursService {
                 }
             }
         }
+        if (resource.active.isEmpty) {
+            container.addException(PropertyException("active", "Active is an expected value."))
+        }
+        if (resource.listed.isEmpty) {
+            container.addException(PropertyException("listed", "Listed is an expected value."))
+        }
         container.throwIfNotEmpty()
         val tour = Tour(
                 creator = user,
@@ -56,8 +62,8 @@ class ToursService {
                 name = resource.name.get(),
                 description = resource.description.get(),
                 createdAt = Date.from(Instant.now()),
-                listed = true, //TODO meegeven??
-                active = true //TODO meegeven??
+                listed = resource.listed.get(),
+                active = resource.active.get()
         )
         return UUID.fromString(tourRepository.saveAndFlush(tour).secretId)
     }
@@ -72,9 +78,10 @@ class ToursService {
         val tour = tourRepository.getBySecretId(secretId.toString()).orElseThrow {
             throw GenericException("Secret id is not linked to any tour.")
         }
-        //TODO misschien listed en active ook megeven zoals hierboven bij create
         resource.name.ifPresent { tour.name = resource.name.get() }//TODO misschien checks uitvoeren op lengte?
         resource.description.ifPresent { tour.description = resource.description.get() }//TODO misschien checks uitvoeren op lengte?
+        resource.active.ifPresent { tour.active = resource.active.get() }
+        resource.listed.ifPresent { tour.listed = resource.listed.get() }
         tourRepository.saveAndFlush(tour)
     }
 

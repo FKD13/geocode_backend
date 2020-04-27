@@ -5,5 +5,7 @@ import java.util.*
 class TourWrapper(
         var name: Optional<String>,
         var description: Optional<String>,
-        var locations: Optional<List<String>>
+        var locations: Optional<List<String>>,
+        var listed: Optional<Boolean>,
+        var active: Optional<Boolean>
 )
