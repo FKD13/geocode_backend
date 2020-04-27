@@ -363,6 +363,7 @@ class Report constructor(
 @Table(name = "user_tours")
 @JsonldType("https://schema.org/Action")
 class UserTour constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -378,6 +379,10 @@ class UserTour constructor(
         @field:JsonldProperty("https://schema.org/Action#object")
         @field:JsonView(View.List::class)
         var tour: Tour = Tour(),
+
+        @Column(nullable = false)
+        @JsonIgnore
+        var amountLocationsVisited: Int = 1,
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Action#actionStatus")
