@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class UsersService {
+class UsersService{
 
     @Autowired
     private lateinit var userRepository: UserRepository

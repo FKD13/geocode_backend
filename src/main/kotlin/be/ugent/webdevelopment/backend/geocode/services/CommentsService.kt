@@ -71,15 +71,17 @@ class CommentsService {
             if (it.creator.id != user.id) {
                 throw GenericException("The currently logged in user did not create this comment and can therefore not edit it.")
             } else {
-                val comment = comment.message.orElseGet { "" }
+                val commentString = comment.message.orElseGet { "" }
                 val ec = ExceptionContainer(code = HttpStatus.UNPROCESSABLE_ENTITY)
-                checkCommentMessage(comment, ec)
-                ec.ifEmptyOrElse({
+
+                checkCommentMessage(commentString, ec)
+
+                ec.ifNotEmpty {
                     throw ec.also { container -> container.addException(GenericException("Could not update comment.")) }
-                },{
-                    it.comment = comment
-                    commentRepository.saveAndFlush(it)
-                })
+                }
+
+                it.comment = commentString
+                commentRepository.saveAndFlush(it)
             }
         }, {
             throw GenericException("Comment with id = $id was not found.")
