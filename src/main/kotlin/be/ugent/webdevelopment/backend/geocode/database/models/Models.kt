@@ -174,7 +174,7 @@ class Location constructor(
 @Entity
 @Table(name = "tours")
 @JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
-@JsonldId("tours") //todo check of dit klopt met de endpoints
+@JsonldId("tours")
 class Tour constructor( //todo check al de JsonViews als we dit gaan implementeren
         @Id
         @GeneratedValue
@@ -190,7 +190,12 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @ManyToMany(cascade = [CascadeType.PERSIST])
         @field:JsonldProperty("https://schema.org/CreativeWork#about")
         @field:JsonView(View.PublicDetail::class)
-        var locations: Set<Location> = Collections.emptySet(),
+        var locations: Set<Location> = Collections.emptySet(), //todo hier een list van maken want volgorde maakt uit
+
+        @Column(nullable = false, name = "secret_id", unique = true)
+        @field:JsonldId
+        @field:JsonView(View.Id::class)
+        var secretId: String = "",
 
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Thing#name")
@@ -207,6 +212,14 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @field:JsonView(View.PublicDetail::class)
         var createdAt: Date = Date(),
 
+        @Column(nullable = false)
+        @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
+        var listed: Boolean = false,
+
+        @Column(nullable = false)
+        @field:JsonView(View.List::class, View.AdminDetail::class)
+        var active: Boolean = false,
+
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
         var user_tours: Set<UserTour> = Collections.emptySet()
@@ -215,7 +228,7 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
 @Entity
 @Table(name = "comments")
 @JsonldType("https://schema.org/Comment")
-@JsonldId("comments") //todo check of dit klopt met de endpoints
+@JsonldId("comments")
 class Comment constructor(
         @Id
         @GeneratedValue
@@ -248,7 +261,7 @@ class Comment constructor(
 @Entity
 @Table(name = "location_ratings")
 @JsonldType("https://schema.org/AggregateRating")
-@JsonldId("ratings") //todo check of dit klopt met de endpoints
+@JsonldId("ratings")
 class LocationRating constructor(
         @Id
         @GeneratedValue
@@ -280,7 +293,7 @@ class LocationRating constructor(
 @Entity
 @Table(name = "check_ins")
 @JsonldType("https://schema.org/DiscoverAction")
-@JsonldId("checkin") //todo check of dit klopt met de endpoints
+@JsonldId("checkin")
 class CheckIn constructor(
         @Id
         @GeneratedValue
@@ -307,7 +320,7 @@ class CheckIn constructor(
 @Entity
 @Table(name = "reports")
 @JsonldType("https://schema.org/Review")
-@JsonldId("reports") //todo check of dit klopt met de endpoints
+@JsonldId("reports")
 class Report constructor(
         @Id
         @GeneratedValue
@@ -369,7 +382,13 @@ class UserTour constructor(
         @Column(nullable = false)
         @field:JsonldProperty("https://schema.org/Action#actionStatus")
         @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
-        var completed: Boolean = false
+        var completed: Boolean = false,
+
+
+        @Column(nullable = false)
+        @field:JsonView(View.PrivateDetail::class)
+        var createdAt: Date = Date()
+
 ) : JsonLDSerializable()
 
 @Entity
