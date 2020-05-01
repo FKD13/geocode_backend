@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ResetWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatistics
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
@@ -26,7 +27,8 @@ class UserController(
         val locationsService: LocationsService,
         val visitsService: VisitsService,
         val statisticsService: StatisticsService,
-        val imageService: ImageService) {
+        val imageService: ImageService,
+        val authService: AuthService) {
 
     @GetMapping
     fun findByLoggedIn(
@@ -54,6 +56,11 @@ class UserController(
     @PostMapping("/avatar")
     fun avatarUpload(@RequestBody image: MultipartFile, request: HttpServletRequest, response: HttpServletResponse): Int {
         return imageService.saveImageFile(image)
+    }
+
+    @PatchMapping
+    fun passWordReset(@RequestBody resource: ResetWrapper, response: HttpServletResponse, request: HttpServletRequest){
+        authService.passwordReset(resource, jwtService.tryAuthenticate(request))
     }
 
     //------------------------------------------------------------------------------------------------------------------
