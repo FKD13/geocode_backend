@@ -27,15 +27,35 @@ class ToursService {
         return tourRepository.getAllByActiveTrueAndListedTrue()
     }
 
+    fun checkStringField(field: String, container: ExceptionContainer, fieldName: String, error: String, exceptionCondition: (String) -> Boolean) {
+        if (exceptionCondition(field)) {
+            container.addException(PropertyException(fieldName, error))
+        }
+    }
+
+    fun checkName(field: String, container: ExceptionContainer) {
+        checkStringField(field, container, "name", "The name should be between 3 and 255 characters long.") { it.length < 3 || it.length > 255 }
+    }
+
+    fun checkDescription(field: String, container: ExceptionContainer) {
+        checkStringField(field, container, "description", "The name should be between 3 and 255 characters long.") { it.length < 5 || it.length > 1024 }
+    }
+
     fun createTour(resource: TourWrapper, user: User): UUID {
         val container = ExceptionContainer()
-        if (resource.name.isEmpty) { //TODO misschien checks uitvoeren op lengte?
+        if (resource.name.isEmpty) {
             container.addException(PropertyException("name", "The name is an expected value."))
+        } else {
+            checkName(resource.name.get(), container)
         }
-        if (resource.description.isEmpty) { //TODO misschien checks uitvoeren op lengte?
+        if (resource.description.isEmpty) {
             container.addException(PropertyException("description", "The description is an expected value."))
+        } else {
+            checkDescription(resource.description.get(), container)
         }
+
         val locations: MutableList<Location> = Collections.emptyList()
+
         if (resource.locations.isEmpty) {
             container.addException(PropertyException("locations", "The locations are an expected value."))
         } else {
@@ -78,10 +98,16 @@ class ToursService {
         val tour = tourRepository.getBySecretId(secretId.toString()).orElseThrow {
             throw GenericException("Secret id is not linked to any tour.")
         }
-        resource.name.ifPresent { tour.name = resource.name.get() }//TODO misschien checks uitvoeren op lengte?
-        resource.description.ifPresent { tour.description = resource.description.get() }//TODO misschien checks uitvoeren op lengte?
-        resource.active.ifPresent { tour.active = resource.active.get() }
-        resource.listed.ifPresent { tour.listed = resource.listed.get() }
+
+        val container = ExceptionContainer()
+        resource.name.ifPresent { checkName(it, container) }
+        resource.description.ifPresent { checkDescription(it, container) }
+
+        container.throwIfNotEmpty()
+        resource.name.ifPresent { tour.name = it }//TODO misschien checks uitvoeren op lengte?
+        resource.description.ifPresent { tour.description = it }//TODO misschien checks uitvoeren op lengte?
+        resource.active.ifPresent { tour.active = it }
+        resource.listed.ifPresent { tour.listed = it }
         tourRepository.saveAndFlush(tour)
     }
 

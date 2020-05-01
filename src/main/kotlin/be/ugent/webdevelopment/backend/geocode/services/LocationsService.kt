@@ -152,14 +152,13 @@ class LocationsService {
 
         container.throwIfNotEmpty()
 
-        locationRepository.findBySecretId(secretId = secretId.toString()).ifPresentOrElse({
-            val location: Location = it
-            resource.longitude.ifPresent { location.longitude = resource.longitude.get() }
-            resource.latitude.ifPresent { location.latitude = resource.latitude.get() }
-            resource.name.ifPresent { location.name = resource.name.get() }
-            resource.description.ifPresent { location.description = resource.description.get() }
-            resource.creatorId.ifPresent { location.creator = userRepository.findById(resource.creatorId.get()).get() }
-            resource.active.ifPresent { location.active = resource.active.get() }
+        locationRepository.findBySecretId(secretId = secretId.toString()).ifPresentOrElse({ location ->
+            resource.longitude.ifPresent { location.longitude = it }
+            resource.latitude.ifPresent { location.latitude = it }
+            resource.name.ifPresent { location.name = it }
+            resource.description.ifPresent { location.description = it }
+            resource.creatorId.ifPresent { location.creator = userRepository.findById(it).get() }
+            resource.active.ifPresent { location.active = it }
             locationRepository.saveAndFlush(location)
         }, {
             throw GenericException("Location with secretId=$secretId does not exist in the database.")
