@@ -38,7 +38,7 @@ class ToursService {
     }
 
     fun checkDescription(field: String, container: ExceptionContainer) {
-        checkStringField(field, container, "description", "The name should be between 3 and 255 characters long.") { it.length < 5 || it.length > 1024 }
+        checkStringField(field, container, "description", "The name should be between 3 and 255 characters long.") { it.length < 5 || it.length > 2048 }
     }
 
     fun createTour(resource: TourWrapper, user: User): UUID {
