@@ -27,7 +27,7 @@ class ToursController(
     }
 
     @PostMapping
-    fun create(@RequestBody resource: TourWrapper, request: HttpServletRequest, response: HttpServletResponse): UUID {
+    fun create(@RequestBody resource: TourWrapper, request: HttpServletRequest, response: HttpServletResponse): Tour {
         return toursService.createTour(resource, jwtAuthenticator.tryAuthenticate(request))
     }
 

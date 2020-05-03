@@ -44,7 +44,7 @@ class ToursService {
         checkStringField(field, container, "description", "The name should be between 3 and 255 characters long.") { it.length < 5 || it.length > 2048 }
     }
 
-    fun createTour(resource: TourWrapper, user: User): UUID {
+    fun createTour(resource: TourWrapper, user: User): Tour {
         val container = ExceptionContainer()
         if (resource.name.isEmpty) {
             container.addException(PropertyException("name", "The name is an expected value."))
@@ -83,10 +83,10 @@ class ToursService {
                 active = resource.active.get(),
                 totalDistance = calcTotalDist(locations)
         )
-        return UUID.fromString(tourRepository.saveAndFlush(tour).secretId)
+        return tourRepository.saveAndFlush(tour)
     }
 
-    private fun calcTotalDist(list: List<Location>): Int {
+    private fun calcTotalDist(list: List<Location>): Double {
         var res = 0.0
         val R = 6371
         for (i in 1 until list.size) {
@@ -98,7 +98,7 @@ class ToursService {
             val c = 2 * atan2(sqrt(a), sqrt(1 - a))
             res += (R * c)
         }
-        return res.roundToInt()
+        return res
     }
 
     fun getTourById(secretId: UUID): Tour {
@@ -113,7 +113,7 @@ class ToursService {
         }
 
         val container = ExceptionContainer()
-        var totalDist: Optional<Int> = Optional.empty()
+        var totalDist: Optional<Double> = Optional.empty()
         var locations: Optional<List<Location>> = Optional.empty()
         resource.name.ifPresent { checkName(it, container) }
         resource.description.ifPresent { checkDescription(it, container) }
