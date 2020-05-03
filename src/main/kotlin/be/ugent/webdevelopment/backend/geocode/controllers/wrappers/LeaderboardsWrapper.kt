@@ -5,7 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.database.models.User
 import com.fasterxml.jackson.annotation.JsonView
 
 class LeaderboardsWrapper(
-        val User: User,
+        val user: User,
 
         @field:JsonView(View.List::class)
         val value: Int
