@@ -36,10 +36,10 @@ pipeline {
                 sh 'sudo systemctl restart backend_prod.service'
             }
         }
-        stage('Self Destruct') {
-            steps {
-                sh 'rm -rf .[!.]* *'
-            }
+    }
+    post {
+        always {
+            sh 'rm -rf .[!.]* *'
         }
     }
 }
