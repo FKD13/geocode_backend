@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Service
 class ToursService {
@@ -54,7 +55,7 @@ class ToursService {
             checkDescription(resource.description.get(), container)
         }
 
-        val locations: MutableList<Location> = Collections.emptyList()
+        val locations: MutableList<Location> = ArrayList()
 
         if (resource.locations.isEmpty) {
             container.addException(PropertyException("locations", "The locations are an expected value."))
@@ -104,8 +105,8 @@ class ToursService {
         resource.description.ifPresent { checkDescription(it, container) }
 
         container.throwIfNotEmpty()
-        resource.name.ifPresent { tour.name = it }//TODO misschien checks uitvoeren op lengte?
-        resource.description.ifPresent { tour.description = it }//TODO misschien checks uitvoeren op lengte?
+        resource.name.ifPresent { tour.name = it }
+        resource.description.ifPresent { tour.description = it }
         resource.active.ifPresent { tour.active = it }
         resource.listed.ifPresent { tour.listed = it }
         tourRepository.saveAndFlush(tour)
