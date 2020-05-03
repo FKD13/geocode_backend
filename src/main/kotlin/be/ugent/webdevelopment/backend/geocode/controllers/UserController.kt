@@ -58,7 +58,7 @@ class UserController(
         return imageService.saveImageFile(image)
     }
 
-    @PatchMapping("/passwordReset")
+    @PatchMapping("/passwordreset")
     fun passWordReset(@RequestBody resource: ResetWrapper, response: HttpServletResponse, request: HttpServletRequest){
         authService.passwordReset(resource, jwtService.tryAuthenticate(request))
     }
