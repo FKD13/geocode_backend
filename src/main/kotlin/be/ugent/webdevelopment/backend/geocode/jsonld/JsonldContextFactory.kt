@@ -38,6 +38,7 @@ object JsonldContextFactory {
             val fields = currentClass.declaredFields
             for (f in fields) {
                 f.isAccessible = true
+                if (f.get(objType) == null) continue
                 if ((f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") ||
                         (provider.activeView != null && (
                                 f.isAnnotationPresent(JsonView::class.java) &&
