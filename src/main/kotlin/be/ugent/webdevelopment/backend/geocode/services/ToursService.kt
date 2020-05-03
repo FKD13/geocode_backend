@@ -119,10 +119,10 @@ class ToursService {
         resource.description.ifPresent { checkDescription(it, container) }
         resource.locations.ifPresent {
             checkLocations(it, container)
+            container.throwIfNotEmpty()
             locations = Optional.of(it.map { locationsRepository.findBySecretId(it).get() })
             totalDist = Optional.of(calcTotalDist(locations.get()))
         }
-
 
         container.throwIfNotEmpty()
         resource.name.ifPresent { tour.name = it }
