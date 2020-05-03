@@ -62,14 +62,8 @@ class ToursService {
         if (resource.locations.isEmpty) {
             container.addException(PropertyException("locations", "The locations are an expected value."))
         } else {
-            resource.locations.get().forEach {
-                val loc = locationsRepository.findBySecretId(it)
-                if (loc.isEmpty) {
-                    container.addException(PropertyException("locations", "The location with secretId = $it was not found in the database."))
-                } else {
-                    locations.add(loc.get())
-                }
-            }
+            checkLocations(resource.locations.get(), container)
+            resource.locations.get().forEach { locations.add(locationsRepository.findBySecretId(it).get()) }
         }
         if (resource.active.isEmpty) {
             container.addException(PropertyException("active", "Active is an expected value."))
@@ -98,9 +92,9 @@ class ToursService {
         for (i in 1 until list.size) {
             val prevLoc = list[i - 1]
             val loc = list[i]
-            val latDiff = (loc.latitude - prevLoc.latitude) * (PI) / 180.0
-            val lonDiff = (loc.longitude - prevLoc.longitude) * (PI) / 180.0
-            val a = sin(latDiff / 2.0).pow(2) + (cos(loc.latitude * (PI) / 180.0) * cos(prevLoc.latitude * (PI) / 180.0) * sin(lonDiff / 2.0).pow(2))
+            val latDiff = (loc.latitude - prevLoc.latitude) * (PI / 180.0)
+            val lonDiff = (loc.longitude - prevLoc.longitude) * (PI / 180.0)
+            val a = sin(latDiff / 2.0).pow(2) + (cos(loc.latitude * (PI / 180.0)) * cos(prevLoc.latitude * (PI / 180.0)) * sin(lonDiff / 2.0).pow(2))
             val c = 2 * atan2(sqrt(a), sqrt(1 - a))
             res += (R * c)
         }
@@ -119,15 +113,33 @@ class ToursService {
         }
 
         val container = ExceptionContainer()
+        var totalDist: Optional<Int> = Optional.empty()
+        var locations: Optional<List<Location>> = Optional.empty()
         resource.name.ifPresent { checkName(it, container) }
         resource.description.ifPresent { checkDescription(it, container) }
+        resource.locations.ifPresent {
+            checkLocations(it, container)
+            locations = Optional.of(it.map { locationsRepository.findBySecretId(it).get() })
+            totalDist = Optional.of(calcTotalDist(locations.get()))
+        }
+
 
         container.throwIfNotEmpty()
         resource.name.ifPresent { tour.name = it }
         resource.description.ifPresent { tour.description = it }
         resource.active.ifPresent { tour.active = it }
         resource.listed.ifPresent { tour.listed = it }
+        totalDist.ifPresent { tour.totalDistance = it }
+        locations.ifPresent { tour.locations = it }
         tourRepository.saveAndFlush(tour)
+    }
+
+    private fun checkLocations(list: List<String>, container: ExceptionContainer) {
+        list.forEach {
+            if (locationsRepository.findBySecretId(it).isEmpty) {
+                container.addException(PropertyException("locations", "The location with secretId = $it was not found in the database."))
+            }
+        }
     }
 
     fun deleteTour(secretId: UUID, user: User) {
