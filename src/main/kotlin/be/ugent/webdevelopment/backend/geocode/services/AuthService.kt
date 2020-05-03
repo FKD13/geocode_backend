@@ -57,23 +57,23 @@ class AuthService {
         }
     }
 
-    fun checkPasswordLength(password: String, container: ExceptionContainer){
-        if(password.length < 8){
+    fun checkPasswordLength(password: String, container: ExceptionContainer) {
+        if (password.length < 8) {
             container.addException(PropertyException("password", "Should be at least 8 characters"))
         }
-        if (password.length > 64){
+        if (password.length > 64) {
             container.addException(PropertyException("password", "Should be at most 64 characters"))
         }
     }
 
-    fun checkPasswordRepeat(password: String, passwordRepeat: String?, container: ExceptionContainer){
-        if (password != passwordRepeat){
+    fun checkPasswordRepeat(password: String, passwordRepeat: String?, container: ExceptionContainer) {
+        if (password != passwordRepeat) {
             container.addException(PropertyException("passwordRepeat", "Passwords didn't match, try again."))
         }
     }
 
     private fun checkPasswordSpecialChars(password: String, container: ExceptionContainer) {
-        if (passwordPattern.matcher(password).matches()){
+        if (passwordPattern.matcher(password).matches()) {
             container.addException(PropertyException("password", "Should not contain ` ´ ' or \""))
         }
     }
@@ -143,9 +143,16 @@ class AuthService {
     }
 
 
-
     fun passwordReset(resource: ResetWrapper, user: User) {
         val container = ExceptionContainer()
+
+        resource.oldPassword.ifPresentOrElse({
+            if (BCrypt.checkpw(it, user.password).not()) {
+                container.addException(PropertyException("oldPassword", "The oldPassword is wrong."))
+            }
+        }, {
+            container.addException(PropertyException("oldPassword", "The old password is an expected value."))
+        })
 
         resource.password.ifPresentOrElse({ password ->
             resource.passwordRepeat.ifPresentOrElse({ passwordRepeat ->
@@ -155,7 +162,7 @@ class AuthService {
             })
             checkPasswordLength(password, container)
             checkPasswordSpecialChars(password, container)
-        },{
+        }, {
             container.addException(PropertyException("newPassword", "The new password is an expected value."))
         })
         container.ifNotEmpty {

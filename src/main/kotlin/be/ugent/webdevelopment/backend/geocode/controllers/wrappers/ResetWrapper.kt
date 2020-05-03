@@ -4,7 +4,7 @@ import java.util.*
 
 
 class ResetWrapper(
-        var oldPassword: Optional<String>, //todo mag weg als we het enkel met cookie doen
+        var oldPassword: Optional<String>,
         var password: Optional<String>,
         var passwordRepeat: Optional<String>
 ) : Wrapper()
