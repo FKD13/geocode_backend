@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.TourWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ToursStatistics
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Tour
 import be.ugent.webdevelopment.backend.geocode.services.JWTAuthenticator
@@ -44,6 +45,11 @@ class ToursController(
     @DeleteMapping(value = ["/{secretId}"])
     fun delete(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse) {
         toursService.deleteTour(secretId, jwtAuthenticator.tryAuthenticate(request))
+    }
+
+    @GetMapping("/{secretId}/statistics")
+    fun statistics(@PathVariable secretId: UUID, request: HttpServletRequest, response: HttpServletResponse): ToursStatistics {
+        return toursService.statistics(secretId)
     }
 
 

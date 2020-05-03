@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.TourWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ToursStatistics
 import be.ugent.webdevelopment.backend.geocode.database.models.Location
 import be.ugent.webdevelopment.backend.geocode.database.models.Tour
 import be.ugent.webdevelopment.backend.geocode.database.models.User
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.*
 
 @Service
 class ToursService {
@@ -78,15 +80,31 @@ class ToursService {
         container.throwIfNotEmpty()
         val tour = Tour(
                 creator = user,
-                locations = resource.locations.get().map { locationsRepository.findBySecretId(it).get() },
+                locations = locations,
                 secretId = UUID.randomUUID().toString(),
                 name = resource.name.get(),
                 description = resource.description.get(),
                 createdAt = Date.from(Instant.now()),
                 listed = resource.listed.get(),
-                active = resource.active.get()
+                active = resource.active.get(),
+                totalDistance = calcTotalDist(locations)
         )
         return UUID.fromString(tourRepository.saveAndFlush(tour).secretId)
+    }
+
+    private fun calcTotalDist(list: List<Location>): Int {
+        var res = 0.0
+        val R = 6371
+        for (i in 1 until list.size) {
+            val prevLoc = list[i - 1]
+            val loc = list[i]
+            val latDiff = (loc.latitude - prevLoc.latitude) * (PI) / 180.0
+            val lonDiff = (loc.longitude - prevLoc.longitude) * (PI) / 180.0
+            val a = sin(latDiff / 2.0).pow(2) + (cos(loc.latitude * (PI) / 180.0) * cos(prevLoc.latitude * (PI) / 180.0) * sin(lonDiff / 2.0).pow(2))
+            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+            res += (R * c)
+        }
+        return res.roundToInt()
     }
 
     fun getTourById(secretId: UUID): Tour {
@@ -125,6 +143,13 @@ class ToursService {
 
     fun getByUser(user: User): List<Tour> {
         return tourRepository.getAllByCreator(user)
+    }
+
+    fun statistics(secretId: UUID): ToursStatistics {
+        val tour = getTourById(secretId)
+        return ToursStatistics(
+                completionCount = tour.user_tours.filter { it.completed }.count()
+        )
     }
 
 }

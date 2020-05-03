@@ -202,8 +202,13 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @field:JsonView(View.List::class)
         var name: String = "",
 
+        @Column(nullable = false)
+        @field:JsonldProperty("https://schema.org/Thing#name") //todo aanpassen
+        @field:JsonView(View.List::class)
+        var totalDistance: Int = 0,
+
         @Column(length = 2048, nullable = false)
-        @field:JsonldProperty("https://schema.org/CreativeWork#abstract")
+        @field:JsonldProperty("https://schema.org/CreativeWork#abstract") //todo aanpassen
         @field:JsonView(View.PublicDetail::class)
         var description: String = "",
 
