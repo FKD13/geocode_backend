@@ -349,12 +349,12 @@ class Report constructor(
         var createdAt: Date = Date(),
 
         @Column(nullable = false, length = 2048)
-        @field:JsonldProperty("https://schema.org/Review#dateCreated")
+        @field:JsonldProperty("https://schema.org/Review#reviewBody")
         @field:JsonView(View.AdminDetail::class)
         var message: String = "",
 
         @Column(nullable = false)
-        @field:JsonldProperty("https://schema.org/Review#reviewBody")
+        @field:JsonldProperty("https://schema.org/Review#reviewAspect")
         @field:JsonView(View.AdminDetail::class)
         var reason: String = "",
 
