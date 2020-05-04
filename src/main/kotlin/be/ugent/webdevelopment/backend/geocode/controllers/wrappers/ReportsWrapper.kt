@@ -5,5 +5,6 @@ import java.util.*
 class ReportsWrapper(
         var imageId: Optional<Int>,
         var reason: Optional<String>,
-        var resolved: Optional<Boolean>
+        var resolved: Optional<Boolean>,
+        var message: Optional<String>
 ) : Wrapper()
