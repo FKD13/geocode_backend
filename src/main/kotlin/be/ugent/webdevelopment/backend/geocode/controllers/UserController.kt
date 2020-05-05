@@ -1,9 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ResetWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatistics
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.Tour
@@ -55,13 +52,18 @@ class UserController(
         usersService.deleteUser(jwtService.tryAuthenticate(request))
     }
 
+    @DeleteMapping("/data")
+    fun deleteData(@RequestBody resource: DeleteWrappper, response: HttpServletResponse, request: HttpServletRequest) {
+        usersService.deleteData(jwtService.tryAuthenticate(request), resource)
+    }
+
     @PostMapping("/avatar")
     fun avatarUpload(@RequestBody image: MultipartFile, request: HttpServletRequest, response: HttpServletResponse): Int {
         return imageService.saveImageFile(image)
     }
 
     @PatchMapping("/passwordreset")
-    fun passWordReset(@RequestBody resource: ResetWrapper, response: HttpServletResponse, request: HttpServletRequest){
+    fun passWordReset(@RequestBody resource: ResetWrapper, response: HttpServletResponse, request: HttpServletRequest) {
         authService.passwordReset(resource, jwtService.tryAuthenticate(request))
     }
 

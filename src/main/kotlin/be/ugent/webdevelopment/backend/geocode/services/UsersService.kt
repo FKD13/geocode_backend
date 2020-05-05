@@ -1,5 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.DATATYPE
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.DeleteWrappper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class UsersService{
+class UsersService {
 
     @Autowired
     private lateinit var userRepository: UserRepository
@@ -96,7 +98,38 @@ class UsersService{
 
     fun deleteUser(user: User) {
         userRepository.delete(user)
+        //TODO check of echt alles van die user mee verwijderd wordt.
         userRepository.flush()
+    }
+
+    fun <T : Any, U : Any> apply(value: T, f: (value: T) -> U): U {
+        return f(value)
+    }
+
+    fun deleteData(user: User, resource: DeleteWrappper) {
+        resource.type.ifPresentOrElse({ dataType ->
+            when (dataType) {
+                DATATYPE.COMMENTS -> apply(user, {
+                    it.comments = emptySet()
+                })
+                DATATYPE.RATINGS -> apply(user, {
+                    it.location_ratings = emptySet()
+                })
+                DATATYPE.LOCATIONS -> apply(user, {
+                    it.locations = emptySet()
+                })
+                DATATYPE.TOURS -> apply(user, {
+                    it.tours = emptySet()
+                })
+                DATATYPE.VISITS -> apply(user, {
+                    it.check_ins = emptySet()
+                })
+                else -> throw PropertyException("type", "The given type does not exist.")
+            }
+            userRepository.saveAndFlush(user)
+        }, {
+            throw PropertyException("type", "the type is an expected value")
+        })
     }
 
 
