@@ -13,4 +13,10 @@ class MainController {
     fun main(): String {
         return "Hello There!"
     }
+
+
+    @GetMapping("/privacyagreement")
+    fun privacy(): String {
+        return "This is our privacy agreement."
+    }
 }
