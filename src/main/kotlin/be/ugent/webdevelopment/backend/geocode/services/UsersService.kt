@@ -5,8 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.DeleteWrappp
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.PrivacyWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
-import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
-import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
+import be.ugent.webdevelopment.backend.geocode.database.repositories.*
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
@@ -19,6 +18,21 @@ class UsersService {
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var commentRepository: CommentRepository
+
+    @Autowired
+    private lateinit var locationRepository: LocationRepository
+
+    @Autowired
+    private lateinit var tourRepository: TourRepository
+
+    @Autowired
+    private lateinit var ratingRepository: LocationRatingRepository
+
+    @Autowired
+    private lateinit var checkInRepository: CheckInRepository
 
     @Autowired
     private lateinit var imageRepository: ImageRepository
@@ -111,23 +125,22 @@ class UsersService {
         resource.type.ifPresentOrElse({ dataType ->
             when (dataType) {
                 DATATYPE.COMMENTS -> apply(user, {
-                    it.comments = emptySet()
+                    commentRepository.deleteAll(commentRepository.findAllByCreator(it))
                 })
                 DATATYPE.RATINGS -> apply(user, {
-                    it.location_ratings = emptySet()
+                    ratingRepository.deleteAll(ratingRepository.findAllByCreator(it))
                 })
                 DATATYPE.LOCATIONS -> apply(user, {
-                    it.locations = emptySet()
+                    locationRepository.deleteAll(locationRepository.findByCreator(it))
                 })
                 DATATYPE.TOURS -> apply(user, {
-                    it.tours = emptySet()
+                    tourRepository.deleteAll(tourRepository.getAllByCreator(it))
                 })
                 DATATYPE.VISITS -> apply(user, {
-                    it.check_ins = emptySet()
+                    checkInRepository.deleteAll(checkInRepository.findAllByCreator(it))
                 })
                 else -> throw PropertyException("type", "The given type does not exist.")
             }
-            userRepository.saveAndFlush(user)
         }, {
             throw PropertyException("type", "the type is an expected value")
         })

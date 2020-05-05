@@ -59,31 +59,31 @@ class User constructor(
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var locations: Set<Location> = Collections.emptySet(),
+        var locations: MutableSet<Location> = Collections.emptySet(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var tours: Set<Tour> = Collections.emptySet(),
+        var tours: MutableSet<Tour> = Collections.emptySet(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var comments: Set<Comment> = Collections.emptySet(),
+        var comments: MutableSet<Comment> = Collections.emptySet(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var location_ratings: Set<LocationRating> = Collections.emptySet(),
+        var location_ratings: MutableSet<LocationRating> = Collections.emptySet(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var check_ins: Set<CheckIn> = Collections.emptySet(),
+        var check_ins: MutableSet<CheckIn> = Collections.emptySet(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
-        var reports: Set<Report> = Collections.emptySet(),
+        var reports: MutableSet<Report> = Collections.emptySet(),
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
-        var user_tours: Set<UserTour> = Collections.emptySet()
+        var user_tours: MutableSet<UserTour> = Collections.emptySet()
 ) : JsonLDSerializable()
 
 @Entity
@@ -134,7 +134,7 @@ class Location constructor(
         @field:JsonView(View.AdminDetail::class)
         var visitSecret: String = "",
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
         @field:JsonldProperty("https://schema.org/Person")
         @field:JsonView(View.List::class)
         var creator: User = User(),
@@ -186,12 +186,12 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @field:JsonView(View.Id::class)
         var id: Int = 0,
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/CreativeWork#creator")
         @field:JsonView(View.List::class)
         var creator: User = User(),
 
-        @ManyToMany(cascade = [CascadeType.PERSIST])
+        @ManyToMany(fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/CreativeWork#about")
         @field:JsonView(View.PublicDetail::class)
         var locations: List<Location> = Collections.emptyList(),
@@ -245,12 +245,12 @@ class Comment constructor(
         @field:JsonView(View.Id::class)
         var id: Int = 0,
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Comment#creator")
         @field:JsonView(View.List::class)
         var creator: User = User(),
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Comment#about")
         @field:JsonView(View.List::class)
         var location: Location = Location(),
@@ -278,12 +278,12 @@ class LocationRating constructor(
         @field:JsonView(View.Id::class)
         var id: Int = 0,
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Rating#author")
         @field:JsonView(View.List::class)
         var creator: User = User(),
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Rating#about")
         @field:JsonView(View.List::class)
         var location: Location = Location(),
@@ -310,12 +310,12 @@ class CheckIn constructor(
         @field:JsonView(View.Id::class)
         var id: Int = 0,
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/DiscoverAction#agent")
         @field:JsonView(View.List::class)
         var creator: User = User(),
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/DiscoverAction#location")
         @field:JsonView(View.List::class)
         var location: Location = Location(),
@@ -337,12 +337,12 @@ class Report constructor(
         @field:JsonView(View.AdminDetail::class)
         var id: Int = 0,
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Review#creator")
         @field:JsonView(View.AdminDetail::class)
         var creator: User = User(),
 
-        @ManyToOne(cascade = [CascadeType.PERSIST], optional = false, fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @field:JsonldProperty("https://schema.org/Review#itemReviewed")
         @field:JsonView(View.AdminDetail::class)
         var location: Location = Location(),
