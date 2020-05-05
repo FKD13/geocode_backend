@@ -2,6 +2,7 @@ package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.DATATYPE
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.DeleteWrappper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.PrivacyWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
@@ -102,8 +103,8 @@ class UsersService {
         userRepository.flush()
     }
 
-    fun <T : Any, U : Any> apply(value: T, f: (value: T) -> U): U {
-        return f(value)
+    fun <T, U> apply(x: T, f: (T) -> U): U {
+        return f(x)
     }
 
     fun deleteData(user: User, resource: DeleteWrappper) {
@@ -132,5 +133,11 @@ class UsersService {
         })
     }
 
+    fun privacy(resource: PrivacyWrapper, user: User) {
+        resource.displayOnLeaderboards.ifPresent {
+            user.displayOnLeaderboards = it
+            userRepository.saveAndFlush(user)
+        }
+    }
 
 }

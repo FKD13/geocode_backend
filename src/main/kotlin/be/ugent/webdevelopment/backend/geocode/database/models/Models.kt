@@ -54,6 +54,10 @@ class User constructor(
         var password: String = "",
 
         @JsonIgnore
+        @Column(nullable = false)
+        var displayOnLeaderboards: Boolean = true,
+
+        @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "creator", fetch = FetchType.LAZY)
         var locations: Set<Location> = Collections.emptySet(),
 

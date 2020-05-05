@@ -67,6 +67,11 @@ class UserController(
         authService.passwordReset(resource, jwtService.tryAuthenticate(request))
     }
 
+    @PatchMapping("/privacy")
+    fun privacySettings(@RequestBody resource: PrivacyWrapper, response: HttpServletResponse, request: HttpServletRequest) {
+        usersService.privacy(resource, jwtService.tryAuthenticate(request))
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // Visits
 
