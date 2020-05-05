@@ -167,7 +167,7 @@ class LocationsService {
 
     fun deleteById(user: User, secretId: UUID) {
         locationRepository.findBySecretId(secretId.toString()).ifPresentOrElse({
-            if (it.creator.id != user.id) {//TODO ook admin mag verwijderen
+            if (!user.admin && it.creator.id != user.id) {
                 throw GenericException("The currently logged in user did not create this location and can therefore not delete it.")
             } else {
                 locationRepository.delete(it)
