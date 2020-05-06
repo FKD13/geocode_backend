@@ -26,7 +26,7 @@ class CaptchaResponse(
 class CaptchaService {
 
     @Value("\${CAPTCHA_SITE}")
-    private final lateinit var captchaSite: String //TODO to create endpoint for this
+    private final lateinit var captchaSite: String
 
     @Value("\${CAPTCHA_SECRET}")
     private final lateinit var captchaSecret: String
