@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.Image
 import be.ugent.webdevelopment.backend.geocode.database.models.Report
@@ -59,8 +60,13 @@ class ReportService {
             val container = ExceptionContainer()
             reportsWrapper.imageId.ifPresent { imageService.checkImageId("imageId", it, container) }
             reportsWrapper.reason.ifPresent {
+                if (it.length < 4 || it.length > 1024) {
+                    container.addException(PropertyException("reason", "Reason should be at least 4 characters and less than 1024 characters."))
+                }
+            }
+            reportsWrapper.message.ifPresent {
                 if (it.length < 4 || it.length > 2048) {
-                    container.addException(PropertyException("reason", "Reason should be at least 4 characters and less than 2048 characters."))
+                    container.addException(PropertyException("message", "Message should be at least 5 characters and less than 2048 characters."))
                 }
             }
             container.throwIfNotEmpty()
@@ -69,6 +75,9 @@ class ReportService {
             }
             reportsWrapper.reason.ifPresent {
                 report.get().reason = it
+            }
+            reportsWrapper.message.ifPresent {
+                report.get().message = it
             }
             reportsWrapper.resolved.ifPresent {
                 report.get().resolved = it
@@ -87,11 +96,18 @@ class ReportService {
                 imageService.checkImageId("imageId", it, container)
             }, {})
             reportsWrapper.reason.ifPresentOrElse({
-                if (it.length < 4 || it.length > 2048) {
-                    container.addException(PropertyException("reason", "Reason should be at least 5 characters and less than 2048 characters."))
+                if (it.length < 4 || it.length > 1024) {
+                    container.addException(PropertyException("reason", "Reason should be at least 5 characters and less than 1024 characters."))
                 }
             }, {
                 container.addException(PropertyException("reason", "The reason is an expected value."))
+            })
+            reportsWrapper.message.ifPresentOrElse({
+                if (it.length < 4 || it.length > 2048) {
+                    container.addException(PropertyException("message", "Message should be at least 5 characters and less than 2048 characters."))
+                }
+            }, {
+                container.addException(PropertyException("message", "The message is an expected value."))
             })
             container.throwIfNotEmpty()
 
@@ -99,16 +115,27 @@ class ReportService {
             reportsWrapper.imageId.ifPresent {
                 image = imageRepository.findById(it).orElseGet { null }
             }
+
             return reportRepository.saveAndFlush(Report(
                     createdAt = Date.from(Instant.now()),
                     image = image,
                     creator = user,
                     location = location.get(),
                     reason = reportsWrapper.reason.get(),
+                    message = reportsWrapper.message.get(),
                     resolved = false
             ))
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
+        }
+    }
+
+    fun getLocations(): List<ReportLocationWrapper> {
+        return reportRepository.findAll().groupBy { it.location }.map {
+            ReportLocationWrapper(
+                    location = it.key,
+                    reportsCount = it.value.count()
+            )
         }
     }
 

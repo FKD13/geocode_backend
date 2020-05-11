@@ -60,7 +60,8 @@ class LocationsController(
     @PatchMapping(value = ["/{secretId}"])
     fun update(@PathVariable secretId: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secretId).loc.creator.id) //todo ook admin mag dit
+        val user = jwtService.tryAuthenticate(request)
+        if (!user.admin && user.id != service.findBySecretId(secretId).loc.creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secretId, resource)
     }
