@@ -10,6 +10,7 @@ import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 
 @Service
 class UsersService{
@@ -26,6 +27,15 @@ class UsersService{
     @Autowired
     private lateinit var imageService: ImageService
 
+    @Autowired
+    lateinit var jwtAuthenticator: JWTAuthenticator
+
+    fun checkAdmin(request: HttpServletRequest) {
+        if (!(jwtAuthenticator.tryAuthenticate(request).admin)) {
+            throw GenericException("You are not an admin, you may not access this endpoint.")
+        }
+    }
+
     fun findByEmail(email: String): User {
         if (userRepository.findByEmail(email).isPresent) return userRepository.findByEmail(email).get()
         throw GenericException("User with email = $email was not found in the database")
@@ -39,6 +49,18 @@ class UsersService{
         val user: Optional<User> = userRepository.findById(id)
         if (user.isEmpty) throw GenericException("User with id = $id was not found in the database")
         return user.get()
+    }
+
+    fun deleteById(id: Int) {
+        val user: Optional<User> = userRepository.findById(id)
+        if (user.isEmpty) throw GenericException("User with id = $id was not found in the database")
+        userRepository.delete(user.get())
+    }
+
+    fun updateById(id: Int, resource: UserWrapper) {
+        val user: Optional<User> = userRepository.findById(id)
+        if (user.isEmpty) throw GenericException("User with id = $id was not found in the database")
+        this.update(user.get(), resource)
     }
 
     fun checkUsername(nameResource: String, nameUser: String, container: ExceptionContainer) {
