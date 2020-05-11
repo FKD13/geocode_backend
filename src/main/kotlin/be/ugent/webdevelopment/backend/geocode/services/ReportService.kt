@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.Image
 import be.ugent.webdevelopment.backend.geocode.database.models.Report
@@ -126,6 +127,15 @@ class ReportService {
             ))
         } else {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
+        }
+    }
+
+    fun getLocations(): List<ReportLocationWrapper> {
+        return reportRepository.findAll().groupBy { it.location }.map {
+            ReportLocationWrapper(
+                    location = it.key,
+                    reportsCount = it.value.count()
+            )
         }
     }
 

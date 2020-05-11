@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ReportsWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.Report
@@ -40,6 +41,12 @@ class ReportsController(
     fun getReports(request: HttpServletRequest, response: HttpServletResponse): List<Report> {
         reportService.checkAdmin(request)
         return reportService.getAll()
+    }
+
+    @GetMapping("/locations")
+    fun getLocations(request: HttpServletRequest, response: HttpServletResponse): List<ReportLocationWrapper> {
+        reportService.checkAdmin(request)
+        return reportService.getLocations()
     }
 
     @PostMapping("/image")
