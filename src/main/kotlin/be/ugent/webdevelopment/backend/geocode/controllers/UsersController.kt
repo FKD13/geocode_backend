@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.UsersService
@@ -28,4 +29,23 @@ class UsersController(val service: UsersService) {
         return service.findById(id)
     }
 
+    @DeleteMapping(value = ["/{id}"])
+    @JsonView(View.AdminDetail::class)
+    fun deleteById(@PathVariable id: Int,
+                 response: HttpServletResponse, request: HttpServletRequest) {
+        service.checkAdmin(request)
+        service.deleteById(id)
+    }
+
+    @PatchMapping(value = ["/{id}"])
+    @JsonView(View.AdminDetail::class)
+    fun updateById(
+            @PathVariable id: Int,
+            @RequestBody resource: UserWrapper,
+            response: HttpServletResponse,
+            request: HttpServletRequest
+    ) {
+        service.checkAdmin(request)
+        service.updateById(id, resource)
+    }
 }
