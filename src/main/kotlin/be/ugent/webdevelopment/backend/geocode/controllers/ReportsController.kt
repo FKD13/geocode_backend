@@ -44,6 +44,7 @@ class ReportsController(
     }
 
     @GetMapping("/locations")
+    @JsonView(View.List::class)
     fun getLocations(request: HttpServletRequest, response: HttpServletResponse): List<ReportLocationWrapper> {
         reportService.checkAdmin(request)
         return reportService.getLocations()
