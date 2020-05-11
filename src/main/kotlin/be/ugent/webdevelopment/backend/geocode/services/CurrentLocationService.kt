@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.CurrentLocationReceiveWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.CurrentLocationWrapper
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import org.springframework.beans.factory.annotation.Value
@@ -20,8 +21,14 @@ class CurrentLocationService {
 
         // Do the request
         try {
-            return RestTemplate().getForObject(ipApiUrl, CurrentLocationWrapper::class.java)
+            val currentLocationReceive: CurrentLocationReceiveWrapper =
+                    RestTemplate().getForObject(ipApiUrl, CurrentLocationReceiveWrapper::class.java)
                     ?: throw GenericException("Unable to fetch current location.")
+
+            return CurrentLocationWrapper(
+                    currentLocationReceive.lat,
+                    currentLocationReceive.lon
+            )
         } catch (exception: Exception) {
             throw GenericException("Unable to fetch current location.")
         }
