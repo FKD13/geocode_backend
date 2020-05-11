@@ -5,6 +5,7 @@ import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ResetWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatistics
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.View
+import be.ugent.webdevelopment.backend.geocode.database.models.Achievement
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.Tour
 import be.ugent.webdevelopment.backend.geocode.database.models.User
@@ -30,7 +31,9 @@ class UserController(
         val statisticsService: StatisticsService,
         val imageService: ImageService,
         val authService: AuthService,
-        val toursService: ToursService) {
+        val toursService: ToursService,
+        val achievementService: AchievementService
+) {
 
     @GetMapping
     fun findByLoggedIn(
@@ -93,6 +96,14 @@ class UserController(
     @GetMapping("/tours")
     fun getUserTours(request: HttpServletRequest, response: HttpServletResponse): List<Tour> {
         return toursService.getByUser(jwtService.tryAuthenticate(request))
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Achievements
+
+    @GetMapping("/achievements")
+    fun getUserAchievements(request: HttpServletRequest) : List<Achievement> {
+        return achievementService.getUserAchievements(jwtService.tryAuthenticate(request))
     }
 
 }

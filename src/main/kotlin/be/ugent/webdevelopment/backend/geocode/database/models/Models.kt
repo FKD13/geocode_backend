@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
+import be.ugent.webdevelopment.backend.geocode.achievements.TypeAchievement
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
@@ -79,7 +80,11 @@ class User constructor(
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
-        var user_tours: Set<UserTour> = Collections.emptySet()
+        var user_tours: Set<UserTour> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
+        var achievement_user: Set<AchievementUser> = Collections.emptySet()
 ) : JsonLDSerializable()
 
 @Entity
@@ -425,4 +430,68 @@ class Image constructor(
         @Column(nullable = false)
         @JsonIgnore
         var contentType: String = ""
+) : JsonLDSerializable()
+
+/**
+ * A Entity to map achievements to users.
+ */
+@Entity
+@Table
+class AchievementUser(
+        @Id
+        @GeneratedValue
+        var id: Int = 0,
+
+        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        var user: User = User(),
+
+        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        var achievement: Achievement = Achievement()
+) {}
+
+@Entity
+@Table(name = "achievements")
+@JsonldType("https://schema.org/CreativeWork") // TODO Check this
+@JsonldId("achievements")
+class Achievement constructor(
+        @Id
+        @GeneratedValue
+        @field:JsonldId
+        @field:JsonView(View.Id::class)
+        var id: Int = 0,
+
+        @Column(nullable = false)
+        @field:JsonldProperty("")
+        @field:JsonView(View.List::class)
+        private val title: String = "",
+
+        @Column(nullable = false)
+        @field:JsonldProperty("")
+        @field:JsonView(View.List::class)
+        private val description: String = "",
+
+        @OneToOne(optional = true, cascade = [CascadeType.ALL])
+        @field:JsonldProperty("https://schema.org/Review#image") //TODO Check this
+        @field:JsonView(View.List::class)
+        var image: Image = Image(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "achievement")
+        var achievement_user: Set<AchievementUser> = Collections.emptySet(),
+
+        @Column(nullable = false)
+        @JsonIgnore
+        var type: TypeAchievement = TypeAchievement.COUNTRY,
+
+        /**
+         * Value to exceed in Count Achievement.
+         */
+        @JsonIgnore
+        var value: Int? = null,
+
+        /**
+         * stringValue to match, for County Achievement.
+         */
+        @JsonIgnore
+        var stringValue: String? = null
 ) : JsonLDSerializable()
