@@ -14,7 +14,7 @@ import java.util.*
 import javax.persistence.*
 
 @JsonSerialize(using = JsonldResourceSerializer::class)
-abstract class JsonLDSerializable
+interface JsonLDSerializable
 
 @Entity
 @Table(name = "users")
@@ -90,7 +90,7 @@ class User constructor(
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
         var achievement_user: Set<AchievementUser> = Collections.emptySet()
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 @Entity
 @Table(name = "locations")
@@ -179,7 +179,7 @@ class Location constructor(
         @ManyToMany(cascade = [CascadeType.PERSIST])
         var tours: Set<Tour> = Collections.emptySet()
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 
 @Entity
@@ -241,7 +241,7 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
         var user_tours: Set<UserTour> = Collections.emptySet()
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 @Entity
 @Table(name = "comments")
@@ -276,7 +276,7 @@ class Comment constructor(
         @field:JsonProperty("message")
         var comment: String = ""
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 @Entity
 @Table(name = "location_ratings")
@@ -310,7 +310,7 @@ class LocationRating constructor(
         @field:JsonView(View.List::class)
         var message: String = ""
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 @Entity
 @Table(name = "check_ins")
@@ -339,7 +339,7 @@ class CheckIn constructor(
         @field:JsonView(View.PrivateDetail::class)
         var createdAt: Date = Date()
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 @Entity
 @Table(name = "reports")
@@ -387,7 +387,7 @@ class Report constructor(
         @field:JsonView(View.AdminDetail::class)
         var image: Image? = null
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 @Entity
 @Table(name = "user_tours")
@@ -423,7 +423,7 @@ class UserTour constructor(
         @field:JsonView(View.PrivateDetail::class)
         var createdAt: Date = Date()
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 @Entity
 @Table(name = "images")
@@ -449,7 +449,7 @@ class Image constructor(
         @JsonIgnore
         var resourcePath: String? = null
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
 
 /**
  * A Entity to map achievements to users.
@@ -514,4 +514,4 @@ class Achievement constructor(
         @JsonIgnore
         var stringValue: String? = null
 
-) : JsonLDSerializable()
+) : JsonLDSerializable
