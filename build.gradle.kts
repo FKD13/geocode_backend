@@ -44,6 +44,8 @@ dependencies {
     // Pdf
     implementation("com.itextpdf:itextpdf:5.5.13.1")
     implementation("org.apache.pdfbox:pdfbox:2.0.19")
+    // GSON
+    implementation("com.google.code.gson:gson")
 
     implementation("org.jetbrains.kotlin:kotlin-maven-noarg")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

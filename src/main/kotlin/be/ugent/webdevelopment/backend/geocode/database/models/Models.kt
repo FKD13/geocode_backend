@@ -429,7 +429,11 @@ class Image constructor(
 
         @Column(nullable = false)
         @JsonIgnore
-        var contentType: String = ""
+        var contentType: String = "",
+
+        @Column(nullable = true)
+        @JsonIgnore
+        var resourcePath: String? = null
 ) : JsonLDSerializable()
 
 /**
