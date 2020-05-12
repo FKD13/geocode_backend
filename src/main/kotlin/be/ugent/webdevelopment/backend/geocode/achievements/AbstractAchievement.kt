@@ -38,7 +38,7 @@ abstract class AbstractAchievement(
             val bytes = resourceLoader.getResource("classpath:$resourcePath").inputStream.readBytes()
             imageRepository.save(Image(
                     image = bytes.toTypedArray(),
-                    contentType = "image/svg",
+                    contentType = "image/svg+xml",
                     resourcePath = resourcePath
             ))
         } else {
