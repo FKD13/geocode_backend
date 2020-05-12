@@ -1,9 +1,11 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.DATATYPE
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.DeleteWrappper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.PrivacyWrapper
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.User
-import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
-import be.ugent.webdevelopment.backend.geocode.database.repositories.UserRepository
+import be.ugent.webdevelopment.backend.geocode.database.repositories.*
 import be.ugent.webdevelopment.backend.geocode.exceptions.ExceptionContainer
 import be.ugent.webdevelopment.backend.geocode.exceptions.GenericException
 import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
@@ -13,10 +15,25 @@ import java.util.*
 import javax.servlet.http.HttpServletRequest
 
 @Service
-class UsersService{
+class UsersService {
 
     @Autowired
     private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var commentRepository: CommentRepository
+
+    @Autowired
+    private lateinit var locationRepository: LocationRepository
+
+    @Autowired
+    private lateinit var tourRepository: TourRepository
+
+    @Autowired
+    private lateinit var ratingRepository: LocationRatingRepository
+
+    @Autowired
+    private lateinit var checkInRepository: CheckInRepository
 
     @Autowired
     private lateinit var imageRepository: ImageRepository
@@ -118,8 +135,41 @@ class UsersService{
 
     fun deleteUser(user: User) {
         userRepository.delete(user)
+        //TODO check of echt alles van die user mee verwijderd wordt.
         userRepository.flush()
     }
+    
 
+    fun deleteData(user: User, resource: DeleteWrappper) {
+        resource.type.ifPresentOrElse({ dataType ->
+            when (dataType) {
+                DATATYPE.COMMENTS -> {
+                    commentRepository.deleteAll(commentRepository.findAllByCreator(user))
+                }
+                DATATYPE.RATINGS -> {
+                    ratingRepository.deleteAll(ratingRepository.findAllByCreator(user))
+                }
+                DATATYPE.LOCATIONS -> {
+                    locationRepository.deleteAll(locationRepository.findByCreator(user))
+                }
+                DATATYPE.TOURS -> {
+                    tourRepository.deleteAll(tourRepository.getAllByCreator(user))
+                }
+                DATATYPE.VISITS -> {
+                    checkInRepository.deleteAll(checkInRepository.findAllByCreator(user))
+                }
+                else -> throw PropertyException("type", "The given type does not exist.")
+            }
+        }, {
+            throw PropertyException("type", "the type is an expected value")
+        })
+    }
+
+    fun privacy(resource: PrivacyWrapper, user: User) {
+        resource.displayOnLeaderboards.ifPresent {
+            user.displayOnLeaderboards = it
+            userRepository.saveAndFlush(user)
+        }
+    }
 
 }

@@ -25,7 +25,7 @@ class LeaderboardsService(
         val result = mutableListOf<LeaderboardsWrapper>()
         val list = repository.findAll().filter { preFilter.invoke(it) }
         userRepository.findAll()
-                .filter { true } // TODO filter on enable leaderbord
+                .filter { it.displayOnLeaderboards }
                 .forEach {
                     result.add(LeaderboardsWrapper(
                             it, list.filter { item -> filter.invoke(item, it) }.map { item -> map.invoke(item) }.distinct().size

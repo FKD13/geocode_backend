@@ -88,7 +88,7 @@ class ToursService {
 
     private fun calcTotalDist(list: List<Location>): Double {
         var res = 0.0
-        val R = 6371
+        val R = 6371.230
         for (i in 1 until list.size) {
             val prevLoc = list[i - 1]
             val loc = list[i]
@@ -113,24 +113,16 @@ class ToursService {
         }
 
         val container = ExceptionContainer()
-        var totalDist: Optional<Double> = Optional.empty()
-        var locations: Optional<List<Location>> = Optional.empty()
+
         resource.name.ifPresent { checkName(it, container) }
         resource.description.ifPresent { checkDescription(it, container) }
-        resource.locations.ifPresent {
-            checkLocations(it, container)
-            container.throwIfNotEmpty()
-            locations = Optional.of(it.map { locationsRepository.findBySecretId(it).get() })
-            totalDist = Optional.of(calcTotalDist(locations.get()))
-        }
 
         container.throwIfNotEmpty()
+
         resource.name.ifPresent { tour.name = it }
         resource.description.ifPresent { tour.description = it }
         resource.active.ifPresent { tour.active = it }
         resource.listed.ifPresent { tour.listed = it }
-        totalDist.ifPresent { tour.totalDistance = it }
-        locations.ifPresent { tour.locations = it }
         tourRepository.saveAndFlush(tour)
     }
 
