@@ -131,12 +131,13 @@ class ReportService {
     }
 
     fun getLocations(): List<ReportLocationWrapper> {
-        return reportRepository.findAll().groupBy { it.location }.map {
-            ReportLocationWrapper(
-                    location = it.key,
-                    reportsCount = it.value.count()
-            )
-        }
+        return reportRepository.findAllByResolvedFalse()
+                .groupBy { it.location }.map {
+                    ReportLocationWrapper(
+                            location = it.key,
+                            reportsCount = it.value.count()
+                    )
+                }
     }
 
     fun getByLocation(secretId: UUID): List<Report> {
