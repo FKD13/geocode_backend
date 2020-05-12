@@ -6,11 +6,13 @@ import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
+import org.springframework.core.io.ResourceLoader
 
 class LocationCreateCountAchievement(
         imageRepository: ImageRepository,
+        resourceLoader: ResourceLoader,
         private val locationRepository: LocationRepository
-) : AbstractAchievement(imageRepository) {
+) : AbstractAchievement(imageRepository, resourceLoader) {
     override fun achieved(user: User, achievement: Achievement): Boolean {
         return locationRepository.findByCreator(user).count() >= achievement.value
                 ?: throw IllegalStateException("This value can not be null.")
