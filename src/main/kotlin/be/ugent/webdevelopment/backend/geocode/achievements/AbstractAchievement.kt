@@ -7,8 +7,7 @@ import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
 import org.slf4j.LoggerFactory
-import java.nio.file.Files
-import java.nio.file.Path
+import org.springframework.util.ResourceUtils
 
 abstract class AbstractAchievement(
         private val imageRepository: ImageRepository
@@ -32,13 +31,13 @@ abstract class AbstractAchievement(
      * Load Image from recource folder
      */
     private fun loadImage(resourcePath: String) : Image {
-        val fileUri = javaClass.classLoader.getResource(resourcePath)?.file
+        val fileUri = javaClass.classLoader.getResource(resourcePath)?.toURI()
         if (fileUri == null) {
             throw RuntimeException("resource at $resourcePath not found")
         } else {
             val optImage = imageRepository.findByResourcePath(resourcePath)
             return if (optImage.isEmpty) {
-                val bytes = Files.readAllBytes(Path.of(fileUri))
+                val bytes = ResourceUtils.getFile(fileUri).readBytes()
                 imageRepository.save(Image(
                         image = bytes.toTypedArray(),
                         contentType = "image/svg",

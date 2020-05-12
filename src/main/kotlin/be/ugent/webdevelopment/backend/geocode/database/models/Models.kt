@@ -474,7 +474,7 @@ class Achievement constructor(
         @field:JsonView(View.List::class)
         private val description: String = "",
 
-        @OneToOne(optional = true, cascade = [CascadeType.ALL])
+        @ManyToOne(optional = true)
         @field:JsonldProperty("https://schema.org/Review#image") //TODO Check this
         @field:JsonView(View.List::class)
         var image: Image = Image(),
