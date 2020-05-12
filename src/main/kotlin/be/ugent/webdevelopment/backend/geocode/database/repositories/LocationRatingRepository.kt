@@ -9,4 +9,5 @@ import java.util.*
 interface LocationRatingRepository : JpaRepository<LocationRating, Int> {
     fun findAllByLocation(location: Location): List<LocationRating>
     fun findByCreatorAndLocation(creator: User, location: Location): Optional<LocationRating>
+    fun findAllByCreator(creator: User): List<LocationRating>
 }
