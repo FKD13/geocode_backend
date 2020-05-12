@@ -12,7 +12,8 @@ class LocationCreateCountAchievement(
         private val locationRepository: LocationRepository
 ) : AbstractAchievement(imageRepository) {
     override fun achieved(user: User, achievement: Achievement): Boolean {
-        return locationRepository.findByCreator(user).count() >= achievement.value!!
+        return locationRepository.findByCreator(user).count() >= achievement.value
+                ?: throw IllegalStateException("This value can not be null.")
     }
 
     override fun storeInternal(template: AchievementTemplate, image: Image, repository: AchievementRepository) {

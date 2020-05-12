@@ -2,7 +2,6 @@ package be.ugent.webdevelopment.backend.geocode.achievements
 
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
-import be.ugent.webdevelopment.backend.geocode.database.repositories.TourRepository
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 
@@ -13,8 +12,7 @@ import org.springframework.stereotype.Component
 class AchievementLoader(
         val achievementRepository: AchievementRepository,
         val achievementManager: AchievementManager,
-        val locationRepository: LocationRepository,
-        val tourRepository: TourRepository
+        val locationRepository: LocationRepository
 ) : InitializingBean {
 
     private val achievements = mapOf(

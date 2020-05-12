@@ -33,12 +33,10 @@ abstract class AbstractAchievement(
      */
     private fun loadImage(resourcePath: String): Image {
         val fileUri = javaClass.classLoader.getResource(resourcePath)?.toURI()
-        if (fileUri == null) {
-            throw RuntimeException("resource at $resourcePath not found")
-        } else {
+        fileUri?.let {
             val optImage = imageRepository.findByResourcePath(resourcePath)
             return if (optImage.isEmpty) {
-                val bytes = ResourceUtils.getFile(fileUri).readBytes()
+                val bytes = ResourceUtils.getFile(it).readBytes()
                 imageRepository.save(Image(
                         image = bytes.toTypedArray(),
                         contentType = "image/svg",
@@ -47,6 +45,6 @@ abstract class AbstractAchievement(
             } else {
                 optImage.get()
             }
-        }
+        } ?: throw RuntimeException("resource at $resourcePath not found")
     }
 }

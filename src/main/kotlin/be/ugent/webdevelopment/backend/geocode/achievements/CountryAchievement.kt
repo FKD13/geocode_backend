@@ -14,7 +14,8 @@ class CountryAchievement(
 
     override fun achieved(user: User, achievement: Achievement): Boolean {
         return checkInRepository.findAllByCreator(user)
-                .map { it.location.country.toLowerCase() }.distinct().contains(achievement.stringValue!!)
+                .map { it.location.country.toLowerCase() }.distinct().contains(achievement.stringValue
+                        ?: throw IllegalStateException("This value can not be null."))
     }
 
     override fun storeInternal(template: AchievementTemplate, image: Image, repository: AchievementRepository) {

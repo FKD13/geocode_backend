@@ -12,7 +12,8 @@ class TourCountAchievement(
         private val userTourRepository: UserTourRepository
 ) : AbstractAchievement(imageRepository) {
     override fun achieved(user: User, achievement: Achievement): Boolean {
-        return userTourRepository.findAllByUser(user).distinct().count() >= achievement.value!!
+        return userTourRepository.findAllByUser(user).distinct().count() >= achievement.value
+                ?: throw IllegalStateException("This value can not be null.")
     }
 
     override fun storeInternal(template: AchievementTemplate, image: Image, repository: AchievementRepository) {

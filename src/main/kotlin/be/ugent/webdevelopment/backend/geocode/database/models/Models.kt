@@ -89,6 +89,7 @@ class User constructor(
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
         var achievement_user: Set<AchievementUser> = Collections.emptySet()
+
 ) : JsonLDSerializable()
 
 @Entity
@@ -177,6 +178,7 @@ class Location constructor(
         @JsonIgnore
         @ManyToMany(cascade = [CascadeType.PERSIST])
         var tours: Set<Tour> = Collections.emptySet()
+
 ) : JsonLDSerializable()
 
 
@@ -184,7 +186,8 @@ class Location constructor(
 @Table(name = "tours")
 @JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
 @JsonldId("tours")
-class Tour constructor( //todo check al de JsonViews als we dit gaan implementeren
+class Tour constructor( //todo check al de JsonViews als we dit gaan implementereZ
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -237,6 +240,7 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
         var user_tours: Set<UserTour> = Collections.emptySet()
+
 ) : JsonLDSerializable()
 
 @Entity
@@ -244,6 +248,7 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
 @JsonldType("https://schema.org/Comment")
 @JsonldId("comments")
 class Comment constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -270,6 +275,7 @@ class Comment constructor(
         @field:JsonView(View.List::class)
         @field:JsonProperty("message")
         var comment: String = ""
+
 ) : JsonLDSerializable()
 
 @Entity
@@ -277,6 +283,7 @@ class Comment constructor(
 @JsonldType("https://schema.org/AggregateRating")
 @JsonldId("ratings")
 class LocationRating constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -302,6 +309,7 @@ class LocationRating constructor(
         @field:JsonldProperty("https://schema.org/Rating#ratingExplanation")
         @field:JsonView(View.List::class)
         var message: String = ""
+
 ) : JsonLDSerializable()
 
 @Entity
@@ -309,6 +317,7 @@ class LocationRating constructor(
 @JsonldType("https://schema.org/DiscoverAction")
 @JsonldId("checkin")
 class CheckIn constructor(
+
         @Id
         @GeneratedValue
         @JsonldId
@@ -329,6 +338,7 @@ class CheckIn constructor(
         @field:JsonldProperty("https://schema.org/DiscoverAction#endTime")
         @field:JsonView(View.PrivateDetail::class)
         var createdAt: Date = Date()
+
 ) : JsonLDSerializable()
 
 @Entity
@@ -336,6 +346,7 @@ class CheckIn constructor(
 @JsonldType("https://schema.org/Review")
 @JsonldId("reports")
 class Report constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -408,7 +419,6 @@ class UserTour constructor(
         @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var completed: Boolean = false,
 
-
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
         var createdAt: Date = Date()
@@ -438,6 +448,7 @@ class Image constructor(
         @Column(nullable = true)
         @JsonIgnore
         var resourcePath: String? = null
+
 ) : JsonLDSerializable()
 
 /**
@@ -502,4 +513,5 @@ class Achievement constructor(
          */
         @JsonIgnore
         var stringValue: String? = null
+
 ) : JsonLDSerializable()
