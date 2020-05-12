@@ -116,29 +116,26 @@ class UsersService {
         //TODO check of echt alles van die user mee verwijderd wordt.
         userRepository.flush()
     }
-
-    fun <T, U> apply(x: T, f: (T) -> U): U {
-        return f(x)
-    }
+    
 
     fun deleteData(user: User, resource: DeleteWrappper) {
         resource.type.ifPresentOrElse({ dataType ->
             when (dataType) {
-                DATATYPE.COMMENTS -> apply(user, {
-                    commentRepository.deleteAll(commentRepository.findAllByCreator(it))
-                })
-                DATATYPE.RATINGS -> apply(user, {
-                    ratingRepository.deleteAll(ratingRepository.findAllByCreator(it))
-                })
-                DATATYPE.LOCATIONS -> apply(user, {
-                    locationRepository.deleteAll(locationRepository.findByCreator(it))
-                })
-                DATATYPE.TOURS -> apply(user, {
-                    tourRepository.deleteAll(tourRepository.getAllByCreator(it))
-                })
-                DATATYPE.VISITS -> apply(user, {
-                    checkInRepository.deleteAll(checkInRepository.findAllByCreator(it))
-                })
+                DATATYPE.COMMENTS -> {
+                    commentRepository.deleteAll(commentRepository.findAllByCreator(user))
+                }
+                DATATYPE.RATINGS -> {
+                    ratingRepository.deleteAll(ratingRepository.findAllByCreator(user))
+                }
+                DATATYPE.LOCATIONS -> {
+                    locationRepository.deleteAll(locationRepository.findByCreator(user))
+                }
+                DATATYPE.TOURS -> {
+                    tourRepository.deleteAll(tourRepository.getAllByCreator(user))
+                }
+                DATATYPE.VISITS -> {
+                    checkInRepository.deleteAll(checkInRepository.findAllByCreator(user))
+                }
                 else -> throw PropertyException("type", "The given type does not exist.")
             }
         }, {
