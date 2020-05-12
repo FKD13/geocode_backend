@@ -11,7 +11,7 @@ import org.springframework.util.ResourceUtils
 
 abstract class AbstractAchievement(
         private val imageRepository: ImageRepository
-) : JsonLDSerializable() {
+) : JsonLDSerializable {
     abstract fun achieved(user: User, achievement: Achievement): Boolean
     abstract fun storeInternal(template: AchievementTemplate, image: Image, repository: AchievementRepository)
 
