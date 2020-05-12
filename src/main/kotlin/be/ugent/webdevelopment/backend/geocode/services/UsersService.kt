@@ -124,7 +124,6 @@ class UsersService {
         userRepository.saveAndFlush(user)
     }
 
-
     private fun checkEmailUnique(emailUser: String, emailResource: String, container: ExceptionContainer) {
         userRepository.findByEmail(emailResource).ifPresent {
             if (it.email != emailUser) {
@@ -138,8 +137,7 @@ class UsersService {
         //TODO check of echt alles van die user mee verwijderd wordt.
         userRepository.flush()
     }
-    
-
+ 
     fun deleteData(user: User, resource: DeleteWrappper) {
         resource.type.ifPresentOrElse({ dataType ->
             when (dataType) {
@@ -171,5 +169,4 @@ class UsersService {
             userRepository.saveAndFlush(user)
         }
     }
-
 }

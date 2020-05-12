@@ -39,6 +39,9 @@ class LocationsService {
     @Autowired
     private lateinit var jwtAuthenticator: JWTAuthenticator
 
+    @Autowired
+    private lateinit var achievementService: AchievementService
+
     private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3|div)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
     private val attributesPattern = Pattern.compile("<[^<>]*\\s+(?!src|height|width)([^<>=]+)=[^<>]*", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
     private val countryUtil = CountryUtil()
@@ -149,6 +152,7 @@ class LocationsService {
                 address = addressList.subList(0, addressList.lastIndex).joinToString(", "),
                 active = resource.active.orElseGet { false }
         )
+        achievementService.validateAchievementsAsync(user)
         return locationRepository.saveAndFlush(loc)
     }
 
@@ -208,5 +212,4 @@ class LocationsService {
         })
         return statistics
     }
-
 }
