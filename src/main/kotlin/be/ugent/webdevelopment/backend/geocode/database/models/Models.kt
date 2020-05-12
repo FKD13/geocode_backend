@@ -1,5 +1,6 @@
 package be.ugent.webdevelopment.backend.geocode.database.models
 
+import be.ugent.webdevelopment.backend.geocode.achievements.TypeAchievement
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
@@ -83,7 +84,12 @@ class User constructor(
 
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
-        var user_tours: MutableSet<UserTour> = Collections.emptySet()
+        var user_tours: Set<UserTour> = Collections.emptySet(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
+        var achievement_user: Set<AchievementUser> = Collections.emptySet()
+
 ) : JsonLDSerializable
 
 @Entity
@@ -172,6 +178,7 @@ class Location constructor(
         @JsonIgnore
         @ManyToMany(cascade = [CascadeType.PERSIST])
         var tours: Set<Tour> = Collections.emptySet()
+
 ) : JsonLDSerializable
 
 
@@ -179,7 +186,8 @@ class Location constructor(
 @Table(name = "tours")
 @JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
 @JsonldId("tours")
-class Tour constructor( //todo check al de JsonViews als we dit gaan implementeren
+class Tour constructor( //todo check al de JsonViews als we dit gaan implementereZ
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -232,6 +240,7 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         @JsonIgnore
         @OneToMany(cascade = [CascadeType.ALL], mappedBy = "tour")
         var user_tours: Set<UserTour> = Collections.emptySet()
+
 ) : JsonLDSerializable
 
 @Entity
@@ -239,6 +248,7 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
 @JsonldType("https://schema.org/Comment")
 @JsonldId("comments")
 class Comment constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -265,6 +275,7 @@ class Comment constructor(
         @field:JsonView(View.List::class)
         @field:JsonProperty("message")
         var comment: String = ""
+
 ) : JsonLDSerializable
 
 @Entity
@@ -272,6 +283,7 @@ class Comment constructor(
 @JsonldType("https://schema.org/AggregateRating")
 @JsonldId("ratings")
 class LocationRating constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -297,6 +309,7 @@ class LocationRating constructor(
         @field:JsonldProperty("https://schema.org/Rating#ratingExplanation")
         @field:JsonView(View.List::class)
         var message: String = ""
+
 ) : JsonLDSerializable
 
 @Entity
@@ -304,6 +317,7 @@ class LocationRating constructor(
 @JsonldType("https://schema.org/DiscoverAction")
 @JsonldId("checkin")
 class CheckIn constructor(
+
         @Id
         @GeneratedValue
         @JsonldId
@@ -324,6 +338,7 @@ class CheckIn constructor(
         @field:JsonldProperty("https://schema.org/DiscoverAction#endTime")
         @field:JsonView(View.PrivateDetail::class)
         var createdAt: Date = Date()
+
 ) : JsonLDSerializable
 
 @Entity
@@ -331,6 +346,7 @@ class CheckIn constructor(
 @JsonldType("https://schema.org/Review")
 @JsonldId("reports")
 class Report constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -403,7 +419,6 @@ class UserTour constructor(
         @field:JsonView(View.PrivateDetail::class, View.AdminDetail::class)
         var completed: Boolean = false,
 
-
         @Column(nullable = false)
         @field:JsonView(View.PrivateDetail::class)
         var createdAt: Date = Date()
@@ -428,5 +443,75 @@ class Image constructor(
 
         @Column(nullable = false)
         @JsonIgnore
-        var contentType: String = ""
+        var contentType: String = "",
+
+        @Column(nullable = true)
+        @JsonIgnore
+        var resourcePath: String? = null
+
+) : JsonLDSerializable
+
+/**
+ * A Entity to map achievements to users.
+ */
+@Entity
+@Table
+class AchievementUser(
+        @Id
+        @GeneratedValue
+        var id: Int = 0,
+
+        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        var user: User = User(),
+
+        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        var achievement: Achievement = Achievement()
+)
+
+@Entity
+@Table(name = "achievements")
+@JsonldType("https://schema.org/CreativeWork") // TODO Check this
+@JsonldId("achievements")
+class Achievement constructor(
+        @Id
+        @GeneratedValue
+        @field:JsonldId
+        @field:JsonView(View.Id::class)
+        var id: Int = 0,
+
+        @Column(nullable = false)
+        @field:JsonldProperty("")
+        @field:JsonView(View.List::class)
+        private val title: String = "",
+
+        @Column(nullable = false)
+        @field:JsonldProperty("")
+        @field:JsonView(View.List::class)
+        private val description: String = "",
+
+        @ManyToOne(optional = true)
+        @field:JsonldProperty("https://schema.org/Review#image") //TODO Check this
+        @field:JsonView(View.List::class)
+        var image: Image = Image(),
+
+        @JsonIgnore
+        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "achievement")
+        var achievement_user: Set<AchievementUser> = Collections.emptySet(),
+
+        @Column(nullable = false)
+        @JsonIgnore
+        var type: TypeAchievement = TypeAchievement.COUNTRY,
+
+        /**
+         * Value to exceed in Count Achievement.
+         */
+        @JsonIgnore
+        var value: Int? = null,
+
+        /**
+         * stringValue to match, for County Achievement.
+         */
+        @JsonIgnore
+        var stringValue: String? = null
+
 ) : JsonLDSerializable

@@ -26,6 +26,9 @@ class ToursService {
     @Autowired
     lateinit var locationsRepository: LocationRepository
 
+    @Autowired
+    lateinit var achievementService: AchievementService
+
     fun getTours(): List<Tour> {
         return tourRepository.getAllByActiveTrueAndListedTrue()
     }
@@ -83,6 +86,7 @@ class ToursService {
                 active = resource.active.get(),
                 totalDistance = calcTotalDist(locations)
         )
+        achievementService.validateAchievementsAsync(user)
         return tourRepository.saveAndFlush(tour)
     }
 
@@ -155,5 +159,4 @@ class ToursService {
                 completionCount = tour.user_tours.filter { it.completed }.count()
         )
     }
-
 }

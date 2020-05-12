@@ -34,6 +34,9 @@ class VisitsService {
     @Autowired
     lateinit var locationsService: LocationsService
 
+    @Autowired
+    lateinit var achievementService: AchievementService
+
     @Async
     fun checkTours(user: User, location: Location) {
         tourRepository.getAllByActiveTrueAndListedTrue().filter { it.locations.contains(location) }.apply {
@@ -72,6 +75,7 @@ class VisitsService {
                 }
             }
         }
+        achievementService.validateAchievements(user)
     }
 
     fun visit(user: User, visitSecret: UUID): ExtendedLocationWrapper {
@@ -118,5 +122,4 @@ class VisitsService {
     fun getById(id: Int): CheckIn {
         return checkInRepository.findById(id).orElseThrow { GenericException("Checkin with id = $id was not found in the database.") }
     }
-
 }
