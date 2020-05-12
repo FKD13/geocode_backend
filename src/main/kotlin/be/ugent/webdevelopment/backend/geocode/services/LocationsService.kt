@@ -139,6 +139,8 @@ class LocationsService {
 
         val addressList: List<String> = (response.first()["display_name"] as String).split(", ")
 
+        val user = userRepository.findById(resource.creatorId.get()).get()
+
         val loc = Location(
                 longitude = resource.longitude.get(),
                 latitude = resource.latitude.get(),
@@ -147,7 +149,7 @@ class LocationsService {
                 listed = resource.listed.get(),
                 name = resource.name.get(),
                 description = resource.description.get(),
-                creator = userRepository.findById(resource.creatorId.get()).get(),
+                creator = user,
                 country = addressList.last(),
                 address = addressList.subList(0, addressList.lastIndex).joinToString(", "),
                 active = resource.active.orElseGet { false }
