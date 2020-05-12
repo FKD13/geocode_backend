@@ -35,7 +35,7 @@ abstract class AbstractAchievement(
     private fun loadImage(resourcePath: String): Image {
         val optImage = imageRepository.findByResourcePath(resourcePath)
         return if (optImage.isEmpty) {
-            val bytes = resourceLoader.getResource(resourcePath).inputStream.readBytes()
+            val bytes = resourceLoader.getResource("/WEB-INF/$resourcePath").inputStream.readBytes()
             imageRepository.save(Image(
                     image = bytes.toTypedArray(),
                     contentType = "image/svg",
