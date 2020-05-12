@@ -5,10 +5,14 @@ import be.ugent.webdevelopment.backend.geocode.database.models.Image
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
+import be.ugent.webdevelopment.backend.geocode.database.repositories.LocationRepository
 
-class LocationCreateCountAchievement(imageRepository: ImageRepository) : AbstractAchievement(imageRepository) {
+class LocationCreateCountAchievement(
+        imageRepository: ImageRepository,
+        private val locationRepository: LocationRepository
+) : AbstractAchievement(imageRepository) {
     override fun achieved(user: User, achievement: Achievement): Boolean {
-        TODO("Not yet implemented")
+        return locationRepository.findByCreator(user).count() >= achievement.value!!
     }
     override fun storeInternal(template: AchievementTemplate, image: Image, repository: AchievementRepository) {
         if (template.value is Int) {
