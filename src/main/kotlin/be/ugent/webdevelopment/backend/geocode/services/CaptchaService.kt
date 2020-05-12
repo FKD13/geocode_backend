@@ -52,5 +52,4 @@ class CaptchaService {
             throw GenericException(code = HttpStatus.BAD_REQUEST, message = "Actions did not match")
         }
     }
-
 }

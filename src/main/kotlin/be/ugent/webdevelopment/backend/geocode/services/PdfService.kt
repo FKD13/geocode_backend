@@ -16,7 +16,7 @@ import javax.imageio.ImageIO
 class PdfService(
         val qrCodeService: QRCodeService
 ) {
-    fun getPdf(bufferedImage: BufferedImage) : ByteArrayInputStream {
+    fun getPdf(bufferedImage: BufferedImage): ByteArrayInputStream {
         val document = Document()
 
         val baoDoc = ByteArrayOutputStream()
