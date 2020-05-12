@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class UsersService{
+class UsersService {
 
     @Autowired
     private lateinit var userRepository: UserRepository
@@ -85,7 +85,6 @@ class UsersService{
         userRepository.saveAndFlush(user)
     }
 
-
     private fun checkEmailUnique(emailUser: String, emailResource: String, container: ExceptionContainer) {
         userRepository.findByEmail(emailResource).ifPresent {
             if (it.email != emailUser) {
@@ -98,6 +97,4 @@ class UsersService{
         userRepository.delete(user)
         userRepository.flush()
     }
-
-
 }

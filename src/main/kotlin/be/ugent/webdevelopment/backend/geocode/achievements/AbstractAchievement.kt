@@ -27,10 +27,11 @@ abstract class AbstractAchievement(
             LoggerFactory.getLogger(javaClass).debug("Skipping achievement ${template.title}, already in database.")
         }
     }
+
     /**
      * Load Image from recource folder
      */
-    private fun loadImage(resourcePath: String) : Image {
+    private fun loadImage(resourcePath: String): Image {
         val fileUri = javaClass.classLoader.getResource(resourcePath)?.toURI()
         if (fileUri == null) {
             throw RuntimeException("resource at $resourcePath not found")

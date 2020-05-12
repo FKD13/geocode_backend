@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.achievements.AchievementManager
+import be.ugent.webdevelopment.backend.geocode.database.models.AchievementUser
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementUserRepository
@@ -28,7 +29,17 @@ class AchievementService(
      * Should be called when creating locations, tours an checking in.
      */
     @Async
+    fun validateAchievementsAsync(user: User) {
+        validateAchievements(user)
+    }
+
     fun validateAchievements(user: User) {
-        //TODO
+        val achievements = getAchievements().toHashSet()
+        val achievedAchievements = getUserAchievements(user).toHashSet()
+        for (i in achievements.filterNot { it in achievedAchievements }) {
+            if (achievementManager.getAchievement(i.type).achieved(user, i)) {
+                achievementUserRepository.save(AchievementUser(user = user, achievement = i))
+            }
+        }
     }
 }

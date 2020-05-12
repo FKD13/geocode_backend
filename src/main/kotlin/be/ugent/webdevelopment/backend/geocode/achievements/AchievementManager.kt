@@ -21,7 +21,7 @@ class AchievementManager(
             TypeAchievement.TOURSCREATECOUNT to TourCountAchievement(imageRepository, userTourRepository)
     )
 
-    fun getAchievement(type: TypeAchievement) : AbstractAchievement {
+    fun getAchievement(type: TypeAchievement): AbstractAchievement {
         return achievements[type] ?: throw RuntimeException("Unkown Achievement Type.")
     }
 }

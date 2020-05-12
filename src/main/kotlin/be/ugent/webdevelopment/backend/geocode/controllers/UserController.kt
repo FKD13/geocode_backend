@@ -64,7 +64,7 @@ class UserController(
     }
 
     @PatchMapping("/passwordreset")
-    fun passWordReset(@RequestBody resource: ResetWrapper, response: HttpServletResponse, request: HttpServletRequest){
+    fun passWordReset(@RequestBody resource: ResetWrapper, response: HttpServletResponse, request: HttpServletRequest) {
         authService.passwordReset(resource, jwtService.tryAuthenticate(request))
     }
 
@@ -102,7 +102,7 @@ class UserController(
     // Achievements
 
     @GetMapping("/achievements")
-    fun getUserAchievements(request: HttpServletRequest) : List<Achievement> {
+    fun getUserAchievements(request: HttpServletRequest): List<Achievement> {
         return achievementService.getUserAchievements(jwtService.tryAuthenticate(request))
     }
 

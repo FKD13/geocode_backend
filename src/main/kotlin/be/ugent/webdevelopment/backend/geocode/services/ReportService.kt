@@ -137,5 +137,4 @@ class ReportService {
             throw GenericException("The secretId: $secretId, is not linked to any location in the database.")
         }
     }
-
 }

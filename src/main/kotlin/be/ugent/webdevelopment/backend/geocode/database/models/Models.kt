@@ -451,7 +451,7 @@ class AchievementUser(
 
         @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
         var achievement: Achievement = Achievement()
-) {}
+)
 
 @Entity
 @Table(name = "achievements")

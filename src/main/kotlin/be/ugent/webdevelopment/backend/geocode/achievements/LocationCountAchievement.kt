@@ -15,6 +15,7 @@ class LocationCountAchievement(
         return checkInRepository.findAllByCreator(user)
                 .map { it.location }.distinct().count() >= achievement.value!!
     }
+
     override fun storeInternal(template: AchievementTemplate, image: Image, repository: AchievementRepository) {
         if (template.value is Int) {
             repository.save(Achievement(
