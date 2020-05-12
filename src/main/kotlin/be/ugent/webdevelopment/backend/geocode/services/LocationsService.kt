@@ -14,6 +14,9 @@ import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import be.ugent.webdevelopment.backend.geocode.utils.CountryUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForObject
+import java.net.URI
 import java.util.*
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
@@ -121,12 +124,20 @@ class LocationsService {
         resource.description.ifPresentOrElse({ checkDescription(resource.description.get(), container) }, { container.addException(PropertyException("description", "Description is an expected value.")) })
         resource.creatorId.ifPresentOrElse({ checkId(resource.creatorId.get(), container) }, { container.addException(PropertyException("creatorId", "CreatorId is an expected value.")) })
         resource.listed.ifPresentOrElse({}, { container.addException(PropertyException("listed", "Listed is an expected value.")) })
-        resource.country.ifPresentOrElse({ checkCountry(resource.country.get(), container) }, { container.addException(PropertyException("country", "Country is an expected value.")) })
-        resource.address.ifPresentOrElse({}, { container.addException(PropertyException("address", "Address is an expected value.")) })
 
         if (container.isEmpty().not()) {
             throw container.also { it.addException(GenericException("Location could not be created")) }
         }
+
+        val verifyUri: URI = URI.create(
+                "https://nominatim.openstreetmap.org/search?format=json&q=${resource.latitude.get()}%20${resource.longitude.get()}}")
+        val response: List<Map<String, Any>> = RestTemplate().postForObject(verifyUri, List::class.java)
+
+        if (response.isEmpty() || (response.first()["display_name"] is String).not()) {
+            throw GenericException("Could not get Address.")
+        }
+
+        val addressList: List<String> = (response.first()["display_name"] as String).split(", ")
 
         val user = userRepository.findById(resource.creatorId.get()).get()
 
@@ -139,8 +150,8 @@ class LocationsService {
                 name = resource.name.get(),
                 description = resource.description.get(),
                 creator = user,
-                country = resource.country.get(),
-                address = resource.address.get(),
+                country = addressList.last(),
+                address = addressList.subList(0, addressList.lastIndex).joinToString(", "),
                 active = resource.active.orElseGet { false }
         )
         achievementService.validateAchievementsAsync(user)
