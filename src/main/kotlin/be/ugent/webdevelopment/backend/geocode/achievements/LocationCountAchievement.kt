@@ -6,11 +6,13 @@ import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.CheckInRepository
 import be.ugent.webdevelopment.backend.geocode.database.repositories.ImageRepository
+import org.springframework.core.io.ResourceLoader
 
 class LocationCountAchievement(
         imageRepository: ImageRepository,
+        resourceLoader: ResourceLoader,
         private val checkInRepository: CheckInRepository
-) : AbstractAchievement(imageRepository) {
+) : AbstractAchievement(imageRepository, resourceLoader) {
     override fun achieved(user: User, achievement: Achievement): Boolean {
         return checkInRepository.findAllByCreator(user)
                 .map { it.location }.distinct().count() >= achievement.value
