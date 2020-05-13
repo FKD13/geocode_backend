@@ -130,7 +130,7 @@ class LocationsService {
         }
 
         val verifyUri: URI = URI.create(
-                "https://nominatim.openstreetmap.org/search?format=json&q=${resource.latitude.get()}%20${resource.longitude.get()}}")
+                "https://nominatim.openstreetmap.org/search?format=json&q=${resource.latitude.get()}%20${resource.longitude.get()}")
         val response: List<Map<String, Any>> = RestTemplate().postForObject(verifyUri, List::class.java)
 
         if (response.isEmpty() || (response.first()["display_name"] is String).not()) {
