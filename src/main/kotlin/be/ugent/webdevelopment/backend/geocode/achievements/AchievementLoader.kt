@@ -33,12 +33,22 @@ class AchievementLoader(
             ),
             TypeAchievement.LOCATIONSCOUNT to listOf(
                     AchievementTemplate(
+                            "A Small Walk", "Visit 1 locations", "small_walk.png", 1
+                    )
+            ),
+            TypeAchievement.LOCATIONSCOUNT to listOf(
+                    AchievementTemplate(
                             "Hiker", "Visit 10 locations", "fashion.png", 10
                     )
             ),
             TypeAchievement.LOCATIONSCREATECOUNT to listOf(
                     AchievementTemplate(
                             "Locations Breeder", "Create 5 locations", "street-map.png", 5
+                    )
+            ),
+            TypeAchievement.LOCATIONSCREATECOUNT to listOf(
+                    AchievementTemplate(
+                            "Locations Beginner", "Create 1 locations", "single_location.png", 1
                     )
             )
     )
