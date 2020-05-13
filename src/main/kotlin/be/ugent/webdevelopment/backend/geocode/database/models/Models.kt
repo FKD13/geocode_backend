@@ -27,17 +27,17 @@ class User constructor(
         @field:JsonView(View.Id::class)
         var id: Int = 0,
 
-        @field:JsonldProperty("https://schema.org/email")
+        @field:JsonldProperty("https://schema.org/Person#email")
         @Column(nullable = false, unique = true, length = 512)
         @field:JsonView(View.PrivateDetail::class)
         var email: String = "",
 
-        @field:JsonldProperty("https://schema.org/alternateName")
+        @field:JsonldProperty("https://schema.org/Person#alternateName")
         @Column(nullable = false, unique = true)
         @field:JsonView(View.List::class)
         var username: String = "",
 
-        @field:JsonldProperty("https://schema.org/image")
+        @field:JsonldProperty("https://schema.org/Person#image")
         @OneToOne(optional = true, cascade = [CascadeType.ALL])
         @field:JsonView(View.List::class)
         var avatar: Image? = null,
@@ -104,12 +104,12 @@ class Location constructor(
         var id: Int = 0,
 
         @Column(nullable = false)
-        @field:JsonldProperty("https://schema.org/longitude")
+        @field:JsonldProperty("https://schema.org/Place#longitude")
         @field:JsonView(View.List::class)
         var longitude: Double = 0.0,
 
         @Column(nullable = false)
-        @field:JsonldProperty("https://schema.org/latitude")
+        @field:JsonldProperty("https://schema.org/Place#latitude")
         @field:JsonView(View.List::class)
         var latitude: Double = 0.0,
 
@@ -127,12 +127,12 @@ class Location constructor(
         var listed: Boolean = false,
 
         @Column(nullable = false)
-        @field:JsonldProperty("https://schema.org/name")
+        @field:JsonldProperty("https://schema.org/Place#name")
         @field:JsonView(View.List::class)
         var name: String = "",
 
         @Column(nullable = false, length = 2048)
-        @field:JsonldProperty("https://schema.org/description")
+        @field:JsonldProperty("https://schema.org/Place#description")
         @field:JsonView(View.PublicDetail::class)
         var description: String = "",
 
@@ -141,7 +141,7 @@ class Location constructor(
         var visitSecret: String = "",
 
         @ManyToOne(fetch = FetchType.LAZY, optional = false)
-        @field:JsonldProperty("https://schema.org/Person")
+        @field:JsonldProperty("https://schema.org/CreativeWork#creator")
         @field:JsonView(View.List::class)
         var creator: User = User(),
 
@@ -184,9 +184,9 @@ class Location constructor(
 
 @Entity
 @Table(name = "tours")
-@JsonldType("https://schema.org/CreativeWork") //todo miss https://schema.org/Guide van maken
+@JsonldType("https://schema.org/CreativeWork")
 @JsonldId("tours")
-class Tour constructor( //todo check al de JsonViews als we dit gaan implementereZ
+class Tour constructor( //todo check al de JsonViews als we dit gaan implementeren
 
         @Id
         @GeneratedValue
@@ -210,17 +210,17 @@ class Tour constructor( //todo check al de JsonViews als we dit gaan implementer
         var secretId: String = "",
 
         @Column(nullable = false)
-        @field:JsonldProperty("https://schema.org/Thing#name")
+        @field:JsonldProperty("https://schema.org/CreativeWork#name")
         @field:JsonView(View.List::class)
         var name: String = "",
 
         @Column(nullable = false)
-        @field:JsonldProperty("https://schema.org/Thing#name") //todo aanpassen
+        @field:JsonldProperty("https://schema.org/TravelAction#distance")
         @field:JsonView(View.List::class)
         var totalDistance: Double = 0.0,
 
         @Column(length = 2048, nullable = false)
-        @field:JsonldProperty("https://schema.org/CreativeWork#abstract") //todo aanpassen
+        @field:JsonldProperty("https://schema.org/CreativeWork#abstract")
         @field:JsonView(View.PublicDetail::class)
         var description: String = "",
 
@@ -457,6 +457,7 @@ class Image constructor(
 @Entity
 @Table
 class AchievementUser(
+
         @Id
         @GeneratedValue
         var id: Int = 0,
@@ -466,13 +467,15 @@ class AchievementUser(
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         var achievement: Achievement = Achievement()
+
 )
 
 @Entity
 @Table(name = "achievements")
-@JsonldType("https://schema.org/CreativeWork") // TODO Check this
+@JsonldType("https://schema.org/CreativeWork")
 @JsonldId("achievements")
 class Achievement constructor(
+
         @Id
         @GeneratedValue
         @field:JsonldId
@@ -480,17 +483,17 @@ class Achievement constructor(
         var id: Int = 0,
 
         @Column(nullable = false)
-        @field:JsonldProperty("")
+        @field:JsonldProperty("https://schema.org/CreativeWork#name")
         @field:JsonView(View.List::class)
         private val name: String = "",
 
         @Column(nullable = false)
-        @field:JsonldProperty("")
+        @field:JsonldProperty("https://schema.org/CreativeWork#abstract")
         @field:JsonView(View.List::class)
         private val description: String = "",
 
         @ManyToOne(optional = true)
-        @field:JsonldProperty("https://schema.org/Review#image") //TODO Check this
+        @field:JsonldProperty("https://schema.org/CreativeWork#image")
         @field:JsonView(View.List::class)
         var image: Image = Image(),
 
