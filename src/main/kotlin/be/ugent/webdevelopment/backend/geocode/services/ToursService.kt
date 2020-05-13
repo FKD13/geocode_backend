@@ -40,11 +40,13 @@ class ToursService {
     }
 
     fun checkName(field: String, container: ExceptionContainer) {
-        checkStringField(field, container, "name", "The name should be between 3 and 255 characters long.") { it.length < 3 || it.length > 255 }
+        checkStringField(field, container, "name", "The name should be between 3 and 255 characters long.")
+        { it.length < 3 || it.length > 255 }
     }
 
     fun checkDescription(field: String, container: ExceptionContainer) {
-        checkStringField(field, container, "description", "The name should be between 3 and 255 characters long.") { it.length < 5 || it.length > 2048 }
+        checkStringField(field, container, "description", "The name should be between 3 and 255 characters long.")
+        { it.length < 5 || it.length > 2048 }
     }
 
     fun createTour(resource: TourWrapper, user: User): Tour {
@@ -103,7 +105,8 @@ class ToursService {
             val loc = list[i]
             val latDiff = (loc.latitude - prevLoc.latitude) * (PI / 180.0)
             val lonDiff = (loc.longitude - prevLoc.longitude) * (PI / 180.0)
-            val a = sin(latDiff / 2.0).pow(2) + (cos(loc.latitude * (PI / 180.0)) * cos(prevLoc.latitude * (PI / 180.0)) * sin(lonDiff / 2.0).pow(2))
+            val a = sin(latDiff / 2.0).pow(2) + (cos(loc.latitude * (PI / 180.0)) *
+                    cos(prevLoc.latitude * (PI / 180.0)) * sin(lonDiff / 2.0).pow(2))
             val c = 2 * atan2(sqrt(a), sqrt(1 - a))
             res += (R * c)
         }
