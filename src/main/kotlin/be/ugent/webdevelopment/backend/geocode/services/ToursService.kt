@@ -51,6 +51,17 @@ class ToursService {
 
     fun createTour(resource: TourWrapper, user: User): Tour {
         val container = ExceptionContainer()
+
+        val date = Calendar.getInstance().apply {
+            add(Calendar.HOUR, -1)
+        }
+
+        if (!user.admin) {
+            if (tourRepository.findAllByCreatorAndCreatedAtIsAfter(user, date = date.time).isNotEmpty()) {
+                throw GenericException("You can only create a tour every hour.")
+            }
+        }
+
         if (resource.name.isEmpty) {
             container.addException(PropertyException("name", "The name is an expected value."))
         } else {

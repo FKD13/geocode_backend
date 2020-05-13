@@ -8,6 +8,7 @@ import java.util.*
 interface LocationRepository : JpaRepository<Location, Int> {
     fun findAllByListedAndActive(listed: Boolean, active: Boolean): List<Location>
     fun findByCreator(creator: User): List<Location>
+    fun findByCreatorAndCreatedAtIsAfter(creator: User, date: Date): List<Location>
     fun findBySecretId(secretId: String): Optional<Location>
     fun findByVisitSecret(visitSecret: String): Optional<Location>
     fun findByVisitSecretAndActive(visitSecret: String, active: Boolean): Optional<Location>

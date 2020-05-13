@@ -35,6 +35,9 @@ class ReportService {
     @Autowired
     lateinit var jwtAuthenticator: JWTAuthenticator
 
+    @Autowired
+    lateinit var locationsService: LocationsService
+
     fun getById(reportId: Int): Report {
         val report = reportRepository.findById(reportId)
         if (report.isPresent) {
@@ -131,11 +134,11 @@ class ReportService {
     }
 
     fun getLocations(): List<ReportLocationWrapper> {
-        return reportRepository.findAllByResolvedFalse()
-                .groupBy { it.location }.map {
+        return locationRepository.findAll()
+                .map {
                     ReportLocationWrapper(
-                            location = it.key,
-                            reportsCount = it.value.count()
+                            location = it,
+                            reportsCount = getByLocation(UUID.fromString(it.secretId)).filter { !it.resolved }.size
                     )
                 }
     }

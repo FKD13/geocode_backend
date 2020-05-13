@@ -53,8 +53,7 @@ class LocationsController(
     @JsonView(View.PrivateDetail::class)
     fun create(@RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest): Location {
-        resource.creatorId = Optional.of(jwtService.tryAuthenticate(request).id)
-        return service.create(resource)
+        return service.create(resource, jwtService.tryAuthenticate(request))
     }
 
     @PatchMapping(value = ["/{secretId}"])
