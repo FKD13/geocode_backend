@@ -84,8 +84,8 @@ class LocationsService {
     }
 
     fun checkName(name: String, container: ExceptionContainer) {
-        if (name.length > 255) {
-            container.addException(PropertyException("name", "Name can not be bigger than 255 characters."))
+        if (name.length > 64) {
+            container.addException(PropertyException("name", "Name can not be bigger than 64 characters."))
         } else if (name.length < 3) {
             container.addException(PropertyException("name", "Name can not be smaller than 3 characters."))
         }
