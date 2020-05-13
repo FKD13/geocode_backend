@@ -20,7 +20,7 @@ abstract class AbstractAchievement(
      *
      */
     fun store(template: AchievementTemplate, repository: AchievementRepository) {
-        val optAchievement = repository.findAllByTitle(template.title)
+        val optAchievement = repository.findAllByName(template.title)
         if (optAchievement.isEmpty) {
             val image = loadImage(template.image)
             storeInternal(template, image, repository)
