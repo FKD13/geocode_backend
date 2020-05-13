@@ -25,7 +25,7 @@ class MainController(
 
     @GetMapping("/", produces = [MediaType.TEXT_HTML_VALUE])
     fun mainHtml(): ModelAndView {
-        return ModelAndView("forward:/swagger/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config/")
+        return ModelAndView("redirect:/swagger/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config/")
     }
 
     @GetMapping("/privacyagreement")
