@@ -2,7 +2,6 @@ package be.ugent.webdevelopment.backend.geocode.jsonld
 
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldId
 import be.ugent.webdevelopment.backend.geocode.jsonld.annotation.JsonldProperty
-import be.ugent.webdevelopment.backend.geocode.jsonld.util.JsonldResourceUtils.getFullIdFromObject
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonUnwrapped
 import com.fasterxml.jackson.annotation.JsonView
@@ -38,6 +37,7 @@ object JsonldContextFactory {
             val fields = currentClass.declaredFields
             for (f in fields) {
                 f.isAccessible = true
+                if (f.get(objType) == null) continue
                 if ((f.isAnnotationPresent(JsonldId::class.java) || f.name == "this$0") ||
                         (provider.activeView != null && (
                                 f.isAnnotationPresent(JsonView::class.java) &&
@@ -60,19 +60,10 @@ object JsonldContextFactory {
                     propertyId = Optional.of(jsonldProperty.value)
                 }
                 propertyId.ifPresent { id: String? ->
-                    if (f.type.declaredFields.any { df -> df.isAnnotationPresent(JsonldId::class.java) }) {
-                        val node = JsonNodeFactory.withExactBigDecimals(true).objectNode()
-                        getFullIdFromObject(f.get(objType)).ifPresent {
-                            node.set<JsonNode>("@id", TextNode.valueOf(it))
-                        }
-                        node.set<JsonNode>("@type", TextNode.valueOf(id))
-                        contexts[f.name] = node
+                    if (f.isAnnotationPresent(JsonProperty::class.java)) {
+                        contexts[f.getAnnotation(JsonProperty::class.java).value] = TextNode.valueOf(id)
                     } else {
-                        if (f.isAnnotationPresent(JsonProperty::class.java)) {
-                            contexts[f.getAnnotation(JsonProperty::class.java).value] = TextNode.valueOf(id)
-                        } else {
-                            contexts[f.name] = TextNode.valueOf(id)
-                        }
+                        contexts[f.name] = TextNode.valueOf(id)
                     }
                 }
             }

@@ -10,7 +10,5 @@ class LocationWrapper(
         var name: Optional<String>,
         var description: Optional<String>,
         var creatorId: Optional<Int>,
-        var active: Optional<Boolean>,
-        var address: Optional<String>,
-        var country: Optional<String>
+        var active: Optional<Boolean>
 ) : Wrapper()

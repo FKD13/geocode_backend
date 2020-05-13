@@ -1,10 +1,9 @@
 package be.ugent.webdevelopment.backend.geocode.controllers
 
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.ExtendedLocationWrapper
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserStatistics
-import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserWrapper
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
+import be.ugent.webdevelopment.backend.geocode.database.models.Tour
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.services.*
 import com.fasterxml.jackson.annotation.JsonView
@@ -26,7 +25,11 @@ class UserController(
         val locationsService: LocationsService,
         val visitsService: VisitsService,
         val statisticsService: StatisticsService,
-        val imageService: ImageService) {
+        val imageService: ImageService,
+        val authService: AuthService,
+        val toursService: ToursService,
+        val achievementService: AchievementService
+) {
 
     @GetMapping
     fun findByLoggedIn(
@@ -51,9 +54,24 @@ class UserController(
         usersService.deleteUser(jwtService.tryAuthenticate(request))
     }
 
+    @DeleteMapping("/data")
+    fun deleteData(@RequestBody resource: DeleteWrappper, response: HttpServletResponse, request: HttpServletRequest) {
+        usersService.deleteData(jwtService.tryAuthenticate(request), resource)
+    }
+
     @PostMapping("/avatar")
     fun avatarUpload(@RequestBody image: MultipartFile, request: HttpServletRequest, response: HttpServletResponse): Int {
         return imageService.saveImageFile(image)
+    }
+
+    @PatchMapping("/passwordreset")
+    fun passWordReset(@RequestBody resource: ResetWrapper, response: HttpServletResponse, request: HttpServletRequest) {
+        authService.passwordReset(resource, jwtService.tryAuthenticate(request))
+    }
+
+    @PatchMapping("/privacy")
+    fun privacySettings(@RequestBody resource: PrivacyWrapper, response: HttpServletResponse, request: HttpServletRequest) {
+        usersService.privacy(resource, jwtService.tryAuthenticate(request))
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -77,4 +95,21 @@ class UserController(
     fun getUserStatistics(request: HttpServletRequest, response: HttpServletResponse): UserStatistics {
         return statisticsService.getUserStatistics(jwtService.tryAuthenticate(request))
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Tours
+
+    @GetMapping("/tours")
+    fun getUserTours(request: HttpServletRequest, response: HttpServletResponse): List<Tour> {
+        return toursService.getByUser(jwtService.tryAuthenticate(request))
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Achievements
+
+    @GetMapping("/achievements")
+    fun getUserAchievements(request: HttpServletRequest): List<UserAchievementWrapper> {
+        return achievementService.getUserAchievementsWrapper(jwtService.tryAuthenticate(request))
+    }
+
 }

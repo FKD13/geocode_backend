@@ -19,7 +19,6 @@ import java.awt.image.BufferedImage
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.websocket.server.PathParam
 
 
 @RestController
@@ -54,14 +53,14 @@ class LocationsController(
     @JsonView(View.PrivateDetail::class)
     fun create(@RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest): Location {
-        resource.creatorId = Optional.of(jwtService.tryAuthenticate(request).id)
-        return service.create(resource)
+        return service.create(resource, jwtService.tryAuthenticate(request))
     }
 
     @PatchMapping(value = ["/{secretId}"])
     fun update(@PathVariable secretId: UUID, @RequestBody resource: LocationWrapper,
                response: HttpServletResponse, request: HttpServletRequest) {
-        if (jwtService.tryAuthenticate(request).id != service.findBySecretId(secretId).loc.creator.id)
+        val user = jwtService.tryAuthenticate(request)
+        if (!user.admin && user.id != service.findBySecretId(secretId).loc.creator.id)
             throw GenericException("The currently logged in user did not create this location and can therefor not edit it.")
         service.update(secretId, resource)
     }

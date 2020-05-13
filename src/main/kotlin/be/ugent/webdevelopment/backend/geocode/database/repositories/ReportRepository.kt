@@ -9,4 +9,5 @@ import java.util.*
 interface ReportRepository : JpaRepository<Report, Int> {
     fun findAllByImage(image: Image): Optional<Report>
     fun findAllByLocation(location: Location): List<Report>
+    fun findAllByResolvedFalse(): List<Report>
 }

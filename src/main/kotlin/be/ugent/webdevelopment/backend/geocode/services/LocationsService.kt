@@ -14,6 +14,9 @@ import be.ugent.webdevelopment.backend.geocode.exceptions.PropertyException
 import be.ugent.webdevelopment.backend.geocode.utils.CountryUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForObject
+import java.net.URI
 import java.util.*
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
@@ -35,6 +38,9 @@ class LocationsService {
 
     @Autowired
     private lateinit var jwtAuthenticator: JWTAuthenticator
+
+    @Autowired
+    private lateinit var achievementService: AchievementService
 
     private val descriptionTagsPattern = Pattern.compile("<\\s*(?!li|ul|p|b|i|u|img|br|h1|h2|h3|div)([^<>\\s]*)([^<>]*)>(.*)<\\s*/\\s*\\1\\s*>", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
     private val attributesPattern = Pattern.compile("<[^<>]*\\s+(?!src|height|width)([^<>=]+)=[^<>]*", Pattern.CASE_INSENSITIVE + Pattern.MULTILINE)
@@ -78,8 +84,8 @@ class LocationsService {
     }
 
     fun checkName(name: String, container: ExceptionContainer) {
-        if (name.length > 255) {
-            container.addException(PropertyException("name", "Name can not be bigger than 255 characters."))
+        if (name.length > 64) {
+            container.addException(PropertyException("name", "Name can not be bigger than 64 characters."))
         } else if (name.length < 3) {
             container.addException(PropertyException("name", "Name can not be smaller than 3 characters."))
         }
@@ -109,21 +115,38 @@ class LocationsService {
         }
     }
 
-    fun create(resource: LocationWrapper): Location {
+    fun create(resource: LocationWrapper, user: User): Location {
         val container = ExceptionContainer()
+
+        val date = Calendar.getInstance().apply {
+            add(Calendar.HOUR, -1)
+        }
+
+        if (!user.admin) {
+            if (locationRepository.findByCreatorAndCreatedAtIsAfter(user, date = date.time).isNotEmpty()) {
+                throw GenericException("You can only create a location every hour.")
+            }
+        }
 
         resource.longitude.ifPresentOrElse({ checkLon(resource.longitude.get(), container) }, { container.addException(PropertyException("longitude", "Longitude is an expected value.")) })
         resource.latitude.ifPresentOrElse({ checkLat(resource.latitude.get(), container) }, { container.addException(PropertyException("latitude", "Latitude is an expected value.")) })
         resource.name.ifPresentOrElse({ checkName(resource.name.get(), container) }, { container.addException(PropertyException("name", "Name is an expected value.")) })
         resource.description.ifPresentOrElse({ checkDescription(resource.description.get(), container) }, { container.addException(PropertyException("description", "Description is an expected value.")) })
-        resource.creatorId.ifPresentOrElse({ checkId(resource.creatorId.get(), container) }, { container.addException(PropertyException("creatorId", "CreatorId is an expected value.")) })
         resource.listed.ifPresentOrElse({}, { container.addException(PropertyException("listed", "Listed is an expected value.")) })
-        resource.country.ifPresentOrElse({ checkCountry(resource.country.get(), container) }, { container.addException(PropertyException("country", "Country is an expected value.")) })
-        resource.address.ifPresentOrElse({}, { container.addException(PropertyException("address", "Address is an expected value.")) })
 
         if (container.isEmpty().not()) {
             throw container.also { it.addException(GenericException("Location could not be created")) }
         }
+
+        val verifyUri: URI = URI.create(
+                "https://nominatim.openstreetmap.org/search?format=json&q=${resource.latitude.get()}%20${resource.longitude.get()}")
+        val response: List<Map<String, Any>> = RestTemplate().postForObject(verifyUri, List::class.java)
+
+        if (response.isEmpty() || (response.first()["display_name"] is String).not()) {
+            throw GenericException("Could not get Address.")
+        }
+
+        val addressList: List<String> = (response.first()["display_name"] as String).split(", ")
 
         val loc = Location(
                 longitude = resource.longitude.get(),
@@ -133,12 +156,14 @@ class LocationsService {
                 listed = resource.listed.get(),
                 name = resource.name.get(),
                 description = resource.description.get(),
-                creator = userRepository.findById(resource.creatorId.get()).get(),
-                country = resource.country.get(),
-                address = resource.address.get(),
+                creator = user,
+                country = addressList.last(),
+                address = addressList.subList(0, addressList.lastIndex).joinToString(", "),
                 active = resource.active.orElseGet { false }
         )
-        return locationRepository.saveAndFlush(loc)
+        val locationRes = locationRepository.saveAndFlush(loc)
+        achievementService.validateAchievementsAsync(user)
+        return locationRes
     }
 
     fun update(secretId: UUID, resource: LocationWrapper) {
@@ -152,14 +177,13 @@ class LocationsService {
 
         container.throwIfNotEmpty()
 
-        locationRepository.findBySecretId(secretId = secretId.toString()).ifPresentOrElse({
-            val location: Location = it
-            resource.longitude.ifPresent { location.longitude = resource.longitude.get() }
-            resource.latitude.ifPresent { location.latitude = resource.latitude.get() }
-            resource.name.ifPresent { location.name = resource.name.get() }
-            resource.description.ifPresent { location.description = resource.description.get() }
-            resource.creatorId.ifPresent { location.creator = userRepository.findById(resource.creatorId.get()).get() }
-            resource.active.ifPresent { location.active = resource.active.get() }
+        locationRepository.findBySecretId(secretId = secretId.toString()).ifPresentOrElse({ location ->
+            resource.longitude.ifPresent { location.longitude = it }
+            resource.latitude.ifPresent { location.latitude = it }
+            resource.name.ifPresent { location.name = it }
+            resource.description.ifPresent { location.description = it }
+            resource.creatorId.ifPresent { location.creator = userRepository.findById(it).get() }
+            resource.active.ifPresent { location.active = it }
             locationRepository.saveAndFlush(location)
         }, {
             throw GenericException("Location with secretId=$secretId does not exist in the database.")
@@ -168,7 +192,7 @@ class LocationsService {
 
     fun deleteById(user: User, secretId: UUID) {
         locationRepository.findBySecretId(secretId.toString()).ifPresentOrElse({
-            if (it.creator.id != user.id) {
+            if (!user.admin && it.creator.id != user.id) {
                 throw GenericException("The currently logged in user did not create this location and can therefore not delete it.")
             } else {
                 locationRepository.delete(it)
@@ -198,5 +222,4 @@ class LocationsService {
         })
         return statistics
     }
-
 }

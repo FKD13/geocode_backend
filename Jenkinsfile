@@ -7,13 +7,6 @@ pipeline {
                 sh './runapp.sh build -x test'
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing for branch: ' + env.BRANCH_NAME
-                sh 'mv .env.template .env'
-                sh './runapp.sh test'
-            }
-        }
         stage('Deploy-Development') {
             when {
                 branch 'development'
@@ -40,6 +33,11 @@ pipeline {
             steps {
                 sh 'rm -rf .[!.]* *'
             }
+        }
+    }
+    post {
+        failure {
+            sh 'rm -rf .[!.]* *'
         }
     }
 }
