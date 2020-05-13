@@ -154,8 +154,9 @@ class LocationsService {
                 address = addressList.subList(0, addressList.lastIndex).joinToString(", "),
                 active = resource.active.orElseGet { false }
         )
+        val locationRes = locationRepository.saveAndFlush(loc)
         achievementService.validateAchievementsAsync(user)
-        return locationRepository.saveAndFlush(loc)
+        return locationRes
     }
 
     fun update(secretId: UUID, resource: LocationWrapper) {
