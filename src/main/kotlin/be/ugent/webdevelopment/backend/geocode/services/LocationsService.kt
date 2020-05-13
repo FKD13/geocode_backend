@@ -132,7 +132,6 @@ class LocationsService {
         resource.latitude.ifPresentOrElse({ checkLat(resource.latitude.get(), container) }, { container.addException(PropertyException("latitude", "Latitude is an expected value.")) })
         resource.name.ifPresentOrElse({ checkName(resource.name.get(), container) }, { container.addException(PropertyException("name", "Name is an expected value.")) })
         resource.description.ifPresentOrElse({ checkDescription(resource.description.get(), container) }, { container.addException(PropertyException("description", "Description is an expected value.")) })
-        resource.creatorId.ifPresentOrElse({ checkId(resource.creatorId.get(), container) }, { container.addException(PropertyException("creatorId", "CreatorId is an expected value.")) })
         resource.listed.ifPresentOrElse({}, { container.addException(PropertyException("listed", "Listed is an expected value.")) })
 
         if (container.isEmpty().not()) {
