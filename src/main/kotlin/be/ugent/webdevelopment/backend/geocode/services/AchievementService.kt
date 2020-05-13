@@ -38,7 +38,7 @@ class AchievementService(
         val achievedAchievements = getUserAchievements(user).toHashSet()
         for (i in achievements.filterNot { it in achievedAchievements }) {
             if (achievementManager.getAchievement(i.type).achieved(user, i)) {
-                achievementUserRepository.save(AchievementUser(user = user, achievement = i))
+                achievementUserRepository.saveAndFlush(AchievementUser(user = user, achievement = i))
             }
         }
     }
