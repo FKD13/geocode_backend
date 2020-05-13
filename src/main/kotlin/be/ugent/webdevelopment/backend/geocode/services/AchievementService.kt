@@ -34,8 +34,8 @@ class AchievementService(
     }
 
     fun validateAchievements(user: User) {
-        val achievements = getAchievements().toHashSet()
-        val achievedAchievements = getUserAchievements(user).toHashSet()
+        val achievements = getAchievements()
+        val achievedAchievements = getUserAchievements(user).distinct()
         for (i in achievements.filterNot { it in achievedAchievements }) {
             if (achievementManager.getAchievement(i.type).achieved(user, i)) {
                 achievementUserRepository.saveAndFlush(AchievementUser(user = user, achievement = i))
