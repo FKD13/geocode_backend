@@ -115,8 +115,18 @@ class LocationsService {
         }
     }
 
-    fun create(resource: LocationWrapper): Location {
+    fun create(resource: LocationWrapper, user: User): Location {
         val container = ExceptionContainer()
+
+        val date = Calendar.getInstance().apply {
+            add(Calendar.HOUR, -1)
+        }
+
+        if (!user.admin) {
+            if (locationRepository.findByCreatorAndCreatedAtIsAfter(user, date = date.time).isNotEmpty()) {
+                throw GenericException("You can only create a location every hour.")
+            }
+        }
 
         resource.longitude.ifPresentOrElse({ checkLon(resource.longitude.get(), container) }, { container.addException(PropertyException("longitude", "Longitude is an expected value.")) })
         resource.latitude.ifPresentOrElse({ checkLat(resource.latitude.get(), container) }, { container.addException(PropertyException("latitude", "Latitude is an expected value.")) })
@@ -138,8 +148,6 @@ class LocationsService {
         }
 
         val addressList: List<String> = (response.first()["display_name"] as String).split(", ")
-
-        val user = userRepository.findById(resource.creatorId.get()).get()
 
         val loc = Location(
                 longitude = resource.longitude.get(),

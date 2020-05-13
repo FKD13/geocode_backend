@@ -80,7 +80,19 @@ class VisitsService {
 
     fun visit(user: User, visitSecret: UUID): ExtendedLocationWrapper {
         val location = locationRepository.findByVisitSecretAndActive(visitSecret.toString(), active = true)
+
         location.ifPresentOrElse({
+
+            val date = Calendar.getInstance().apply {
+                add(Calendar.HOUR, -24)
+            }
+
+            if (!user.admin) {
+                if (checkInRepository.findAllByCreatorAndLocationAndCreatedAtAfter(user, it, date = date.time).isNotEmpty()) {
+                    throw GenericException("You can only checkin once per location every day.")
+                }
+            }
+
             checkInRepository.saveAndFlush(
                     CheckIn(creator = user, location = location.get(), createdAt = Date.from(Instant.now()))
             )
