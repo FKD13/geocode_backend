@@ -2,7 +2,6 @@ package be.ugent.webdevelopment.backend.geocode.controllers
 
 import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.*
 import be.ugent.webdevelopment.backend.geocode.database.View
-import be.ugent.webdevelopment.backend.geocode.database.models.Achievement
 import be.ugent.webdevelopment.backend.geocode.database.models.CheckIn
 import be.ugent.webdevelopment.backend.geocode.database.models.Tour
 import be.ugent.webdevelopment.backend.geocode.database.models.User
@@ -109,8 +108,8 @@ class UserController(
     // Achievements
 
     @GetMapping("/achievements")
-    fun getUserAchievements(request: HttpServletRequest): List<Achievement> {
-        return achievementService.getUserAchievements(jwtService.tryAuthenticate(request))
+    fun getUserAchievements(request: HttpServletRequest): List<UserAchievementWrapper> {
+        return achievementService.getUserAchievementsWrapper(jwtService.tryAuthenticate(request))
     }
 
 }

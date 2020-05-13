@@ -466,7 +466,10 @@ class AchievementUser(
         var user: User = User(),
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
-        var achievement: Achievement = Achievement()
+        var achievement: Achievement = Achievement(),
+
+        @JsonIgnore
+        var achievedAt: Date = Date()
 
 )
 

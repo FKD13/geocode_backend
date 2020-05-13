@@ -1,6 +1,7 @@
 package be.ugent.webdevelopment.backend.geocode.services
 
 import be.ugent.webdevelopment.backend.geocode.achievements.AchievementManager
+import be.ugent.webdevelopment.backend.geocode.controllers.wrappers.UserAchievementWrapper
 import be.ugent.webdevelopment.backend.geocode.database.models.AchievementUser
 import be.ugent.webdevelopment.backend.geocode.database.models.User
 import be.ugent.webdevelopment.backend.geocode.database.repositories.AchievementRepository
@@ -23,6 +24,13 @@ class AchievementService(
      * Get All achievements by user
      */
     fun getUserAchievements(user: User) = achievementUserRepository.findAllByUser(user).map { it.achievement }
+
+    fun getUserAchievementsWrapper(user: User) = achievementUserRepository.findAllByUser(user).map {
+        UserAchievementWrapper(
+                it.achievement,
+                it.achievedAt
+        )
+    }
 
     /**
      * A function that will validate the achievements of a user
