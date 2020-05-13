@@ -18,27 +18,27 @@ class AchievementLoader(
     private val achievements = mapOf(
             TypeAchievement.COUNTRY to listOf(
                     AchievementTemplate(
-                            "Brexit", "Visit GB", "bacteria.png", "Great Britan"
+                            "Brexit", "Visit GB", "tower.png", "Great Britan"
                     )
             ),
             TypeAchievement.COUNTRYCOUNT to listOf(
                     AchievementTemplate(
-                            "County Hopper", "Visit 5 countries", "bacteria.png", 5
+                            "County Hopper", "Visit 5 countries", "space.png", 5
                     )
             ),
             TypeAchievement.TOURSCREATECOUNT to listOf(
                     AchievementTemplate(
-                            "Tour Breeder", "Create 5 tours", "bacteria.png", 5
+                            "Tour Breeder", "Create 5 tours", "direction.png", 5
                     )
             ),
             TypeAchievement.LOCATIONSCOUNT to listOf(
                     AchievementTemplate(
-                            "Hiker", "Visit 10 locations", "bacteria.png", 10
+                            "Hiker", "Visit 10 locations", "fashion.png", 10
                     )
             ),
             TypeAchievement.LOCATIONSCREATECOUNT to listOf(
                     AchievementTemplate(
-                            "Locations Breeder", "Create 5 locations", "bacteria.png", 5
+                            "Locations Breeder", "Create 5 locations", "street-map.png", 5
                     )
             )
     )
