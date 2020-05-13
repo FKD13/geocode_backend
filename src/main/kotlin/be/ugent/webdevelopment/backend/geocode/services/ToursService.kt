@@ -104,8 +104,9 @@ class ToursService {
                 active = resource.active.get(),
                 totalDistance = calcTotalDist(locations)
         )
+        val tourRes = tourRepository.saveAndFlush(tour)
         achievementService.validateAchievementsAsync(user)
-        return tourRepository.saveAndFlush(tour)
+        return tourRes
     }
 
     private fun calcTotalDist(list: List<Location>): Double {
