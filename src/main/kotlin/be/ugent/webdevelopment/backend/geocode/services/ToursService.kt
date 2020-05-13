@@ -74,7 +74,12 @@ class ToursService {
         if (resource.listed.isEmpty) {
             container.addException(PropertyException("listed", "Listed is an expected value."))
         }
-        container.throwIfNotEmpty()
+        container.let {
+            it.ifNotEmpty {
+                it.addException(GenericException("The tour could not be created."))
+                throw it
+            }
+        }
         val tour = Tour(
                 creator = user,
                 locations = locations,
