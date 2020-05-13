@@ -461,10 +461,10 @@ class AchievementUser(
         @GeneratedValue
         var id: Int = 0,
 
-        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         var user: User = User(),
 
-        @ManyToOne(optional = false, cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         var achievement: Achievement = Achievement()
 )
 
@@ -482,7 +482,7 @@ class Achievement constructor(
         @Column(nullable = false)
         @field:JsonldProperty("")
         @field:JsonView(View.List::class)
-        private val title: String = "",
+        private val name: String = "",
 
         @Column(nullable = false)
         @field:JsonldProperty("")
@@ -495,7 +495,7 @@ class Achievement constructor(
         var image: Image = Image(),
 
         @JsonIgnore
-        @OneToMany(cascade = [CascadeType.ALL], mappedBy = "achievement")
+        @OneToMany(cascade = [CascadeType.PERSIST], mappedBy = "achievement")
         var achievement_user: Set<AchievementUser> = Collections.emptySet(),
 
         @Column(nullable = false)

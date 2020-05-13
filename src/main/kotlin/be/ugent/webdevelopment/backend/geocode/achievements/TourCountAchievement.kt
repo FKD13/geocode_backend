@@ -20,8 +20,8 @@ class TourCountAchievement(
 
     override fun storeInternal(template: AchievementTemplate, image: Image, repository: AchievementRepository) {
         if (template.value is Int) {
-            repository.save(Achievement(
-                    title = template.title,
+            repository.saveAndFlush(Achievement(
+                    name = template.title,
                     description = template.description,
                     image = image,
                     type = TypeAchievement.TOURSCREATECOUNT,
