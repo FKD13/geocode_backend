@@ -40,12 +40,12 @@ class ToursService {
     }
 
     fun checkName(field: String, container: ExceptionContainer) {
-        checkStringField(field, container, "name", "The name should be between 3 and 255 characters long.")
-        { it.length < 3 || it.length > 255 }
+        checkStringField(field, container, "name", "The name should be between 3 and 64 characters long.")
+        { it.length < 3 || it.length > 64 }
     }
 
     fun checkDescription(field: String, container: ExceptionContainer) {
-        checkStringField(field, container, "description", "The name should be between 3 and 255 characters long.")
+        checkStringField(field, container, "description", "The name should be between 3 and 2048 characters long.")
         { it.length < 5 || it.length > 2048 }
     }
 
