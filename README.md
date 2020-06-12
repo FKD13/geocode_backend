@@ -18,6 +18,10 @@ Or if you are on windows, you need to run this command `cmd.exe /c runapp.bat bo
 
 To visit the swagger documentation, surf to [http://localhost:8080/swagger/swagger-ui.html](http://localhost:8080/swagger/swagger-ui.html)
 
+## Frontend
+
+You can find the frontend in a separate repository: [https://github.com/maartenvn/GeoCode](https://github.com/maartenvn/GeoCode).
+
 ## URL's
 https://geocode.ga/
 
